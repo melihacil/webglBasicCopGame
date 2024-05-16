@@ -42,7 +42,7 @@ camControl.dampingFactor = 0.2;
 // Auto rotate if needed
 // Beginning of the game may use this
 camControl.autoRotate = true;
-camControl.autoRotateSpeed = 5;
+camControl.autoRotateSpeed = 1;
 
 // Saves the state for the camera, can load it back by resetting
 window.addEventListener("keydown", function (e) {

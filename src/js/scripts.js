@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-
+import { init, camera } from "./CameraControls";
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
@@ -9,22 +9,10 @@ document.body.appendChild(renderer.domElement);
 renderer.setClearColor(0xfefefe);
 
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(
-  45,
-  window.innerWidth / window.innerHeight,
-  0.1,
-  1000
-);
 
-// Sets orbit control to move the camera around
-const camControl = new OrbitControls(camera, renderer.domElement);
-// camControl.panSpeed = 2;
-// camControl.rotateSpeed = 2;
-// camControl.maxDistance = 10;
-// camControl.enablePan = false;
-camControl.enableDamping = true;
-camControl.dampingFactor = 0.2;
+init(renderer, scene);
 
+<<<<<<< Updated upstream
 // camControl.mouseButtons.RIGHT = THREE.MOUSE.ROTATE;
 // camControl.mouseButtons.LEFT = THREE.MOUSE.PAN;
 
@@ -65,23 +53,15 @@ camControl.target = new THREE.Vector3(2, 2, 2);
 
 // Initial Camera positioning
 camera.position.set(6, 8, 14);
+=======
+>>>>>>> Stashed changes
 // Sets a 12 by 12 gird helper
 const gridHelper = new THREE.GridHelper(12, 12);
 scene.add(gridHelper);
 
 // Sets the x, y, and z axes with each having a length of 4
-const axesHelper = new THREE.AxesHelper(4);
+const axesHelper = new THREE.AxesHelper(12);
 scene.add(axesHelper);
-
-function animate() {
-  //
-
-  camControl.update();
-
-  renderer.render(scene, camera);
-}
-
-renderer.setAnimationLoop(animate);
 
 window.addEventListener("resize", function () {
   camera.aspect = window.innerWidth / window.innerHeight;

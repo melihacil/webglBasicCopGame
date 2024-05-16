@@ -1,0 +1,23 @@
+{
+  "name": "threeboilerplate",
+  "version": "1.0.0",
+  "description": "The Three.js boilerplate that I'm using in my Tutorials.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Wael Yasmina",
+  "license": "ISC",
+  "dependencies": {
+    "three": "^0.161.0"
+  },
+  "devDependencies": {
+    "@parcel/config-default": "^2.10.3",
+    "parcel": "^2.10.0",
+    "parcel-reporter-static-files-copy": "^1.5.3"
+  },
+  "staticFiles": {
+    "staticOutPath": "assets"
+  }
+}

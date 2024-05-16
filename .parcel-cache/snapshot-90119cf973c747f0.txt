@@ -17,7 +17,7 @@
 137C:\Users\melih.acil\Documents\GitHub\webglBasicCopGame\node_modules\@parcel\optimizer-htmlnano\node_modules\css-tree\lib\parser\create.js133603333773092750 0
 73C:\Users\melih.acil\Documents\GitHub\webglBasicCopGame\node_modules\@lmdb133603333852519387 1
 128C:\Users\melih.acil\Documents\GitHub\webglBasicCopGame\node_modules\three\src\renderers\shaders\ShaderChunk\begin_vertex.glsl.js133603333792919775 0
-77C:\Users\melih.acil\Documents\GitHub\webglBasicCopGame\dist\index.64a4978e.js133603361594751233 0
+77C:\Users\melih.acil\Documents\GitHub\webglBasicCopGame\dist\index.64a4978e.js133603362144652247 0
 91C:\Users\melih.acil\Documents\GitHub\webglBasicCopGame\node_modules\@parcel\workers\LICENSE133603333746345395 0
 95C:\Users\melih.acil\Documents\GitHub\webglBasicCopGame\node_modules\utility-types\dist\index.js133603333752018637 0
 122C:\Users\melih.acil\Documents\GitHub\webglBasicCopGame\node_modules\react-refresh\cjs\react-refresh-runtime.development.js133603333756588378 0
@@ -57,7 +57,7 @@
 95C:\Users\melih.acil\Documents\GitHub\webglBasicCopGame\node_modules\cosmiconfig\dist\index.d.ts133603333781274083 0
 96C:\Users\melih.acil\Documents\GitHub\webglBasicCopGame\node_modules\@parcel\cache\lib\types.d.ts133603333769332735 0
 115C:\Users\melih.acil\Documents\GitHub\webglBasicCopGame\node_modules\@swc\helpers\_\_class_private_field_destructure133603333801629719 1
-59C:\Users\melih.acil\Documents\GitHub\webglBasicCopGame\dist133603361595359481 1
+59C:\Users\melih.acil\Documents\GitHub\webglBasicCopGame\dist133603362145282949 1
 146C:\Users\melih.acil\Documents\GitHub\webglBasicCopGame\node_modules\@parcel\optimizer-htmlnano\node_modules\css-tree\lib\syntax\atrule\supports.js133603333793969771 0
 121C:\Users\melih.acil\Documents\GitHub\webglBasicCopGame\node_modules\@swc\helpers\_\_async_generator_delegate\package.json133603333800329727 0
 90C:\Users\melih.acil\Documents\GitHub\webglBasicCopGame\node_modules\mdn-data\l10n\index.js133603333755708387 0
@@ -178,7 +178,7 @@
 106C:\Users\melih.acil\Documents\GitHub\webglBasicCopGame\node_modules\three\src\animation\PropertyBinding.js133603333828169585 0
 98C:\Users\melih.acil\Documents\GitHub\webglBasicCopGame\node_modules\css-tree\cjs\definition-syntax133603333794699763 1
 111C:\Users\melih.acil\Documents\GitHub\webglBasicCopGame\node_modules\css-tree\lib\syntax\node\NestingSelector.js133603333801679718 0
-72C:\Users\melih.acil\Documents\GitHub\webglBasicCopGame\src\js\scripts.js133603361594134614 0
+72C:\Users\melih.acil\Documents\GitHub\webglBasicCopGame\src\js\scripts.js133603362143963267 0
 114C:\Users\melih.acil\Documents\GitHub\webglBasicCopGame\node_modules\three\examples\jsm\shaders\AfterimageShader.js133603333778238864 0
 118C:\Users\melih.acil\Documents\GitHub\webglBasicCopGame\node_modules\@parcel\transformer-react-refresh-wrap\lib\helpers133603333752108662 1
 94C:\Users\melih.acil\Documents\GitHub\webglBasicCopGame\node_modules\node-releases\package.json133603333751067006 0
@@ -6960,4 +6960,4 @@
 83C:\Users\melih.acil\Documents\GitHub\webglBasicCopGame\node_modules\.bin\semver.ps1133603333846979421 0
 95C:\Users\melih.acil\Documents\GitHub\webglBasicCopGame\node_modules\.bin\update-browserslist-db133603333846979421 0
 99C:\Users\melih.acil\Documents\GitHub\webglBasicCopGame\node_modules\.bin\update-browserslist-db.cmd133603333846979421 0
-81C:\Users\melih.acil\Documents\GitHub\webglBasicCopGame\dist\index.64a4978e.js.map133603361595110916 0
+81C:\Users\melih.acil\Documents\GitHub\webglBasicCopGame\dist\index.64a4978e.js.map133603362145015965 0

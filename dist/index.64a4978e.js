@@ -616,8 +616,8 @@ camControl.dampingFactor = 0.2;
 // camControl.keyPanSpeed = 20;
 // Auto rotate if needed
 // Beginning of the game may use this
-// camControl.autoRotate = true;
-// camControl.autoRotateSpeed = 5;
+camControl.autoRotate = true;
+camControl.autoRotateSpeed = 5;
 // Saves the state for the camera, can load it back by resetting
 window.addEventListener("keydown", function(e) {
     if (e.code === "KeyK") camControl.saveState();

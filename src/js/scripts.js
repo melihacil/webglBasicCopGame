@@ -12,7 +12,6 @@ const scene = new THREE.Scene();
 
 init(renderer, scene);
 
-<<<<<<< Updated upstream
 // camControl.mouseButtons.RIGHT = THREE.MOUSE.ROTATE;
 // camControl.mouseButtons.LEFT = THREE.MOUSE.PAN;
 
@@ -53,8 +52,6 @@ camControl.target = new THREE.Vector3(2, 2, 2);
 
 // Initial Camera positioning
 camera.position.set(6, 8, 14);
-=======
->>>>>>> Stashed changes
 // Sets a 12 by 12 gird helper
 const gridHelper = new THREE.GridHelper(12, 12);
 scene.add(gridHelper);

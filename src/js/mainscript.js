@@ -32,14 +32,14 @@ init(renderer, scene);
 // camControl.autoRotateSpeed = 1;
 
 // Saves the state for the camera, can load it back by resetting
-window.addEventListener("keydown", function (e) {
-  if (e.code === "KeyK") {
-    camControl.saveState();
-  }
-  if (e.code === "KeyL") {
-    camControl.reset();
-  }
-});
+// window.addEventListener("keydown", function (e) {
+//   if (e.code === "KeyK") {
+//     camControl.saveState();
+//   }
+//   if (e.code === "KeyL") {
+//     camControl.reset();
+//   }
+// });
 
 // camControl.minAzimuthAngle = Math.PI / 4;
 // camControl.maxAzimuthAngle = Math.PI / 2;

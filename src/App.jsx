@@ -18,10 +18,10 @@ function App() {
     test.initialize();
     test.animate();
 
-    const boxGeometry = new THREE.BoxGeometry(8, 8, 8);
-    const boxMaterial = new THREE.MeshNormalMaterial();
-    const boxMesh = new THREE.Mesh(boxGeometry, boxMaterial);
-    test.scene.add(boxMesh);
+    // const boxGeometry = new THREE.BoxGeometry(8, 8, 8);
+    // const boxMaterial = new THREE.MeshNormalMaterial();
+    // const boxMesh = new THREE.Mesh(boxGeometry, boxMaterial);
+    // test.scene.add(boxMesh);
 
     let loadedModel;
     const glftLoader = new GLTFLoader();
@@ -33,7 +33,26 @@ function App() {
       gltfScene.scene.position.y = 5;
       gltfScene.scene.scale.set(10, 10, 10);
       test.scene.add(gltfScene.scene);
+
+      const gltfAnimations = gltf.animations;
+      const mixer = new THREE.AnimationMixer(model);
+      const animationsMap = new Map()
+      gltfAnimations.filter(a => a.name != 'TPose').forEach((a) => {
+        animationsMap.set(a.name, mixer.clipAction(a))
+      })
+
+      characterControls = new CharacterControls(model, mixer, animationsMap, orbitControls, camera, 'Idle')
     });
+
+    const soldierModel = new GLTFLoader();
+    soldierModel.load('./assets/soldier/Soldier.glb', (gltfScene) => {
+      const model = gltfScene.scene;
+      model.traverse(function (object) {
+        if (object.isMesh) object.castShadow = true;
+      });
+      test.scene.add(model);
+
+    })
 
     const gridHelper = new THREE.GridHelper(12, 12);
     test.scene.add(gridHelper);

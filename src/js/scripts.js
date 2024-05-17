@@ -28,8 +28,8 @@ init(renderer, scene);
 
 // Auto rotate if needed
 // Beginning of the game may use this
-camControl.autoRotate = true;
-camControl.autoRotateSpeed = 1;
+// camControl.autoRotate = true;
+// camControl.autoRotateSpeed = 1;
 
 // Saves the state for the camera, can load it back by resetting
 window.addEventListener("keydown", function (e) {
@@ -45,10 +45,10 @@ window.addEventListener("keydown", function (e) {
 // camControl.maxAzimuthAngle = Math.PI / 2;
 
 // Locking vertical angles of rotation
-camControl.minPolarAngle = Math.PI / 4;
-camControl.maxPolarAngle = Math.PI / 2;
+// camControl.minPolarAngle = Math.PI / 4;
+// camControl.maxPolarAngle = Math.PI / 2;
 // Locks the target to the given coordinates
-camControl.target = new THREE.Vector3(2, 2, 2);
+//camControl.target = new THREE.Vector3(2, 2, 2);
 
 // Initial Camera positioning
 camera.position.set(6, 8, 14);

@@ -609,8 +609,8 @@ const scene = new _three.Scene();
 // camControl.keyPanSpeed = 20;
 // Auto rotate if needed
 // Beginning of the game may use this
-camControl.autoRotate = true;
-camControl.autoRotateSpeed = 1;
+// camControl.autoRotate = true;
+// camControl.autoRotateSpeed = 1;
 // Saves the state for the camera, can load it back by resetting
 window.addEventListener("keydown", function(e) {
     if (e.code === "KeyK") camControl.saveState();
@@ -619,10 +619,10 @@ window.addEventListener("keydown", function(e) {
 // camControl.minAzimuthAngle = Math.PI / 4;
 // camControl.maxAzimuthAngle = Math.PI / 2;
 // Locking vertical angles of rotation
-camControl.minPolarAngle = Math.PI / 4;
-camControl.maxPolarAngle = Math.PI / 2;
+// camControl.minPolarAngle = Math.PI / 4;
+// camControl.maxPolarAngle = Math.PI / 2;
 // Locks the target to the given coordinates
-camControl.target = new _three.Vector3(2, 2, 2);
+//camControl.target = new THREE.Vector3(2, 2, 2);
 // Initial Camera positioning
 (0, _cameraControls.camera).position.set(6, 8, 14);
 // Sets a 12 by 12 gird helper
@@ -32509,6 +32509,7 @@ var _orbitControlsJs = require("three/examples/jsm/controls/OrbitControls.js");
 var _nodesJs = require("three/examples/jsm/nodes/Nodes.js");
 const camera = new _three.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
 function init(renderer, scene) {
+    const camera = new _three.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
     // Sets orbit control to move the camera around
     const camControl = new (0, _orbitControlsJs.OrbitControls)(camera, renderer.domElement);
     // camControl.panSpeed = 2;

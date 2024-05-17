@@ -1,23 +1,19 @@
 {
-  "name": "threeboilerplate",
-  "version": "1.0.0",
-  "description": "The Three.js boilerplate that I'm using in my Tutorials.",
-  "main": "index.js",
+  "name": "00-setup-guide",
+  "private": true,
+  "version": "0.0.0",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
-  "keywords": [],
-  "author": "Wael Yasmina",
-  "license": "ISC",
   "dependencies": {
-    "three": "^0.161.0"
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "three": "^0.138.3"
   },
   "devDependencies": {
-    "@parcel/config-default": "^2.12.0",
-    "parcel": "^2.10.0",
-    "parcel-reporter-static-files-copy": "^1.5.3"
-  },
-  "staticFiles": {
-    "staticOutPath": "assets"
+    "@vitejs/plugin-react": "^1.0.7",
+    "vite": "^2.8.0"
   }
 }

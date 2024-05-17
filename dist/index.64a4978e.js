@@ -586,6 +586,7 @@ function hmrAccept(bundle /*: ParcelRequire */ , id /*: string */ ) {
 },{}],"goJYj":[function(require,module,exports) {
 var _three = require("three");
 var _orbitControlsJs = require("three/examples/jsm/controls/OrbitControls.js");
+var _cameraControls = require("./CameraControls");
 const renderer = new _three.WebGLRenderer({
     antialias: true
 });
@@ -594,15 +595,7 @@ document.body.appendChild(renderer.domElement);
 // Sets the color of the background
 renderer.setClearColor(0xfefefe);
 const scene = new _three.Scene();
-const camera = new _three.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-// Sets orbit control to move the camera around
-const camControl = new (0, _orbitControlsJs.OrbitControls)(camera, renderer.domElement);
-// camControl.panSpeed = 2;
-// camControl.rotateSpeed = 2;
-// camControl.maxDistance = 10;
-// camControl.enablePan = false;
-camControl.enableDamping = true;
-camControl.dampingFactor = 0.2;
+(0, _cameraControls.init)(renderer, scene);
 // camControl.mouseButtons.RIGHT = THREE.MOUSE.ROTATE;
 // camControl.mouseButtons.LEFT = THREE.MOUSE.PAN;
 // KEY CONTROLS USING WASD -> ArrowLeft etc maps it to the arrows
@@ -616,8 +609,8 @@ camControl.dampingFactor = 0.2;
 // camControl.keyPanSpeed = 20;
 // Auto rotate if needed
 // Beginning of the game may use this
-camControl.autoRotate = true;
-camControl.autoRotateSpeed = 1;
+// camControl.autoRotate = true;
+// camControl.autoRotateSpeed = 1;
 // Saves the state for the camera, can load it back by resetting
 window.addEventListener("keydown", function(e) {
     if (e.code === "KeyK") camControl.saveState();
@@ -626,31 +619,25 @@ window.addEventListener("keydown", function(e) {
 // camControl.minAzimuthAngle = Math.PI / 4;
 // camControl.maxAzimuthAngle = Math.PI / 2;
 // Locking vertical angles of rotation
-camControl.minPolarAngle = Math.PI / 4;
-camControl.maxPolarAngle = Math.PI / 2;
+// camControl.minPolarAngle = Math.PI / 4;
+// camControl.maxPolarAngle = Math.PI / 2;
 // Locks the target to the given coordinates
-camControl.target = new _three.Vector3(2, 2, 2);
+//camControl.target = new THREE.Vector3(2, 2, 2);
 // Initial Camera positioning
-camera.position.set(6, 8, 14);
+(0, _cameraControls.camera).position.set(6, 8, 14);
 // Sets a 12 by 12 gird helper
 const gridHelper = new _three.GridHelper(12, 12);
 scene.add(gridHelper);
 // Sets the x, y, and z axes with each having a length of 4
-const axesHelper = new _three.AxesHelper(4);
+const axesHelper = new _three.AxesHelper(12);
 scene.add(axesHelper);
-function animate() {
-    //
-    camControl.update();
-    renderer.render(scene, camera);
-}
-renderer.setAnimationLoop(animate);
 window.addEventListener("resize", function() {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
+    (0, _cameraControls.camera).aspect = window.innerWidth / window.innerHeight;
+    (0, _cameraControls.camera).updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
-},{"three":"ktPTu","three/examples/jsm/controls/OrbitControls.js":"7mqRv"}],"ktPTu":[function(require,module,exports) {
+},{"three":"ktPTu","three/examples/jsm/controls/OrbitControls.js":"7mqRv","./CameraControls":"dLJK6"}],"ktPTu":[function(require,module,exports) {
 /**
  * @license
  * Copyright 2010-2023 Three.js Authors
@@ -32512,6 +32499,13484 @@ class OrbitControls extends (0, _three.EventDispatcher) {
     }
 }
 
-},{"three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["46PTB","goJYj"], "goJYj", "parcelRequire6fcf")
+},{"three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"dLJK6":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "camera", ()=>camera);
+parcelHelpers.export(exports, "init", ()=>init);
+var _three = require("three");
+var _orbitControlsJs = require("three/examples/jsm/controls/OrbitControls.js");
+var _nodesJs = require("three/examples/jsm/nodes/Nodes.js");
+const camera = new _three.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+function init(renderer, scene) {
+    const camera = new _three.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+    // Sets orbit control to move the camera around
+    const camControl = new (0, _orbitControlsJs.OrbitControls)(camera, renderer.domElement);
+    // camControl.panSpeed = 2;
+    // camControl.rotateSpeed = 2;
+    // camControl.maxDistance = 10;
+    // camControl.enablePan = false;
+    camControl.enableDamping = true;
+    camControl.dampingFactor = 0.1;
+    // camControl.mouseButtons.RIGHT = THREE.MOUSE.ROTATE;
+    // camControl.mouseButtons.LEFT = THREE.MOUSE.PAN;
+    // KEY CONTROLS USING WASD -> ArrowLeft etc maps it to the arrows
+    camControl.keys = {
+        LEFT: "KeyA",
+        UP: "KeyW",
+        BOTTOM: "KeyS",
+        RIGHT: "KeyD"
+    };
+    camControl.listenToKeyEvents(window);
+    camControl.keyPanSpeed = 20;
+    // Auto rotate if needed
+    // Beginning of the game may use this
+    // Saves the state for the camera, can load it back by resetting
+    window.addEventListener("keydown", function(e) {
+        if (e.code === "KeyK") camControl.saveState();
+        if (e.code === "KeyL") camControl.reset();
+        if (e.code === "KeyM") camControl.autoRotate = !camControl.autoRotate;
+    });
+    // camControl.minAzimuthAngle = Math.PI / 4;
+    // camControl.maxAzimuthAngle = Math.PI / 2;
+    // Locking vertical angles of rotation
+    //   camControl.minPolarAngle = Math.PI / 4;
+    //   camControl.maxPolarAngle = Math.PI / 2;
+    // Locks the target to the given coordinates
+    //camControl.target = new THREE.Vector3(2, 2, 2);
+    // Initial Camera positioning
+    camera.position.set(2, 6, 20);
+    camControl.autoRotate = true;
+    camControl.autoRotateSpeed = 5;
+    //   camera.rotation.set(-0.464, 0.39, 0.188);
+    //camera.rotateX.apply()
+    function animate() {
+        //
+        camControl.update();
+        //console.log(camera.rotation);
+        renderer.render(scene, camera);
+    }
+    renderer.setAnimationLoop(animate);
+}
+
+},{"three":"ktPTu","three/examples/jsm/controls/OrbitControls.js":"7mqRv","three/examples/jsm/nodes/Nodes.js":"a6WJh","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"a6WJh":[function(require,module,exports) {
+// @TODO: We can simplify "export { default as SomeNode, other, exports } from '...'" to just "export * from '...'" if we will use only named exports
+// this will also solve issues like "import TempNode from '../core/Node.js'"
+// constants
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+// core
+parcelHelpers.export(exports, "ArrayUniformNode", ()=>(0, _arrayUniformNodeJsDefault.default));
+parcelHelpers.export(exports, "AssignNode", ()=>(0, _assignNodeJsDefault.default));
+parcelHelpers.export(exports, "assign", ()=>(0, _assignNodeJs.assign));
+parcelHelpers.export(exports, "AttributeNode", ()=>(0, _attributeNodeJsDefault.default));
+parcelHelpers.export(exports, "attribute", ()=>(0, _attributeNodeJs.attribute));
+parcelHelpers.export(exports, "BypassNode", ()=>(0, _bypassNodeJsDefault.default));
+parcelHelpers.export(exports, "bypass", ()=>(0, _bypassNodeJs.bypass));
+parcelHelpers.export(exports, "CacheNode", ()=>(0, _cacheNodeJsDefault.default));
+parcelHelpers.export(exports, "cache", ()=>(0, _cacheNodeJs.cache));
+parcelHelpers.export(exports, "ConstNode", ()=>(0, _constNodeJsDefault.default));
+parcelHelpers.export(exports, "ContextNode", ()=>(0, _contextNodeJsDefault.default));
+parcelHelpers.export(exports, "context", ()=>(0, _contextNodeJs.context));
+parcelHelpers.export(exports, "label", ()=>(0, _contextNodeJs.label));
+parcelHelpers.export(exports, "IndexNode", ()=>(0, _indexNodeJsDefault.default));
+parcelHelpers.export(exports, "vertexIndex", ()=>(0, _indexNodeJs.vertexIndex));
+parcelHelpers.export(exports, "instanceIndex", ()=>(0, _indexNodeJs.instanceIndex));
+parcelHelpers.export(exports, "LightingModel", ()=>(0, _lightingModelJsDefault.default));
+parcelHelpers.export(exports, "Node", ()=>(0, _nodeJsDefault.default));
+parcelHelpers.export(exports, "addNodeClass", ()=>(0, _nodeJs.addNodeClass));
+parcelHelpers.export(exports, "createNodeFromType", ()=>(0, _nodeJs.createNodeFromType));
+parcelHelpers.export(exports, "VarNode", ()=>(0, _varNodeJsDefault.default));
+parcelHelpers.export(exports, "temp", ()=>(0, _varNodeJs.temp));
+parcelHelpers.export(exports, "NodeAttribute", ()=>(0, _nodeAttributeJsDefault.default));
+parcelHelpers.export(exports, "NodeBuilder", ()=>(0, _nodeBuilderJsDefault.default));
+parcelHelpers.export(exports, "NodeCache", ()=>(0, _nodeCacheJsDefault.default));
+parcelHelpers.export(exports, "NodeCode", ()=>(0, _nodeCodeJsDefault.default));
+parcelHelpers.export(exports, "NodeFrame", ()=>(0, _nodeFrameJsDefault.default));
+parcelHelpers.export(exports, "NodeFunctionInput", ()=>(0, _nodeFunctionInputJsDefault.default));
+parcelHelpers.export(exports, "NodeKeywords", ()=>(0, _nodeKeywordsJsDefault.default));
+parcelHelpers.export(exports, "NodeUniform", ()=>(0, _nodeUniformJsDefault.default));
+parcelHelpers.export(exports, "NodeVar", ()=>(0, _nodeVarJsDefault.default));
+parcelHelpers.export(exports, "NodeVarying", ()=>(0, _nodeVaryingJsDefault.default));
+parcelHelpers.export(exports, "ParameterNode", ()=>(0, _parameterNodeJsDefault.default));
+parcelHelpers.export(exports, "parameter", ()=>(0, _parameterNodeJs.parameter));
+parcelHelpers.export(exports, "PropertyNode", ()=>(0, _propertyNodeJsDefault.default));
+parcelHelpers.export(exports, "property", ()=>(0, _propertyNodeJs.property));
+parcelHelpers.export(exports, "varyingProperty", ()=>(0, _propertyNodeJs.varyingProperty));
+parcelHelpers.export(exports, "output", ()=>(0, _propertyNodeJs.output));
+parcelHelpers.export(exports, "diffuseColor", ()=>(0, _propertyNodeJs.diffuseColor));
+parcelHelpers.export(exports, "roughness", ()=>(0, _propertyNodeJs.roughness));
+parcelHelpers.export(exports, "metalness", ()=>(0, _propertyNodeJs.metalness));
+parcelHelpers.export(exports, "clearcoat", ()=>(0, _propertyNodeJs.clearcoat));
+parcelHelpers.export(exports, "clearcoatRoughness", ()=>(0, _propertyNodeJs.clearcoatRoughness));
+parcelHelpers.export(exports, "sheen", ()=>(0, _propertyNodeJs.sheen));
+parcelHelpers.export(exports, "sheenRoughness", ()=>(0, _propertyNodeJs.sheenRoughness));
+parcelHelpers.export(exports, "iridescence", ()=>(0, _propertyNodeJs.iridescence));
+parcelHelpers.export(exports, "iridescenceIOR", ()=>(0, _propertyNodeJs.iridescenceIOR));
+parcelHelpers.export(exports, "iridescenceThickness", ()=>(0, _propertyNodeJs.iridescenceThickness));
+parcelHelpers.export(exports, "specularColor", ()=>(0, _propertyNodeJs.specularColor));
+parcelHelpers.export(exports, "shininess", ()=>(0, _propertyNodeJs.shininess));
+parcelHelpers.export(exports, "dashSize", ()=>(0, _propertyNodeJs.dashSize));
+parcelHelpers.export(exports, "gapSize", ()=>(0, _propertyNodeJs.gapSize));
+parcelHelpers.export(exports, "pointWidth", ()=>(0, _propertyNodeJs.pointWidth));
+parcelHelpers.export(exports, "StackNode", ()=>(0, _stackNodeJsDefault.default));
+parcelHelpers.export(exports, "stack", ()=>(0, _stackNodeJs.stack));
+parcelHelpers.export(exports, "TempNode", ()=>(0, _tempNodeJsDefault.default));
+parcelHelpers.export(exports, "UniformGroupNode", ()=>(0, _uniformGroupNodeJsDefault.default));
+parcelHelpers.export(exports, "uniformGroup", ()=>(0, _uniformGroupNodeJs.uniformGroup));
+parcelHelpers.export(exports, "objectGroup", ()=>(0, _uniformGroupNodeJs.objectGroup));
+parcelHelpers.export(exports, "renderGroup", ()=>(0, _uniformGroupNodeJs.renderGroup));
+parcelHelpers.export(exports, "frameGroup", ()=>(0, _uniformGroupNodeJs.frameGroup));
+parcelHelpers.export(exports, "UniformNode", ()=>(0, _uniformNodeJsDefault.default));
+parcelHelpers.export(exports, "uniform", ()=>(0, _uniformNodeJs.uniform));
+parcelHelpers.export(exports, "VaryingNode", ()=>(0, _varyingNodeJsDefault.default));
+parcelHelpers.export(exports, "varying", ()=>(0, _varyingNodeJs.varying));
+parcelHelpers.export(exports, "OutputStructNode", ()=>(0, _outputStructNodeJsDefault.default));
+parcelHelpers.export(exports, "outputStruct", ()=>(0, _outputStructNodeJs.outputStruct));
+// math
+parcelHelpers.export(exports, "MathNode", ()=>(0, _mathNodeJsDefault.default));
+parcelHelpers.export(exports, "PI", ()=>(0, _mathNodeJs.PI));
+parcelHelpers.export(exports, "PI2", ()=>(0, _mathNodeJs.PI2));
+parcelHelpers.export(exports, "EPSILON", ()=>(0, _mathNodeJs.EPSILON));
+parcelHelpers.export(exports, "INFINITY", ()=>(0, _mathNodeJs.INFINITY));
+parcelHelpers.export(exports, "radians", ()=>(0, _mathNodeJs.radians));
+parcelHelpers.export(exports, "degrees", ()=>(0, _mathNodeJs.degrees));
+parcelHelpers.export(exports, "exp", ()=>(0, _mathNodeJs.exp));
+parcelHelpers.export(exports, "exp2", ()=>(0, _mathNodeJs.exp2));
+parcelHelpers.export(exports, "log", ()=>(0, _mathNodeJs.log));
+parcelHelpers.export(exports, "log2", ()=>(0, _mathNodeJs.log2));
+parcelHelpers.export(exports, "sqrt", ()=>(0, _mathNodeJs.sqrt));
+parcelHelpers.export(exports, "inverseSqrt", ()=>(0, _mathNodeJs.inverseSqrt));
+parcelHelpers.export(exports, "floor", ()=>(0, _mathNodeJs.floor));
+parcelHelpers.export(exports, "ceil", ()=>(0, _mathNodeJs.ceil));
+parcelHelpers.export(exports, "normalize", ()=>(0, _mathNodeJs.normalize));
+parcelHelpers.export(exports, "fract", ()=>(0, _mathNodeJs.fract));
+parcelHelpers.export(exports, "sin", ()=>(0, _mathNodeJs.sin));
+parcelHelpers.export(exports, "cos", ()=>(0, _mathNodeJs.cos));
+parcelHelpers.export(exports, "tan", ()=>(0, _mathNodeJs.tan));
+parcelHelpers.export(exports, "asin", ()=>(0, _mathNodeJs.asin));
+parcelHelpers.export(exports, "acos", ()=>(0, _mathNodeJs.acos));
+parcelHelpers.export(exports, "atan", ()=>(0, _mathNodeJs.atan));
+parcelHelpers.export(exports, "abs", ()=>(0, _mathNodeJs.abs));
+parcelHelpers.export(exports, "sign", ()=>(0, _mathNodeJs.sign));
+parcelHelpers.export(exports, "length", ()=>(0, _mathNodeJs.length));
+parcelHelpers.export(exports, "lengthSq", ()=>(0, _mathNodeJs.lengthSq));
+parcelHelpers.export(exports, "negate", ()=>(0, _mathNodeJs.negate));
+parcelHelpers.export(exports, "oneMinus", ()=>(0, _mathNodeJs.oneMinus));
+parcelHelpers.export(exports, "dFdx", ()=>(0, _mathNodeJs.dFdx));
+parcelHelpers.export(exports, "dFdy", ()=>(0, _mathNodeJs.dFdy));
+parcelHelpers.export(exports, "round", ()=>(0, _mathNodeJs.round));
+parcelHelpers.export(exports, "reciprocal", ()=>(0, _mathNodeJs.reciprocal));
+parcelHelpers.export(exports, "trunc", ()=>(0, _mathNodeJs.trunc));
+parcelHelpers.export(exports, "fwidth", ()=>(0, _mathNodeJs.fwidth));
+parcelHelpers.export(exports, "bitcast", ()=>(0, _mathNodeJs.bitcast));
+parcelHelpers.export(exports, "atan2", ()=>(0, _mathNodeJs.atan2));
+parcelHelpers.export(exports, "min", ()=>(0, _mathNodeJs.min));
+parcelHelpers.export(exports, "max", ()=>(0, _mathNodeJs.max));
+parcelHelpers.export(exports, "mod", ()=>(0, _mathNodeJs.mod));
+parcelHelpers.export(exports, "step", ()=>(0, _mathNodeJs.step));
+parcelHelpers.export(exports, "reflect", ()=>(0, _mathNodeJs.reflect));
+parcelHelpers.export(exports, "distance", ()=>(0, _mathNodeJs.distance));
+parcelHelpers.export(exports, "difference", ()=>(0, _mathNodeJs.difference));
+parcelHelpers.export(exports, "dot", ()=>(0, _mathNodeJs.dot));
+parcelHelpers.export(exports, "cross", ()=>(0, _mathNodeJs.cross));
+parcelHelpers.export(exports, "pow", ()=>(0, _mathNodeJs.pow));
+parcelHelpers.export(exports, "pow2", ()=>(0, _mathNodeJs.pow2));
+parcelHelpers.export(exports, "pow3", ()=>(0, _mathNodeJs.pow3));
+parcelHelpers.export(exports, "pow4", ()=>(0, _mathNodeJs.pow4));
+parcelHelpers.export(exports, "transformDirection", ()=>(0, _mathNodeJs.transformDirection));
+parcelHelpers.export(exports, "mix", ()=>(0, _mathNodeJs.mix));
+parcelHelpers.export(exports, "clamp", ()=>(0, _mathNodeJs.clamp));
+parcelHelpers.export(exports, "saturate", ()=>(0, _mathNodeJs.saturate));
+parcelHelpers.export(exports, "refract", ()=>(0, _mathNodeJs.refract));
+parcelHelpers.export(exports, "smoothstep", ()=>(0, _mathNodeJs.smoothstep));
+parcelHelpers.export(exports, "faceForward", ()=>(0, _mathNodeJs.faceForward));
+parcelHelpers.export(exports, "cbrt", ()=>(0, _mathNodeJs.cbrt));
+parcelHelpers.export(exports, "OperatorNode", ()=>(0, _operatorNodeJsDefault.default));
+parcelHelpers.export(exports, "add", ()=>(0, _operatorNodeJs.add));
+parcelHelpers.export(exports, "sub", ()=>(0, _operatorNodeJs.sub));
+parcelHelpers.export(exports, "mul", ()=>(0, _operatorNodeJs.mul));
+parcelHelpers.export(exports, "div", ()=>(0, _operatorNodeJs.div));
+parcelHelpers.export(exports, "remainder", ()=>(0, _operatorNodeJs.remainder));
+parcelHelpers.export(exports, "equal", ()=>(0, _operatorNodeJs.equal));
+parcelHelpers.export(exports, "lessThan", ()=>(0, _operatorNodeJs.lessThan));
+parcelHelpers.export(exports, "greaterThan", ()=>(0, _operatorNodeJs.greaterThan));
+parcelHelpers.export(exports, "lessThanEqual", ()=>(0, _operatorNodeJs.lessThanEqual));
+parcelHelpers.export(exports, "greaterThanEqual", ()=>(0, _operatorNodeJs.greaterThanEqual));
+parcelHelpers.export(exports, "and", ()=>(0, _operatorNodeJs.and));
+parcelHelpers.export(exports, "or", ()=>(0, _operatorNodeJs.or));
+parcelHelpers.export(exports, "not", ()=>(0, _operatorNodeJs.not));
+parcelHelpers.export(exports, "xor", ()=>(0, _operatorNodeJs.xor));
+parcelHelpers.export(exports, "bitAnd", ()=>(0, _operatorNodeJs.bitAnd));
+parcelHelpers.export(exports, "bitNot", ()=>(0, _operatorNodeJs.bitNot));
+parcelHelpers.export(exports, "bitOr", ()=>(0, _operatorNodeJs.bitOr));
+parcelHelpers.export(exports, "bitXor", ()=>(0, _operatorNodeJs.bitXor));
+parcelHelpers.export(exports, "shiftLeft", ()=>(0, _operatorNodeJs.shiftLeft));
+parcelHelpers.export(exports, "shiftRight", ()=>(0, _operatorNodeJs.shiftRight));
+parcelHelpers.export(exports, "CondNode", ()=>(0, _condNodeJsDefault.default));
+parcelHelpers.export(exports, "cond", ()=>(0, _condNodeJs.cond));
+parcelHelpers.export(exports, "HashNode", ()=>(0, _hashNodeJsDefault.default));
+parcelHelpers.export(exports, "hash", ()=>(0, _hashNodeJs.hash));
+// math utils
+parcelHelpers.export(exports, "parabola", ()=>(0, _mathUtilsJs.parabola));
+parcelHelpers.export(exports, "gain", ()=>(0, _mathUtilsJs.gain));
+parcelHelpers.export(exports, "pcurve", ()=>(0, _mathUtilsJs.pcurve));
+parcelHelpers.export(exports, "sinc", ()=>(0, _mathUtilsJs.sinc));
+parcelHelpers.export(exports, "triNoise3D", ()=>(0, _triNoise3DJs.triNoise3D));
+// utils
+parcelHelpers.export(exports, "ArrayElementNode", ()=>(0, _arrayElementNodeJsDefault.default));
+parcelHelpers.export(exports, "ConvertNode", ()=>(0, _convertNodeJsDefault.default));
+parcelHelpers.export(exports, "DiscardNode", ()=>(0, _discardNodeJsDefault.default));
+parcelHelpers.export(exports, "discard", ()=>(0, _discardNodeJs.discard));
+parcelHelpers.export(exports, "EquirectUVNode", ()=>(0, _equirectUVNodeJsDefault.default));
+parcelHelpers.export(exports, "equirectUV", ()=>(0, _equirectUVNodeJs.equirectUV));
+parcelHelpers.export(exports, "FunctionOverloadingNode", ()=>(0, _functionOverloadingNodeJsDefault.default));
+parcelHelpers.export(exports, "overloadingFn", ()=>(0, _functionOverloadingNodeJs.overloadingFn));
+parcelHelpers.export(exports, "JoinNode", ()=>(0, _joinNodeJsDefault.default));
+parcelHelpers.export(exports, "LoopNode", ()=>(0, _loopNodeJsDefault.default));
+parcelHelpers.export(exports, "loop", ()=>(0, _loopNodeJs.loop));
+parcelHelpers.export(exports, "MatcapUVNode", ()=>(0, _matcapUVNodeJsDefault.default));
+parcelHelpers.export(exports, "matcapUV", ()=>(0, _matcapUVNodeJs.matcapUV));
+parcelHelpers.export(exports, "MaxMipLevelNode", ()=>(0, _maxMipLevelNodeJsDefault.default));
+parcelHelpers.export(exports, "maxMipLevel", ()=>(0, _maxMipLevelNodeJs.maxMipLevel));
+parcelHelpers.export(exports, "OscNode", ()=>(0, _oscNodeJsDefault.default));
+parcelHelpers.export(exports, "oscSine", ()=>(0, _oscNodeJs.oscSine));
+parcelHelpers.export(exports, "oscSquare", ()=>(0, _oscNodeJs.oscSquare));
+parcelHelpers.export(exports, "oscTriangle", ()=>(0, _oscNodeJs.oscTriangle));
+parcelHelpers.export(exports, "oscSawtooth", ()=>(0, _oscNodeJs.oscSawtooth));
+parcelHelpers.export(exports, "PackingNode", ()=>(0, _packingNodeJsDefault.default));
+parcelHelpers.export(exports, "directionToColor", ()=>(0, _packingNodeJs.directionToColor));
+parcelHelpers.export(exports, "colorToDirection", ()=>(0, _packingNodeJs.colorToDirection));
+parcelHelpers.export(exports, "RemapNode", ()=>(0, _remapNodeJsDefault.default));
+parcelHelpers.export(exports, "remap", ()=>(0, _remapNodeJs.remap));
+parcelHelpers.export(exports, "remapClamp", ()=>(0, _remapNodeJs.remapClamp));
+parcelHelpers.export(exports, "RotateUVNode", ()=>(0, _rotateUVNodeJsDefault.default));
+parcelHelpers.export(exports, "rotateUV", ()=>(0, _rotateUVNodeJs.rotateUV));
+parcelHelpers.export(exports, "RotateNode", ()=>(0, _rotateNodeJsDefault.default));
+parcelHelpers.export(exports, "rotate", ()=>(0, _rotateNodeJs.rotate));
+parcelHelpers.export(exports, "SetNode", ()=>(0, _setNodeJsDefault.default));
+parcelHelpers.export(exports, "SpecularMIPLevelNode", ()=>(0, _specularMIPLevelNodeJsDefault.default));
+parcelHelpers.export(exports, "specularMIPLevel", ()=>(0, _specularMIPLevelNodeJs.specularMIPLevel));
+parcelHelpers.export(exports, "SplitNode", ()=>(0, _splitNodeJsDefault.default));
+parcelHelpers.export(exports, "SpriteSheetUVNode", ()=>(0, _spriteSheetUVNodeJsDefault.default));
+parcelHelpers.export(exports, "spritesheetUV", ()=>(0, _spriteSheetUVNodeJs.spritesheetUV));
+parcelHelpers.export(exports, "TimerNode", ()=>(0, _timerNodeJsDefault.default));
+parcelHelpers.export(exports, "timerLocal", ()=>(0, _timerNodeJs.timerLocal));
+parcelHelpers.export(exports, "timerGlobal", ()=>(0, _timerNodeJs.timerGlobal));
+parcelHelpers.export(exports, "timerDelta", ()=>(0, _timerNodeJs.timerDelta));
+parcelHelpers.export(exports, "frameId", ()=>(0, _timerNodeJs.frameId));
+parcelHelpers.export(exports, "TriplanarTexturesNode", ()=>(0, _triplanarTexturesNodeJsDefault.default));
+parcelHelpers.export(exports, "triplanarTextures", ()=>(0, _triplanarTexturesNodeJs.triplanarTextures));
+parcelHelpers.export(exports, "triplanarTexture", ()=>(0, _triplanarTexturesNodeJs.triplanarTexture));
+parcelHelpers.export(exports, "ReflectorNode", ()=>(0, _reflectorNodeJsDefault.default));
+parcelHelpers.export(exports, "reflector", ()=>(0, _reflectorNodeJs.reflector));
+// accessors
+parcelHelpers.export(exports, "BitangentNode", ()=>(0, _bitangentNodeJsDefault.default));
+parcelHelpers.export(exports, "bitangentGeometry", ()=>(0, _bitangentNodeJs.bitangentGeometry));
+parcelHelpers.export(exports, "bitangentLocal", ()=>(0, _bitangentNodeJs.bitangentLocal));
+parcelHelpers.export(exports, "bitangentView", ()=>(0, _bitangentNodeJs.bitangentView));
+parcelHelpers.export(exports, "bitangentWorld", ()=>(0, _bitangentNodeJs.bitangentWorld));
+parcelHelpers.export(exports, "transformedBitangentView", ()=>(0, _bitangentNodeJs.transformedBitangentView));
+parcelHelpers.export(exports, "transformedBitangentWorld", ()=>(0, _bitangentNodeJs.transformedBitangentWorld));
+parcelHelpers.export(exports, "BufferAttributeNode", ()=>(0, _bufferAttributeNodeJsDefault.default));
+parcelHelpers.export(exports, "bufferAttribute", ()=>(0, _bufferAttributeNodeJs.bufferAttribute));
+parcelHelpers.export(exports, "dynamicBufferAttribute", ()=>(0, _bufferAttributeNodeJs.dynamicBufferAttribute));
+parcelHelpers.export(exports, "instancedBufferAttribute", ()=>(0, _bufferAttributeNodeJs.instancedBufferAttribute));
+parcelHelpers.export(exports, "instancedDynamicBufferAttribute", ()=>(0, _bufferAttributeNodeJs.instancedDynamicBufferAttribute));
+parcelHelpers.export(exports, "BufferNode", ()=>(0, _bufferNodeJsDefault.default));
+parcelHelpers.export(exports, "buffer", ()=>(0, _bufferNodeJs.buffer));
+parcelHelpers.export(exports, "CameraNode", ()=>(0, _cameraNodeJsDefault.default));
+parcelHelpers.export(exports, "cameraProjectionMatrix", ()=>(0, _cameraNodeJs.cameraProjectionMatrix));
+parcelHelpers.export(exports, "cameraProjectionMatrixInverse", ()=>(0, _cameraNodeJs.cameraProjectionMatrixInverse));
+parcelHelpers.export(exports, "cameraViewMatrix", ()=>(0, _cameraNodeJs.cameraViewMatrix));
+parcelHelpers.export(exports, "cameraNormalMatrix", ()=>(0, _cameraNodeJs.cameraNormalMatrix));
+parcelHelpers.export(exports, "cameraWorldMatrix", ()=>(0, _cameraNodeJs.cameraWorldMatrix));
+parcelHelpers.export(exports, "cameraPosition", ()=>(0, _cameraNodeJs.cameraPosition));
+parcelHelpers.export(exports, "cameraNear", ()=>(0, _cameraNodeJs.cameraNear));
+parcelHelpers.export(exports, "cameraFar", ()=>(0, _cameraNodeJs.cameraFar));
+parcelHelpers.export(exports, "cameraLogDepth", ()=>(0, _cameraNodeJs.cameraLogDepth));
+parcelHelpers.export(exports, "VertexColorNode", ()=>(0, _vertexColorNodeJsDefault.default));
+parcelHelpers.export(exports, "vertexColor", ()=>(0, _vertexColorNodeJs.vertexColor));
+parcelHelpers.export(exports, "CubeTextureNode", ()=>(0, _cubeTextureNodeJsDefault.default));
+parcelHelpers.export(exports, "cubeTexture", ()=>(0, _cubeTextureNodeJs.cubeTexture));
+parcelHelpers.export(exports, "InstanceNode", ()=>(0, _instanceNodeJsDefault.default));
+parcelHelpers.export(exports, "instance", ()=>(0, _instanceNodeJs.instance));
+parcelHelpers.export(exports, "MaterialNode", ()=>(0, _materialNodeJsDefault.default));
+parcelHelpers.export(exports, "materialAlphaTest", ()=>(0, _materialNodeJs.materialAlphaTest));
+parcelHelpers.export(exports, "materialColor", ()=>(0, _materialNodeJs.materialColor));
+parcelHelpers.export(exports, "materialShininess", ()=>(0, _materialNodeJs.materialShininess));
+parcelHelpers.export(exports, "materialEmissive", ()=>(0, _materialNodeJs.materialEmissive));
+parcelHelpers.export(exports, "materialOpacity", ()=>(0, _materialNodeJs.materialOpacity));
+parcelHelpers.export(exports, "materialSpecularColor", ()=>(0, _materialNodeJs.materialSpecularColor));
+parcelHelpers.export(exports, "materialSpecularStrength", ()=>(0, _materialNodeJs.materialSpecularStrength));
+parcelHelpers.export(exports, "materialReflectivity", ()=>(0, _materialNodeJs.materialReflectivity));
+parcelHelpers.export(exports, "materialRoughness", ()=>(0, _materialNodeJs.materialRoughness));
+parcelHelpers.export(exports, "materialMetalness", ()=>(0, _materialNodeJs.materialMetalness));
+parcelHelpers.export(exports, "materialNormal", ()=>(0, _materialNodeJs.materialNormal));
+parcelHelpers.export(exports, "materialClearcoat", ()=>(0, _materialNodeJs.materialClearcoat));
+parcelHelpers.export(exports, "materialClearcoatRoughness", ()=>(0, _materialNodeJs.materialClearcoatRoughness));
+parcelHelpers.export(exports, "materialClearcoatNormal", ()=>(0, _materialNodeJs.materialClearcoatNormal));
+parcelHelpers.export(exports, "materialRotation", ()=>(0, _materialNodeJs.materialRotation));
+parcelHelpers.export(exports, "materialSheen", ()=>(0, _materialNodeJs.materialSheen));
+parcelHelpers.export(exports, "materialSheenRoughness", ()=>(0, _materialNodeJs.materialSheenRoughness));
+parcelHelpers.export(exports, "materialIridescence", ()=>(0, _materialNodeJs.materialIridescence));
+parcelHelpers.export(exports, "materialIridescenceIOR", ()=>(0, _materialNodeJs.materialIridescenceIOR));
+parcelHelpers.export(exports, "materialIridescenceThickness", ()=>(0, _materialNodeJs.materialIridescenceThickness));
+parcelHelpers.export(exports, "materialLineScale", ()=>(0, _materialNodeJs.materialLineScale));
+parcelHelpers.export(exports, "materialLineDashSize", ()=>(0, _materialNodeJs.materialLineDashSize));
+parcelHelpers.export(exports, "materialLineGapSize", ()=>(0, _materialNodeJs.materialLineGapSize));
+parcelHelpers.export(exports, "materialLineWidth", ()=>(0, _materialNodeJs.materialLineWidth));
+parcelHelpers.export(exports, "materialLineDashOffset", ()=>(0, _materialNodeJs.materialLineDashOffset));
+parcelHelpers.export(exports, "materialPointWidth", ()=>(0, _materialNodeJs.materialPointWidth));
+parcelHelpers.export(exports, "MaterialReferenceNode", ()=>(0, _materialReferenceNodeJsDefault.default));
+parcelHelpers.export(exports, "materialReference", ()=>(0, _materialReferenceNodeJs.materialReference));
+parcelHelpers.export(exports, "MorphNode", ()=>(0, _morphNodeJsDefault.default));
+parcelHelpers.export(exports, "morph", ()=>(0, _morphNodeJs.morph));
+parcelHelpers.export(exports, "TextureBicubicNode", ()=>(0, _textureBicubicNodeJsDefault.default));
+parcelHelpers.export(exports, "textureBicubic", ()=>(0, _textureBicubicNodeJs.textureBicubic));
+parcelHelpers.export(exports, "ModelNode", ()=>(0, _modelNodeJsDefault.default));
+parcelHelpers.export(exports, "modelDirection", ()=>(0, _modelNodeJs.modelDirection));
+parcelHelpers.export(exports, "modelViewMatrix", ()=>(0, _modelNodeJs.modelViewMatrix));
+parcelHelpers.export(exports, "modelNormalMatrix", ()=>(0, _modelNodeJs.modelNormalMatrix));
+parcelHelpers.export(exports, "modelWorldMatrix", ()=>(0, _modelNodeJs.modelWorldMatrix));
+parcelHelpers.export(exports, "modelPosition", ()=>(0, _modelNodeJs.modelPosition));
+parcelHelpers.export(exports, "modelViewPosition", ()=>(0, _modelNodeJs.modelViewPosition));
+parcelHelpers.export(exports, "modelScale", ()=>(0, _modelNodeJs.modelScale));
+parcelHelpers.export(exports, "ModelViewProjectionNode", ()=>(0, _modelViewProjectionNodeJsDefault.default));
+parcelHelpers.export(exports, "modelViewProjection", ()=>(0, _modelViewProjectionNodeJs.modelViewProjection));
+parcelHelpers.export(exports, "NormalNode", ()=>(0, _normalNodeJsDefault.default));
+parcelHelpers.export(exports, "normalGeometry", ()=>(0, _normalNodeJs.normalGeometry));
+parcelHelpers.export(exports, "normalLocal", ()=>(0, _normalNodeJs.normalLocal));
+parcelHelpers.export(exports, "normalView", ()=>(0, _normalNodeJs.normalView));
+parcelHelpers.export(exports, "normalWorld", ()=>(0, _normalNodeJs.normalWorld));
+parcelHelpers.export(exports, "transformedNormalView", ()=>(0, _normalNodeJs.transformedNormalView));
+parcelHelpers.export(exports, "transformedNormalWorld", ()=>(0, _normalNodeJs.transformedNormalWorld));
+parcelHelpers.export(exports, "transformedClearcoatNormalView", ()=>(0, _normalNodeJs.transformedClearcoatNormalView));
+parcelHelpers.export(exports, "Object3DNode", ()=>(0, _object3DNodeJsDefault.default));
+parcelHelpers.export(exports, "objectDirection", ()=>(0, _object3DNodeJs.objectDirection));
+parcelHelpers.export(exports, "objectViewMatrix", ()=>(0, _object3DNodeJs.objectViewMatrix));
+parcelHelpers.export(exports, "objectNormalMatrix", ()=>(0, _object3DNodeJs.objectNormalMatrix));
+parcelHelpers.export(exports, "objectWorldMatrix", ()=>(0, _object3DNodeJs.objectWorldMatrix));
+parcelHelpers.export(exports, "objectPosition", ()=>(0, _object3DNodeJs.objectPosition));
+parcelHelpers.export(exports, "objectScale", ()=>(0, _object3DNodeJs.objectScale));
+parcelHelpers.export(exports, "objectViewPosition", ()=>(0, _object3DNodeJs.objectViewPosition));
+parcelHelpers.export(exports, "PointUVNode", ()=>(0, _pointUVNodeJsDefault.default));
+parcelHelpers.export(exports, "pointUV", ()=>(0, _pointUVNodeJs.pointUV));
+parcelHelpers.export(exports, "PositionNode", ()=>(0, _positionNodeJsDefault.default));
+parcelHelpers.export(exports, "positionGeometry", ()=>(0, _positionNodeJs.positionGeometry));
+parcelHelpers.export(exports, "positionLocal", ()=>(0, _positionNodeJs.positionLocal));
+parcelHelpers.export(exports, "positionWorld", ()=>(0, _positionNodeJs.positionWorld));
+parcelHelpers.export(exports, "positionWorldDirection", ()=>(0, _positionNodeJs.positionWorldDirection));
+parcelHelpers.export(exports, "positionView", ()=>(0, _positionNodeJs.positionView));
+parcelHelpers.export(exports, "positionViewDirection", ()=>(0, _positionNodeJs.positionViewDirection));
+parcelHelpers.export(exports, "ReferenceNode", ()=>(0, _referenceNodeJsDefault.default));
+parcelHelpers.export(exports, "reference", ()=>(0, _referenceNodeJs.reference));
+parcelHelpers.export(exports, "referenceIndex", ()=>(0, _referenceNodeJs.referenceIndex));
+parcelHelpers.export(exports, "ReflectVectorNode", ()=>(0, _reflectVectorNodeJsDefault.default));
+parcelHelpers.export(exports, "reflectVector", ()=>(0, _reflectVectorNodeJs.reflectVector));
+parcelHelpers.export(exports, "SkinningNode", ()=>(0, _skinningNodeJsDefault.default));
+parcelHelpers.export(exports, "skinning", ()=>(0, _skinningNodeJs.skinning));
+parcelHelpers.export(exports, "SceneNode", ()=>(0, _sceneNodeJsDefault.default));
+parcelHelpers.export(exports, "backgroundBlurriness", ()=>(0, _sceneNodeJs.backgroundBlurriness));
+parcelHelpers.export(exports, "backgroundIntensity", ()=>(0, _sceneNodeJs.backgroundIntensity));
+parcelHelpers.export(exports, "StorageBufferNode", ()=>(0, _storageBufferNodeJsDefault.default));
+parcelHelpers.export(exports, "storage", ()=>(0, _storageBufferNodeJs.storage));
+parcelHelpers.export(exports, "TangentNode", ()=>(0, _tangentNodeJsDefault.default));
+parcelHelpers.export(exports, "tangentGeometry", ()=>(0, _tangentNodeJs.tangentGeometry));
+parcelHelpers.export(exports, "tangentLocal", ()=>(0, _tangentNodeJs.tangentLocal));
+parcelHelpers.export(exports, "tangentView", ()=>(0, _tangentNodeJs.tangentView));
+parcelHelpers.export(exports, "tangentWorld", ()=>(0, _tangentNodeJs.tangentWorld));
+parcelHelpers.export(exports, "transformedTangentView", ()=>(0, _tangentNodeJs.transformedTangentView));
+parcelHelpers.export(exports, "transformedTangentWorld", ()=>(0, _tangentNodeJs.transformedTangentWorld));
+parcelHelpers.export(exports, "TextureNode", ()=>(0, _textureNodeJsDefault.default));
+parcelHelpers.export(exports, "texture", ()=>(0, _textureNodeJs.texture));
+parcelHelpers.export(exports, "textureLoad", ()=>(0, _textureNodeJs.textureLoad));
+parcelHelpers.export(exports, "sampler", ()=>(0, _textureNodeJs.sampler));
+parcelHelpers.export(exports, "TextureStoreNode", ()=>(0, _textureStoreNodeJsDefault.default));
+parcelHelpers.export(exports, "textureStore", ()=>(0, _textureStoreNodeJs.textureStore));
+parcelHelpers.export(exports, "UVNode", ()=>(0, _uvnodeJsDefault.default));
+parcelHelpers.export(exports, "uv", ()=>(0, _uvnodeJs.uv));
+parcelHelpers.export(exports, "UserDataNode", ()=>(0, _userDataNodeJsDefault.default));
+parcelHelpers.export(exports, "userData", ()=>(0, _userDataNodeJs.userData));
+// display
+parcelHelpers.export(exports, "BlendModeNode", ()=>(0, _blendModeNodeJsDefault.default));
+parcelHelpers.export(exports, "burn", ()=>(0, _blendModeNodeJs.burn));
+parcelHelpers.export(exports, "dodge", ()=>(0, _blendModeNodeJs.dodge));
+parcelHelpers.export(exports, "overlay", ()=>(0, _blendModeNodeJs.overlay));
+parcelHelpers.export(exports, "screen", ()=>(0, _blendModeNodeJs.screen));
+parcelHelpers.export(exports, "BumpMapNode", ()=>(0, _bumpMapNodeJsDefault.default));
+parcelHelpers.export(exports, "bumpMap", ()=>(0, _bumpMapNodeJs.bumpMap));
+parcelHelpers.export(exports, "ColorAdjustmentNode", ()=>(0, _colorAdjustmentNodeJsDefault.default));
+parcelHelpers.export(exports, "saturation", ()=>(0, _colorAdjustmentNodeJs.saturation));
+parcelHelpers.export(exports, "vibrance", ()=>(0, _colorAdjustmentNodeJs.vibrance));
+parcelHelpers.export(exports, "hue", ()=>(0, _colorAdjustmentNodeJs.hue));
+parcelHelpers.export(exports, "lumaCoeffs", ()=>(0, _colorAdjustmentNodeJs.lumaCoeffs));
+parcelHelpers.export(exports, "luminance", ()=>(0, _colorAdjustmentNodeJs.luminance));
+parcelHelpers.export(exports, "threshold", ()=>(0, _colorAdjustmentNodeJs.threshold));
+parcelHelpers.export(exports, "ColorSpaceNode", ()=>(0, _colorSpaceNodeJsDefault.default));
+parcelHelpers.export(exports, "linearToColorSpace", ()=>(0, _colorSpaceNodeJs.linearToColorSpace));
+parcelHelpers.export(exports, "colorSpaceToLinear", ()=>(0, _colorSpaceNodeJs.colorSpaceToLinear));
+parcelHelpers.export(exports, "linearTosRGB", ()=>(0, _colorSpaceNodeJs.linearTosRGB));
+parcelHelpers.export(exports, "sRGBToLinear", ()=>(0, _colorSpaceNodeJs.sRGBToLinear));
+parcelHelpers.export(exports, "FrontFacingNode", ()=>(0, _frontFacingNodeJsDefault.default));
+parcelHelpers.export(exports, "frontFacing", ()=>(0, _frontFacingNodeJs.frontFacing));
+parcelHelpers.export(exports, "faceDirection", ()=>(0, _frontFacingNodeJs.faceDirection));
+parcelHelpers.export(exports, "NormalMapNode", ()=>(0, _normalMapNodeJsDefault.default));
+parcelHelpers.export(exports, "normalMap", ()=>(0, _normalMapNodeJs.normalMap));
+parcelHelpers.export(exports, "TBNViewMatrix", ()=>(0, _normalMapNodeJs.TBNViewMatrix));
+parcelHelpers.export(exports, "PosterizeNode", ()=>(0, _posterizeNodeJsDefault.default));
+parcelHelpers.export(exports, "posterize", ()=>(0, _posterizeNodeJs.posterize));
+parcelHelpers.export(exports, "ToneMappingNode", ()=>(0, _toneMappingNodeJsDefault.default));
+parcelHelpers.export(exports, "toneMapping", ()=>(0, _toneMappingNodeJs.toneMapping));
+parcelHelpers.export(exports, "ViewportNode", ()=>(0, _viewportNodeJsDefault.default));
+parcelHelpers.export(exports, "viewport", ()=>(0, _viewportNodeJs.viewport));
+parcelHelpers.export(exports, "viewportCoordinate", ()=>(0, _viewportNodeJs.viewportCoordinate));
+parcelHelpers.export(exports, "viewportResolution", ()=>(0, _viewportNodeJs.viewportResolution));
+parcelHelpers.export(exports, "viewportTopLeft", ()=>(0, _viewportNodeJs.viewportTopLeft));
+parcelHelpers.export(exports, "viewportBottomLeft", ()=>(0, _viewportNodeJs.viewportBottomLeft));
+parcelHelpers.export(exports, "viewportTopRight", ()=>(0, _viewportNodeJs.viewportTopRight));
+parcelHelpers.export(exports, "viewportBottomRight", ()=>(0, _viewportNodeJs.viewportBottomRight));
+parcelHelpers.export(exports, "ViewportTextureNode", ()=>(0, _viewportTextureNodeJsDefault.default));
+parcelHelpers.export(exports, "viewportTexture", ()=>(0, _viewportTextureNodeJs.viewportTexture));
+parcelHelpers.export(exports, "viewportMipTexture", ()=>(0, _viewportTextureNodeJs.viewportMipTexture));
+parcelHelpers.export(exports, "ViewportSharedTextureNode", ()=>(0, _viewportSharedTextureNodeJsDefault.default));
+parcelHelpers.export(exports, "viewportSharedTexture", ()=>(0, _viewportSharedTextureNodeJs.viewportSharedTexture));
+parcelHelpers.export(exports, "ViewportDepthTextureNode", ()=>(0, _viewportDepthTextureNodeJsDefault.default));
+parcelHelpers.export(exports, "viewportDepthTexture", ()=>(0, _viewportDepthTextureNodeJs.viewportDepthTexture));
+parcelHelpers.export(exports, "ViewportDepthNode", ()=>(0, _viewportDepthNodeJsDefault.default));
+parcelHelpers.export(exports, "viewZToOrthographicDepth", ()=>(0, _viewportDepthNodeJs.viewZToOrthographicDepth));
+parcelHelpers.export(exports, "orthographicDepthToViewZ", ()=>(0, _viewportDepthNodeJs.orthographicDepthToViewZ));
+parcelHelpers.export(exports, "viewZToPerspectiveDepth", ()=>(0, _viewportDepthNodeJs.viewZToPerspectiveDepth));
+parcelHelpers.export(exports, "perspectiveDepthToViewZ", ()=>(0, _viewportDepthNodeJs.perspectiveDepthToViewZ));
+parcelHelpers.export(exports, "depth", ()=>(0, _viewportDepthNodeJs.depth));
+parcelHelpers.export(exports, "depthTexture", ()=>(0, _viewportDepthNodeJs.depthTexture));
+parcelHelpers.export(exports, "depthPixel", ()=>(0, _viewportDepthNodeJs.depthPixel));
+parcelHelpers.export(exports, "GaussianBlurNode", ()=>(0, _gaussianBlurNodeJsDefault.default));
+parcelHelpers.export(exports, "gaussianBlur", ()=>(0, _gaussianBlurNodeJs.gaussianBlur));
+parcelHelpers.export(exports, "AfterImageNode", ()=>(0, _afterImageNodeJsDefault.default));
+parcelHelpers.export(exports, "afterImage", ()=>(0, _afterImageNodeJs.afterImage));
+parcelHelpers.export(exports, "AnamorphicNode", ()=>(0, _anamorphicNodeJsDefault.default));
+parcelHelpers.export(exports, "anamorphic", ()=>(0, _anamorphicNodeJs.anamorphic));
+parcelHelpers.export(exports, "PassNode", ()=>(0, _passNodeJsDefault.default));
+parcelHelpers.export(exports, "pass", ()=>(0, _passNodeJs.pass));
+parcelHelpers.export(exports, "depthPass", ()=>(0, _passNodeJs.depthPass));
+// code
+parcelHelpers.export(exports, "ExpressionNode", ()=>(0, _expressionNodeJsDefault.default));
+parcelHelpers.export(exports, "expression", ()=>(0, _expressionNodeJs.expression));
+parcelHelpers.export(exports, "CodeNode", ()=>(0, _codeNodeJsDefault.default));
+parcelHelpers.export(exports, "code", ()=>(0, _codeNodeJs.code));
+parcelHelpers.export(exports, "js", ()=>(0, _codeNodeJs.js));
+parcelHelpers.export(exports, "wgsl", ()=>(0, _codeNodeJs.wgsl));
+parcelHelpers.export(exports, "glsl", ()=>(0, _codeNodeJs.glsl));
+parcelHelpers.export(exports, "FunctionCallNode", ()=>(0, _functionCallNodeJsDefault.default));
+parcelHelpers.export(exports, "call", ()=>(0, _functionCallNodeJs.call));
+parcelHelpers.export(exports, "FunctionNode", ()=>(0, _functionNodeJsDefault.default));
+parcelHelpers.export(exports, "wgslFn", ()=>(0, _functionNodeJs.wgslFn));
+parcelHelpers.export(exports, "glslFn", ()=>(0, _functionNodeJs.glslFn));
+parcelHelpers.export(exports, "ScriptableNode", ()=>(0, _scriptableNodeJsDefault.default));
+parcelHelpers.export(exports, "scriptable", ()=>(0, _scriptableNodeJs.scriptable));
+parcelHelpers.export(exports, "global", ()=>(0, _scriptableNodeJs.global));
+parcelHelpers.export(exports, "ScriptableValueNode", ()=>(0, _scriptableValueNodeJsDefault.default));
+parcelHelpers.export(exports, "scriptableValue", ()=>(0, _scriptableValueNodeJs.scriptableValue));
+// fog
+parcelHelpers.export(exports, "FogNode", ()=>(0, _fogNodeJsDefault.default));
+parcelHelpers.export(exports, "fog", ()=>(0, _fogNodeJs.fog));
+parcelHelpers.export(exports, "FogRangeNode", ()=>(0, _fogRangeNodeJsDefault.default));
+parcelHelpers.export(exports, "rangeFog", ()=>(0, _fogRangeNodeJs.rangeFog));
+parcelHelpers.export(exports, "FogExp2Node", ()=>(0, _fogExp2NodeJsDefault.default));
+parcelHelpers.export(exports, "densityFog", ()=>(0, _fogExp2NodeJs.densityFog));
+// geometry
+parcelHelpers.export(exports, "RangeNode", ()=>(0, _rangeNodeJsDefault.default));
+parcelHelpers.export(exports, "range", ()=>(0, _rangeNodeJs.range));
+// gpgpu
+parcelHelpers.export(exports, "ComputeNode", ()=>(0, _computeNodeJsDefault.default));
+parcelHelpers.export(exports, "compute", ()=>(0, _computeNodeJs.compute));
+// lighting
+parcelHelpers.export(exports, "LightNode", ()=>(0, _lightNodeJsDefault.default));
+parcelHelpers.export(exports, "lightTargetDirection", ()=>(0, _lightNodeJs.lightTargetDirection));
+parcelHelpers.export(exports, "PointLightNode", ()=>(0, _pointLightNodeJsDefault.default));
+parcelHelpers.export(exports, "DirectionalLightNode", ()=>(0, _directionalLightNodeJsDefault.default));
+parcelHelpers.export(exports, "SpotLightNode", ()=>(0, _spotLightNodeJsDefault.default));
+parcelHelpers.export(exports, "IESSpotLightNode", ()=>(0, _iesspotLightNodeJsDefault.default));
+parcelHelpers.export(exports, "AmbientLightNode", ()=>(0, _ambientLightNodeJsDefault.default));
+parcelHelpers.export(exports, "LightsNode", ()=>(0, _lightsNodeJsDefault.default));
+parcelHelpers.export(exports, "lights", ()=>(0, _lightsNodeJs.lights));
+parcelHelpers.export(exports, "lightsNode", ()=>(0, _lightsNodeJs.lightsNode));
+parcelHelpers.export(exports, "addLightNode", ()=>(0, _lightsNodeJs.addLightNode));
+parcelHelpers.export(exports, "LightingNode", ()=>(0, _lightingNodeJsDefault.default));
+parcelHelpers.export(exports, "LightingContextNode", ()=>(0, _lightingContextNodeJsDefault.default));
+parcelHelpers.export(exports, "lightingContext", ()=>(0, _lightingContextNodeJs.lightingContext));
+parcelHelpers.export(exports, "HemisphereLightNode", ()=>(0, _hemisphereLightNodeJsDefault.default));
+parcelHelpers.export(exports, "EnvironmentNode", ()=>(0, _environmentNodeJsDefault.default));
+parcelHelpers.export(exports, "AONode", ()=>(0, _aonodeJsDefault.default));
+parcelHelpers.export(exports, "AnalyticLightNode", ()=>(0, _analyticLightNodeJsDefault.default));
+// procedural
+parcelHelpers.export(exports, "CheckerNode", ()=>(0, _checkerNodeJsDefault.default));
+parcelHelpers.export(exports, "checker", ()=>(0, _checkerNodeJs.checker));
+// loaders
+parcelHelpers.export(exports, "NodeLoader", ()=>(0, _nodeLoaderJsDefault.default));
+parcelHelpers.export(exports, "NodeObjectLoader", ()=>(0, _nodeObjectLoaderJsDefault.default));
+parcelHelpers.export(exports, "NodeMaterialLoader", ()=>(0, _nodeMaterialLoaderJsDefault.default));
+// parsers
+parcelHelpers.export(exports, "GLSLNodeParser", ()=>(0, _glslnodeParserJsDefault.default)) // @TODO: Move to jsm/renderers/webgl.
+;
+// functions
+parcelHelpers.export(exports, "BRDF_GGX", ()=>(0, _brdfGgxJsDefault.default));
+parcelHelpers.export(exports, "BRDF_Lambert", ()=>(0, _brdfLambertJsDefault.default));
+parcelHelpers.export(exports, "D_GGX", ()=>(0, _dGgxJsDefault.default));
+parcelHelpers.export(exports, "DFGApprox", ()=>(0, _dfgapproxJsDefault.default));
+parcelHelpers.export(exports, "F_Schlick", ()=>(0, _fSchlickJsDefault.default));
+parcelHelpers.export(exports, "Schlick_to_F0", ()=>(0, _schlickToF0JsDefault.default));
+parcelHelpers.export(exports, "V_GGX_SmithCorrelated", ()=>(0, _vGgxSmithCorrelatedJsDefault.default));
+parcelHelpers.export(exports, "getDistanceAttenuation", ()=>(0, _lightUtilsJs.getDistanceAttenuation));
+parcelHelpers.export(exports, "getGeometryRoughness", ()=>(0, _getGeometryRoughnessJsDefault.default));
+parcelHelpers.export(exports, "getRoughness", ()=>(0, _getRoughnessJsDefault.default));
+parcelHelpers.export(exports, "PhongLightingModel", ()=>(0, _phongLightingModelJsDefault.default));
+parcelHelpers.export(exports, "PhysicalLightingModel", ()=>(0, _physicalLightingModelJsDefault.default));
+parcelHelpers.export(exports, "NodeUtils", ()=>_nodeUtilsJs);
+var _constantsJs = require("./core/constants.js");
+parcelHelpers.exportAll(_constantsJs, exports);
+var _arrayUniformNodeJs = require("./core/ArrayUniformNode.js");
+var _arrayUniformNodeJsDefault = parcelHelpers.interopDefault(_arrayUniformNodeJs);
+var _assignNodeJs = require("./core/AssignNode.js");
+var _assignNodeJsDefault = parcelHelpers.interopDefault(_assignNodeJs);
+var _attributeNodeJs = require("./core/AttributeNode.js");
+var _attributeNodeJsDefault = parcelHelpers.interopDefault(_attributeNodeJs);
+var _bypassNodeJs = require("./core/BypassNode.js");
+var _bypassNodeJsDefault = parcelHelpers.interopDefault(_bypassNodeJs);
+var _cacheNodeJs = require("./core/CacheNode.js");
+var _cacheNodeJsDefault = parcelHelpers.interopDefault(_cacheNodeJs);
+var _constNodeJs = require("./core/ConstNode.js");
+var _constNodeJsDefault = parcelHelpers.interopDefault(_constNodeJs);
+var _contextNodeJs = require("./core/ContextNode.js");
+var _contextNodeJsDefault = parcelHelpers.interopDefault(_contextNodeJs);
+var _indexNodeJs = require("./core/IndexNode.js");
+var _indexNodeJsDefault = parcelHelpers.interopDefault(_indexNodeJs);
+var _lightingModelJs = require("./core/LightingModel.js");
+var _lightingModelJsDefault = parcelHelpers.interopDefault(_lightingModelJs);
+var _nodeJs = require("./core/Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+var _varNodeJs = require("./core/VarNode.js");
+var _varNodeJsDefault = parcelHelpers.interopDefault(_varNodeJs);
+var _nodeAttributeJs = require("./core/NodeAttribute.js");
+var _nodeAttributeJsDefault = parcelHelpers.interopDefault(_nodeAttributeJs);
+var _nodeBuilderJs = require("./core/NodeBuilder.js");
+var _nodeBuilderJsDefault = parcelHelpers.interopDefault(_nodeBuilderJs);
+var _nodeCacheJs = require("./core/NodeCache.js");
+var _nodeCacheJsDefault = parcelHelpers.interopDefault(_nodeCacheJs);
+var _nodeCodeJs = require("./core/NodeCode.js");
+var _nodeCodeJsDefault = parcelHelpers.interopDefault(_nodeCodeJs);
+var _nodeFrameJs = require("./core/NodeFrame.js");
+var _nodeFrameJsDefault = parcelHelpers.interopDefault(_nodeFrameJs);
+var _nodeFunctionInputJs = require("./core/NodeFunctionInput.js");
+var _nodeFunctionInputJsDefault = parcelHelpers.interopDefault(_nodeFunctionInputJs);
+var _nodeKeywordsJs = require("./core/NodeKeywords.js");
+var _nodeKeywordsJsDefault = parcelHelpers.interopDefault(_nodeKeywordsJs);
+var _nodeUniformJs = require("./core/NodeUniform.js");
+var _nodeUniformJsDefault = parcelHelpers.interopDefault(_nodeUniformJs);
+var _nodeVarJs = require("./core/NodeVar.js");
+var _nodeVarJsDefault = parcelHelpers.interopDefault(_nodeVarJs);
+var _nodeVaryingJs = require("./core/NodeVarying.js");
+var _nodeVaryingJsDefault = parcelHelpers.interopDefault(_nodeVaryingJs);
+var _parameterNodeJs = require("./core/ParameterNode.js");
+var _parameterNodeJsDefault = parcelHelpers.interopDefault(_parameterNodeJs);
+var _propertyNodeJs = require("./core/PropertyNode.js");
+var _propertyNodeJsDefault = parcelHelpers.interopDefault(_propertyNodeJs);
+var _stackNodeJs = require("./core/StackNode.js");
+var _stackNodeJsDefault = parcelHelpers.interopDefault(_stackNodeJs);
+var _tempNodeJs = require("./core/TempNode.js");
+var _tempNodeJsDefault = parcelHelpers.interopDefault(_tempNodeJs);
+var _uniformGroupNodeJs = require("./core/UniformGroupNode.js");
+var _uniformGroupNodeJsDefault = parcelHelpers.interopDefault(_uniformGroupNodeJs);
+var _uniformNodeJs = require("./core/UniformNode.js");
+var _uniformNodeJsDefault = parcelHelpers.interopDefault(_uniformNodeJs);
+var _varyingNodeJs = require("./core/VaryingNode.js");
+var _varyingNodeJsDefault = parcelHelpers.interopDefault(_varyingNodeJs);
+var _outputStructNodeJs = require("./core/OutputStructNode.js");
+var _outputStructNodeJsDefault = parcelHelpers.interopDefault(_outputStructNodeJs);
+var _nodeUtilsJs = require("./core/NodeUtils.js");
+var _mathNodeJs = require("./math/MathNode.js");
+var _mathNodeJsDefault = parcelHelpers.interopDefault(_mathNodeJs);
+var _operatorNodeJs = require("./math/OperatorNode.js");
+var _operatorNodeJsDefault = parcelHelpers.interopDefault(_operatorNodeJs);
+var _condNodeJs = require("./math/CondNode.js");
+var _condNodeJsDefault = parcelHelpers.interopDefault(_condNodeJs);
+var _hashNodeJs = require("./math/HashNode.js");
+var _hashNodeJsDefault = parcelHelpers.interopDefault(_hashNodeJs);
+var _mathUtilsJs = require("./math/MathUtils.js");
+var _triNoise3DJs = require("./math/TriNoise3D.js");
+var _arrayElementNodeJs = require("./utils/ArrayElementNode.js");
+var _arrayElementNodeJsDefault = parcelHelpers.interopDefault(_arrayElementNodeJs);
+var _convertNodeJs = require("./utils/ConvertNode.js");
+var _convertNodeJsDefault = parcelHelpers.interopDefault(_convertNodeJs);
+var _discardNodeJs = require("./utils/DiscardNode.js");
+var _discardNodeJsDefault = parcelHelpers.interopDefault(_discardNodeJs);
+var _equirectUVNodeJs = require("./utils/EquirectUVNode.js");
+var _equirectUVNodeJsDefault = parcelHelpers.interopDefault(_equirectUVNodeJs);
+var _functionOverloadingNodeJs = require("./utils/FunctionOverloadingNode.js");
+var _functionOverloadingNodeJsDefault = parcelHelpers.interopDefault(_functionOverloadingNodeJs);
+var _joinNodeJs = require("./utils/JoinNode.js");
+var _joinNodeJsDefault = parcelHelpers.interopDefault(_joinNodeJs);
+var _loopNodeJs = require("./utils/LoopNode.js");
+var _loopNodeJsDefault = parcelHelpers.interopDefault(_loopNodeJs);
+var _matcapUVNodeJs = require("./utils/MatcapUVNode.js");
+var _matcapUVNodeJsDefault = parcelHelpers.interopDefault(_matcapUVNodeJs);
+var _maxMipLevelNodeJs = require("./utils/MaxMipLevelNode.js");
+var _maxMipLevelNodeJsDefault = parcelHelpers.interopDefault(_maxMipLevelNodeJs);
+var _oscNodeJs = require("./utils/OscNode.js");
+var _oscNodeJsDefault = parcelHelpers.interopDefault(_oscNodeJs);
+var _packingNodeJs = require("./utils/PackingNode.js");
+var _packingNodeJsDefault = parcelHelpers.interopDefault(_packingNodeJs);
+var _remapNodeJs = require("./utils/RemapNode.js");
+var _remapNodeJsDefault = parcelHelpers.interopDefault(_remapNodeJs);
+var _rotateUVNodeJs = require("./utils/RotateUVNode.js");
+var _rotateUVNodeJsDefault = parcelHelpers.interopDefault(_rotateUVNodeJs);
+var _rotateNodeJs = require("./utils/RotateNode.js");
+var _rotateNodeJsDefault = parcelHelpers.interopDefault(_rotateNodeJs);
+var _setNodeJs = require("./utils/SetNode.js");
+var _setNodeJsDefault = parcelHelpers.interopDefault(_setNodeJs);
+var _specularMIPLevelNodeJs = require("./utils/SpecularMIPLevelNode.js");
+var _specularMIPLevelNodeJsDefault = parcelHelpers.interopDefault(_specularMIPLevelNodeJs);
+var _splitNodeJs = require("./utils/SplitNode.js");
+var _splitNodeJsDefault = parcelHelpers.interopDefault(_splitNodeJs);
+var _spriteSheetUVNodeJs = require("./utils/SpriteSheetUVNode.js");
+var _spriteSheetUVNodeJsDefault = parcelHelpers.interopDefault(_spriteSheetUVNodeJs);
+var _timerNodeJs = require("./utils/TimerNode.js");
+var _timerNodeJsDefault = parcelHelpers.interopDefault(_timerNodeJs);
+var _triplanarTexturesNodeJs = require("./utils/TriplanarTexturesNode.js");
+var _triplanarTexturesNodeJsDefault = parcelHelpers.interopDefault(_triplanarTexturesNodeJs);
+var _reflectorNodeJs = require("./utils/ReflectorNode.js");
+var _reflectorNodeJsDefault = parcelHelpers.interopDefault(_reflectorNodeJs);
+// shadernode
+var _shaderNodeJs = require("./shadernode/ShaderNode.js");
+parcelHelpers.exportAll(_shaderNodeJs, exports);
+var _bitangentNodeJs = require("./accessors/BitangentNode.js");
+var _bitangentNodeJsDefault = parcelHelpers.interopDefault(_bitangentNodeJs);
+var _bufferAttributeNodeJs = require("./accessors/BufferAttributeNode.js");
+var _bufferAttributeNodeJsDefault = parcelHelpers.interopDefault(_bufferAttributeNodeJs);
+var _bufferNodeJs = require("./accessors/BufferNode.js");
+var _bufferNodeJsDefault = parcelHelpers.interopDefault(_bufferNodeJs);
+var _cameraNodeJs = require("./accessors/CameraNode.js");
+var _cameraNodeJsDefault = parcelHelpers.interopDefault(_cameraNodeJs);
+var _vertexColorNodeJs = require("./accessors/VertexColorNode.js");
+var _vertexColorNodeJsDefault = parcelHelpers.interopDefault(_vertexColorNodeJs);
+var _cubeTextureNodeJs = require("./accessors/CubeTextureNode.js");
+var _cubeTextureNodeJsDefault = parcelHelpers.interopDefault(_cubeTextureNodeJs);
+var _instanceNodeJs = require("./accessors/InstanceNode.js");
+var _instanceNodeJsDefault = parcelHelpers.interopDefault(_instanceNodeJs);
+var _materialNodeJs = require("./accessors/MaterialNode.js");
+var _materialNodeJsDefault = parcelHelpers.interopDefault(_materialNodeJs);
+var _materialReferenceNodeJs = require("./accessors/MaterialReferenceNode.js");
+var _materialReferenceNodeJsDefault = parcelHelpers.interopDefault(_materialReferenceNodeJs);
+var _morphNodeJs = require("./accessors/MorphNode.js");
+var _morphNodeJsDefault = parcelHelpers.interopDefault(_morphNodeJs);
+var _textureBicubicNodeJs = require("./accessors/TextureBicubicNode.js");
+var _textureBicubicNodeJsDefault = parcelHelpers.interopDefault(_textureBicubicNodeJs);
+var _modelNodeJs = require("./accessors/ModelNode.js");
+var _modelNodeJsDefault = parcelHelpers.interopDefault(_modelNodeJs);
+var _modelViewProjectionNodeJs = require("./accessors/ModelViewProjectionNode.js");
+var _modelViewProjectionNodeJsDefault = parcelHelpers.interopDefault(_modelViewProjectionNodeJs);
+var _normalNodeJs = require("./accessors/NormalNode.js");
+var _normalNodeJsDefault = parcelHelpers.interopDefault(_normalNodeJs);
+var _object3DNodeJs = require("./accessors/Object3DNode.js");
+var _object3DNodeJsDefault = parcelHelpers.interopDefault(_object3DNodeJs);
+var _pointUVNodeJs = require("./accessors/PointUVNode.js");
+var _pointUVNodeJsDefault = parcelHelpers.interopDefault(_pointUVNodeJs);
+var _positionNodeJs = require("./accessors/PositionNode.js");
+var _positionNodeJsDefault = parcelHelpers.interopDefault(_positionNodeJs);
+var _referenceNodeJs = require("./accessors/ReferenceNode.js");
+var _referenceNodeJsDefault = parcelHelpers.interopDefault(_referenceNodeJs);
+var _reflectVectorNodeJs = require("./accessors/ReflectVectorNode.js");
+var _reflectVectorNodeJsDefault = parcelHelpers.interopDefault(_reflectVectorNodeJs);
+var _skinningNodeJs = require("./accessors/SkinningNode.js");
+var _skinningNodeJsDefault = parcelHelpers.interopDefault(_skinningNodeJs);
+var _sceneNodeJs = require("./accessors/SceneNode.js");
+var _sceneNodeJsDefault = parcelHelpers.interopDefault(_sceneNodeJs);
+var _storageBufferNodeJs = require("./accessors/StorageBufferNode.js");
+var _storageBufferNodeJsDefault = parcelHelpers.interopDefault(_storageBufferNodeJs);
+var _tangentNodeJs = require("./accessors/TangentNode.js");
+var _tangentNodeJsDefault = parcelHelpers.interopDefault(_tangentNodeJs);
+var _textureNodeJs = require("./accessors/TextureNode.js");
+var _textureNodeJsDefault = parcelHelpers.interopDefault(_textureNodeJs);
+var _textureStoreNodeJs = require("./accessors/TextureStoreNode.js");
+var _textureStoreNodeJsDefault = parcelHelpers.interopDefault(_textureStoreNodeJs);
+var _uvnodeJs = require("./accessors/UVNode.js");
+var _uvnodeJsDefault = parcelHelpers.interopDefault(_uvnodeJs);
+var _userDataNodeJs = require("./accessors/UserDataNode.js");
+var _userDataNodeJsDefault = parcelHelpers.interopDefault(_userDataNodeJs);
+var _blendModeNodeJs = require("./display/BlendModeNode.js");
+var _blendModeNodeJsDefault = parcelHelpers.interopDefault(_blendModeNodeJs);
+var _bumpMapNodeJs = require("./display/BumpMapNode.js");
+var _bumpMapNodeJsDefault = parcelHelpers.interopDefault(_bumpMapNodeJs);
+var _colorAdjustmentNodeJs = require("./display/ColorAdjustmentNode.js");
+var _colorAdjustmentNodeJsDefault = parcelHelpers.interopDefault(_colorAdjustmentNodeJs);
+var _colorSpaceNodeJs = require("./display/ColorSpaceNode.js");
+var _colorSpaceNodeJsDefault = parcelHelpers.interopDefault(_colorSpaceNodeJs);
+var _frontFacingNodeJs = require("./display/FrontFacingNode.js");
+var _frontFacingNodeJsDefault = parcelHelpers.interopDefault(_frontFacingNodeJs);
+var _normalMapNodeJs = require("./display/NormalMapNode.js");
+var _normalMapNodeJsDefault = parcelHelpers.interopDefault(_normalMapNodeJs);
+var _posterizeNodeJs = require("./display/PosterizeNode.js");
+var _posterizeNodeJsDefault = parcelHelpers.interopDefault(_posterizeNodeJs);
+var _toneMappingNodeJs = require("./display/ToneMappingNode.js");
+var _toneMappingNodeJsDefault = parcelHelpers.interopDefault(_toneMappingNodeJs);
+var _viewportNodeJs = require("./display/ViewportNode.js");
+var _viewportNodeJsDefault = parcelHelpers.interopDefault(_viewportNodeJs);
+var _viewportTextureNodeJs = require("./display/ViewportTextureNode.js");
+var _viewportTextureNodeJsDefault = parcelHelpers.interopDefault(_viewportTextureNodeJs);
+var _viewportSharedTextureNodeJs = require("./display/ViewportSharedTextureNode.js");
+var _viewportSharedTextureNodeJsDefault = parcelHelpers.interopDefault(_viewportSharedTextureNodeJs);
+var _viewportDepthTextureNodeJs = require("./display/ViewportDepthTextureNode.js");
+var _viewportDepthTextureNodeJsDefault = parcelHelpers.interopDefault(_viewportDepthTextureNodeJs);
+var _viewportDepthNodeJs = require("./display/ViewportDepthNode.js");
+var _viewportDepthNodeJsDefault = parcelHelpers.interopDefault(_viewportDepthNodeJs);
+var _gaussianBlurNodeJs = require("./display/GaussianBlurNode.js");
+var _gaussianBlurNodeJsDefault = parcelHelpers.interopDefault(_gaussianBlurNodeJs);
+var _afterImageNodeJs = require("./display/AfterImageNode.js");
+var _afterImageNodeJsDefault = parcelHelpers.interopDefault(_afterImageNodeJs);
+var _anamorphicNodeJs = require("./display/AnamorphicNode.js");
+var _anamorphicNodeJsDefault = parcelHelpers.interopDefault(_anamorphicNodeJs);
+var _passNodeJs = require("./display/PassNode.js");
+var _passNodeJsDefault = parcelHelpers.interopDefault(_passNodeJs);
+var _expressionNodeJs = require("./code/ExpressionNode.js");
+var _expressionNodeJsDefault = parcelHelpers.interopDefault(_expressionNodeJs);
+var _codeNodeJs = require("./code/CodeNode.js");
+var _codeNodeJsDefault = parcelHelpers.interopDefault(_codeNodeJs);
+var _functionCallNodeJs = require("./code/FunctionCallNode.js");
+var _functionCallNodeJsDefault = parcelHelpers.interopDefault(_functionCallNodeJs);
+var _functionNodeJs = require("./code/FunctionNode.js");
+var _functionNodeJsDefault = parcelHelpers.interopDefault(_functionNodeJs);
+var _scriptableNodeJs = require("./code/ScriptableNode.js");
+var _scriptableNodeJsDefault = parcelHelpers.interopDefault(_scriptableNodeJs);
+var _scriptableValueNodeJs = require("./code/ScriptableValueNode.js");
+var _scriptableValueNodeJsDefault = parcelHelpers.interopDefault(_scriptableValueNodeJs);
+var _fogNodeJs = require("./fog/FogNode.js");
+var _fogNodeJsDefault = parcelHelpers.interopDefault(_fogNodeJs);
+var _fogRangeNodeJs = require("./fog/FogRangeNode.js");
+var _fogRangeNodeJsDefault = parcelHelpers.interopDefault(_fogRangeNodeJs);
+var _fogExp2NodeJs = require("./fog/FogExp2Node.js");
+var _fogExp2NodeJsDefault = parcelHelpers.interopDefault(_fogExp2NodeJs);
+var _rangeNodeJs = require("./geometry/RangeNode.js");
+var _rangeNodeJsDefault = parcelHelpers.interopDefault(_rangeNodeJs);
+var _computeNodeJs = require("./gpgpu/ComputeNode.js");
+var _computeNodeJsDefault = parcelHelpers.interopDefault(_computeNodeJs);
+var _lightNodeJs = require("./lighting/LightNode.js");
+var _lightNodeJsDefault = parcelHelpers.interopDefault(_lightNodeJs);
+var _pointLightNodeJs = require("./lighting/PointLightNode.js");
+var _pointLightNodeJsDefault = parcelHelpers.interopDefault(_pointLightNodeJs);
+var _directionalLightNodeJs = require("./lighting/DirectionalLightNode.js");
+var _directionalLightNodeJsDefault = parcelHelpers.interopDefault(_directionalLightNodeJs);
+var _spotLightNodeJs = require("./lighting/SpotLightNode.js");
+var _spotLightNodeJsDefault = parcelHelpers.interopDefault(_spotLightNodeJs);
+var _iesspotLightNodeJs = require("./lighting/IESSpotLightNode.js");
+var _iesspotLightNodeJsDefault = parcelHelpers.interopDefault(_iesspotLightNodeJs);
+var _ambientLightNodeJs = require("./lighting/AmbientLightNode.js");
+var _ambientLightNodeJsDefault = parcelHelpers.interopDefault(_ambientLightNodeJs);
+var _lightsNodeJs = require("./lighting/LightsNode.js");
+var _lightsNodeJsDefault = parcelHelpers.interopDefault(_lightsNodeJs);
+var _lightingNodeJs = require("./lighting/LightingNode.js");
+var _lightingNodeJsDefault = parcelHelpers.interopDefault(_lightingNodeJs);
+var _lightingContextNodeJs = require("./lighting/LightingContextNode.js");
+var _lightingContextNodeJsDefault = parcelHelpers.interopDefault(_lightingContextNodeJs);
+var _hemisphereLightNodeJs = require("./lighting/HemisphereLightNode.js");
+var _hemisphereLightNodeJsDefault = parcelHelpers.interopDefault(_hemisphereLightNodeJs);
+var _environmentNodeJs = require("./lighting/EnvironmentNode.js");
+var _environmentNodeJsDefault = parcelHelpers.interopDefault(_environmentNodeJs);
+var _aonodeJs = require("./lighting/AONode.js");
+var _aonodeJsDefault = parcelHelpers.interopDefault(_aonodeJs);
+var _analyticLightNodeJs = require("./lighting/AnalyticLightNode.js");
+var _analyticLightNodeJsDefault = parcelHelpers.interopDefault(_analyticLightNodeJs);
+var _checkerNodeJs = require("./procedural/CheckerNode.js");
+var _checkerNodeJsDefault = parcelHelpers.interopDefault(_checkerNodeJs);
+var _nodeLoaderJs = require("./loaders/NodeLoader.js");
+var _nodeLoaderJsDefault = parcelHelpers.interopDefault(_nodeLoaderJs);
+var _nodeObjectLoaderJs = require("./loaders/NodeObjectLoader.js");
+var _nodeObjectLoaderJsDefault = parcelHelpers.interopDefault(_nodeObjectLoaderJs);
+var _nodeMaterialLoaderJs = require("./loaders/NodeMaterialLoader.js");
+var _nodeMaterialLoaderJsDefault = parcelHelpers.interopDefault(_nodeMaterialLoaderJs);
+var _glslnodeParserJs = require("./parsers/GLSLNodeParser.js");
+var _glslnodeParserJsDefault = parcelHelpers.interopDefault(_glslnodeParserJs);
+// materials
+var _materialsJs = require("./materials/Materials.js");
+parcelHelpers.exportAll(_materialsJs, exports);
+// materialX
+var _materialXNodesJs = require("./materialx/MaterialXNodes.js");
+parcelHelpers.exportAll(_materialXNodesJs, exports);
+var _brdfGgxJs = require("./functions/BSDF/BRDF_GGX.js");
+var _brdfGgxJsDefault = parcelHelpers.interopDefault(_brdfGgxJs);
+var _brdfLambertJs = require("./functions/BSDF/BRDF_Lambert.js");
+var _brdfLambertJsDefault = parcelHelpers.interopDefault(_brdfLambertJs);
+var _dGgxJs = require("./functions/BSDF/D_GGX.js");
+var _dGgxJsDefault = parcelHelpers.interopDefault(_dGgxJs);
+var _dfgapproxJs = require("./functions/BSDF/DFGApprox.js");
+var _dfgapproxJsDefault = parcelHelpers.interopDefault(_dfgapproxJs);
+var _fSchlickJs = require("./functions/BSDF/F_Schlick.js");
+var _fSchlickJsDefault = parcelHelpers.interopDefault(_fSchlickJs);
+var _schlickToF0Js = require("./functions/BSDF/Schlick_to_F0.js");
+var _schlickToF0JsDefault = parcelHelpers.interopDefault(_schlickToF0Js);
+var _vGgxSmithCorrelatedJs = require("./functions/BSDF/V_GGX_SmithCorrelated.js");
+var _vGgxSmithCorrelatedJsDefault = parcelHelpers.interopDefault(_vGgxSmithCorrelatedJs);
+var _lightUtilsJs = require("./lighting/LightUtils.js");
+var _getGeometryRoughnessJs = require("./functions/material/getGeometryRoughness.js");
+var _getGeometryRoughnessJsDefault = parcelHelpers.interopDefault(_getGeometryRoughnessJs);
+var _getRoughnessJs = require("./functions/material/getRoughness.js");
+var _getRoughnessJsDefault = parcelHelpers.interopDefault(_getRoughnessJs);
+var _phongLightingModelJs = require("./functions/PhongLightingModel.js");
+var _phongLightingModelJsDefault = parcelHelpers.interopDefault(_phongLightingModelJs);
+var _physicalLightingModelJs = require("./functions/PhysicalLightingModel.js");
+var _physicalLightingModelJsDefault = parcelHelpers.interopDefault(_physicalLightingModelJs);
+
+},{"./core/constants.js":"6tdkL","./core/ArrayUniformNode.js":"eYMRC","./core/AssignNode.js":"jzMAb","./core/AttributeNode.js":"8yUip","./core/BypassNode.js":"eOats","./core/CacheNode.js":"iHe0r","./core/ConstNode.js":"1hoCT","./core/ContextNode.js":"b5ZKP","./core/IndexNode.js":"az1vR","./core/LightingModel.js":"dTTYF","./core/Node.js":"cld0p","./core/VarNode.js":"4EKsV","./core/NodeAttribute.js":"8ipJi","./core/NodeBuilder.js":"67v0u","./core/NodeCache.js":"lKkTt","./core/NodeCode.js":"8hnM0","./core/NodeFrame.js":"2Ddza","./core/NodeFunctionInput.js":"zfOUU","./core/NodeKeywords.js":"ZSRVc","./core/NodeUniform.js":"gxszM","./core/NodeVar.js":"fsP2x","./core/NodeVarying.js":"b7jSE","./core/ParameterNode.js":"bbwHV","./core/PropertyNode.js":"9JOy4","./core/StackNode.js":"bxtaz","./core/TempNode.js":"l0t0Y","./core/UniformGroupNode.js":"dEXP3","./core/UniformNode.js":"cfhYS","./core/VaryingNode.js":"iEE7L","./core/OutputStructNode.js":"dUnZ7","./core/NodeUtils.js":"6F9Ti","./math/MathNode.js":"84OFe","./math/OperatorNode.js":"hCYI5","./math/CondNode.js":"k5xIS","./math/HashNode.js":"i48rY","./math/MathUtils.js":"1g1mm","./math/TriNoise3D.js":"3fMOm","./utils/ArrayElementNode.js":"0HKLv","./utils/ConvertNode.js":"3UILi","./utils/DiscardNode.js":"31iIs","./utils/EquirectUVNode.js":"8k6eO","./utils/FunctionOverloadingNode.js":"kmU0b","./utils/JoinNode.js":"iW5mq","./utils/LoopNode.js":"g3yUg","./utils/MatcapUVNode.js":"jBRpN","./utils/MaxMipLevelNode.js":"cMslS","./utils/OscNode.js":"8d6KP","./utils/PackingNode.js":"c5f7w","./utils/RemapNode.js":"d19LM","./utils/RotateUVNode.js":"h3bXr","./utils/RotateNode.js":"hHFa3","./utils/SetNode.js":"bv2D9","./utils/SpecularMIPLevelNode.js":"9jNMs","./utils/SplitNode.js":"jGbJg","./utils/SpriteSheetUVNode.js":"fZp85","./utils/TimerNode.js":"cMdE7","./utils/TriplanarTexturesNode.js":"hv1Ov","./utils/ReflectorNode.js":"Jok2T","./shadernode/ShaderNode.js":"8Xgcj","./accessors/BitangentNode.js":"9uzm9","./accessors/BufferAttributeNode.js":"Zd84g","./accessors/BufferNode.js":"5k9aZ","./accessors/CameraNode.js":"kZ1gx","./accessors/VertexColorNode.js":"lLiG0","./accessors/CubeTextureNode.js":"6SJcw","./accessors/InstanceNode.js":"gK4TL","./accessors/MaterialNode.js":"9GQWn","./accessors/MaterialReferenceNode.js":"dR11o","./accessors/MorphNode.js":"6G8Uj","./accessors/TextureBicubicNode.js":"dQvzQ","./accessors/ModelNode.js":"ix99b","./accessors/ModelViewProjectionNode.js":"1CbCi","./accessors/NormalNode.js":"4n1Pc","./accessors/Object3DNode.js":"jydh6","./accessors/PointUVNode.js":"7iDRx","./accessors/PositionNode.js":"1WXKm","./accessors/ReferenceNode.js":"6ceuI","./accessors/ReflectVectorNode.js":"5vFM7","./accessors/SkinningNode.js":"2bRI1","./accessors/SceneNode.js":"hzawG","./accessors/StorageBufferNode.js":"4Bhza","./accessors/TangentNode.js":"kLjM0","./accessors/TextureNode.js":"4V1bd","./accessors/TextureStoreNode.js":"bj4X0","./accessors/UVNode.js":"dj0CK","./accessors/UserDataNode.js":"1yGGF","./display/BlendModeNode.js":"SNTF7","./display/BumpMapNode.js":"5Lrr1","./display/ColorAdjustmentNode.js":"6fxXm","./display/ColorSpaceNode.js":"cCeUS","./display/FrontFacingNode.js":"aCeTG","./display/NormalMapNode.js":"66BZP","./display/PosterizeNode.js":"8FESb","./display/ToneMappingNode.js":"7W6Lu","./display/ViewportNode.js":"6pmzu","./display/ViewportTextureNode.js":"7krR3","./display/ViewportSharedTextureNode.js":"eL2MW","./display/ViewportDepthTextureNode.js":"kbkaF","./display/ViewportDepthNode.js":"eqnm6","./display/GaussianBlurNode.js":"dG51u","./display/AfterImageNode.js":"2Wlcl","./display/AnamorphicNode.js":"be98K","./display/PassNode.js":"gEajz","./code/ExpressionNode.js":"15ome","./code/CodeNode.js":"hRLHH","./code/FunctionCallNode.js":"dnwB3","./code/FunctionNode.js":"4AgZ2","./code/ScriptableNode.js":"okum5","./code/ScriptableValueNode.js":"jJBWH","./fog/FogNode.js":"12Guo","./fog/FogRangeNode.js":"aT0Dq","./fog/FogExp2Node.js":"kHXf8","./geometry/RangeNode.js":"gV2N7","./gpgpu/ComputeNode.js":"5Ql0B","./lighting/LightNode.js":"fyjUt","./lighting/PointLightNode.js":"aw7yv","./lighting/DirectionalLightNode.js":"gHHmS","./lighting/SpotLightNode.js":"gWi07","./lighting/IESSpotLightNode.js":"iAgS7","./lighting/AmbientLightNode.js":"fguMh","./lighting/LightsNode.js":"175Gf","./lighting/LightingNode.js":"2j6fa","./lighting/LightingContextNode.js":"1uc0x","./lighting/HemisphereLightNode.js":"fy9id","./lighting/EnvironmentNode.js":"d61UE","./lighting/AONode.js":"4IVK0","./lighting/AnalyticLightNode.js":"ckR1j","./procedural/CheckerNode.js":"9vtbu","./loaders/NodeLoader.js":"6fkFa","./loaders/NodeObjectLoader.js":"3cMAh","./loaders/NodeMaterialLoader.js":"kfaMt","./parsers/GLSLNodeParser.js":"gYPyn","./materials/Materials.js":"3mpdR","./materialx/MaterialXNodes.js":"7yidb","./functions/BSDF/BRDF_GGX.js":"axeQ6","./functions/BSDF/BRDF_Lambert.js":"isgtE","./functions/BSDF/D_GGX.js":"jTFaq","./functions/BSDF/DFGApprox.js":"8zKdU","./functions/BSDF/F_Schlick.js":"1ysaX","./functions/BSDF/Schlick_to_F0.js":"6Lq5a","./functions/BSDF/V_GGX_SmithCorrelated.js":"i9Llm","./lighting/LightUtils.js":"dXUaS","./functions/material/getGeometryRoughness.js":"deg3K","./functions/material/getRoughness.js":"5w800","./functions/PhongLightingModel.js":"2JzuC","./functions/PhysicalLightingModel.js":"3M8WI","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"6tdkL":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "NodeShaderStage", ()=>NodeShaderStage);
+parcelHelpers.export(exports, "NodeUpdateType", ()=>NodeUpdateType);
+parcelHelpers.export(exports, "NodeType", ()=>NodeType);
+parcelHelpers.export(exports, "defaultShaderStages", ()=>defaultShaderStages);
+parcelHelpers.export(exports, "defaultBuildStages", ()=>defaultBuildStages);
+parcelHelpers.export(exports, "shaderStages", ()=>shaderStages);
+parcelHelpers.export(exports, "vectorComponents", ()=>vectorComponents);
+const NodeShaderStage = {
+    VERTEX: "vertex",
+    FRAGMENT: "fragment"
+};
+const NodeUpdateType = {
+    NONE: "none",
+    FRAME: "frame",
+    RENDER: "render",
+    OBJECT: "object"
+};
+const NodeType = {
+    BOOLEAN: "bool",
+    INTEGER: "int",
+    FLOAT: "float",
+    VECTOR2: "vec2",
+    VECTOR3: "vec3",
+    VECTOR4: "vec4",
+    MATRIX2: "mat2",
+    MATRIX3: "mat3",
+    MATRIX4: "mat4"
+};
+const defaultShaderStages = [
+    "fragment",
+    "vertex"
+];
+const defaultBuildStages = [
+    "setup",
+    "analyze",
+    "generate"
+];
+const shaderStages = [
+    ...defaultShaderStages,
+    "compute"
+];
+const vectorComponents = [
+    "x",
+    "y",
+    "z",
+    "w"
+];
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"eYMRC":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _uniformNodeJs = require("./UniformNode.js");
+var _uniformNodeJsDefault = parcelHelpers.interopDefault(_uniformNodeJs);
+var _nodeJs = require("./Node.js");
+class ArrayUniformNode extends (0, _uniformNodeJsDefault.default) {
+    constructor(nodes = []){
+        super();
+        this.isArrayUniformNode = true;
+        this.nodes = nodes;
+    }
+    getNodeType(builder) {
+        return this.nodes[0].getNodeType(builder);
+    }
+}
+exports.default = ArrayUniformNode;
+(0, _nodeJs.addNodeClass)("ArrayUniformNode", ArrayUniformNode);
+
+},{"./UniformNode.js":"cfhYS","./Node.js":"cld0p","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"cfhYS":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "uniform", ()=>uniform);
+var _inputNodeJs = require("./InputNode.js");
+var _inputNodeJsDefault = parcelHelpers.interopDefault(_inputNodeJs);
+var _uniformGroupNodeJs = require("./UniformGroupNode.js");
+var _nodeJs = require("./Node.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class UniformNode extends (0, _inputNodeJsDefault.default) {
+    constructor(value, nodeType = null){
+        super(value, nodeType);
+        this.isUniformNode = true;
+        this.groupNode = (0, _uniformGroupNodeJs.objectGroup);
+    }
+    setGroup(group) {
+        this.groupNode = group;
+        return this;
+    }
+    getGroup() {
+        return this.groupNode;
+    }
+    getUniformHash(builder) {
+        return this.getHash(builder);
+    }
+    generate(builder, output) {
+        const type = this.getNodeType(builder);
+        const hash = this.getUniformHash(builder);
+        let sharedNode = builder.getNodeFromHash(hash);
+        if (sharedNode === undefined) {
+            builder.setHashNode(this, hash);
+            sharedNode = this;
+        }
+        const sharedNodeType = sharedNode.getInputType(builder);
+        const nodeUniform = builder.getUniformFromNode(sharedNode, sharedNodeType, builder.shaderStage, builder.context.label);
+        const propertyName = builder.getPropertyName(nodeUniform);
+        if (builder.context.label !== undefined) delete builder.context.label;
+        return builder.format(propertyName, type, output);
+    }
+}
+exports.default = UniformNode;
+const uniform = (arg1, arg2)=>{
+    const nodeType = (0, _shaderNodeJs.getConstNodeType)(arg2 || arg1);
+    // @TODO: get ConstNode from .traverse() in the future
+    const value = arg1 && arg1.isNode === true ? arg1.node && arg1.node.value || arg1.value : arg1;
+    return (0, _shaderNodeJs.nodeObject)(new UniformNode(value, nodeType));
+};
+(0, _nodeJs.addNodeClass)("UniformNode", UniformNode);
+
+},{"./InputNode.js":"7IGQM","./UniformGroupNode.js":"dEXP3","./Node.js":"cld0p","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"7IGQM":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _nodeJs = require("./Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+var _nodeUtilsJs = require("./NodeUtils.js");
+class InputNode extends (0, _nodeJsDefault.default) {
+    constructor(value, nodeType = null){
+        super(nodeType);
+        this.isInputNode = true;
+        this.value = value;
+        this.precision = null;
+    }
+    getNodeType() {
+        if (this.nodeType === null) return (0, _nodeUtilsJs.getValueType)(this.value);
+        return this.nodeType;
+    }
+    getInputType(builder) {
+        return this.getNodeType(builder);
+    }
+    setPrecision(precision) {
+        this.precision = precision;
+        return this;
+    }
+    serialize(data) {
+        super.serialize(data);
+        data.value = this.value;
+        if (this.value && this.value.toArray) data.value = this.value.toArray();
+        data.valueType = (0, _nodeUtilsJs.getValueType)(this.value);
+        data.nodeType = this.nodeType;
+        if (data.valueType === "ArrayBuffer") data.value = (0, _nodeUtilsJs.arrayBufferToBase64)(data.value);
+        data.precision = this.precision;
+    }
+    deserialize(data) {
+        super.deserialize(data);
+        this.nodeType = data.nodeType;
+        this.value = Array.isArray(data.value) ? (0, _nodeUtilsJs.getValueFromType)(data.valueType, ...data.value) : data.value;
+        this.precision = data.precision || null;
+        if (this.value && this.value.fromArray) this.value = this.value.fromArray(data.value);
+    }
+    generate() {
+        console.warn("Abstract function.");
+    }
+}
+exports.default = InputNode;
+(0, _nodeJs.addNodeClass)("InputNode", InputNode);
+
+},{"./Node.js":"cld0p","./NodeUtils.js":"6F9Ti","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"cld0p":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "addNodeClass", ()=>addNodeClass);
+parcelHelpers.export(exports, "createNodeFromType", ()=>createNodeFromType);
+var _three = require("three");
+var _constantsJs = require("./constants.js");
+var _nodeUtilsJs = require("./NodeUtils.js");
+const NodeClasses = new Map();
+let _nodeId = 0;
+class Node extends (0, _three.EventDispatcher) {
+    constructor(nodeType = null){
+        super();
+        this.nodeType = nodeType;
+        this.updateType = (0, _constantsJs.NodeUpdateType).NONE;
+        this.updateBeforeType = (0, _constantsJs.NodeUpdateType).NONE;
+        this.uuid = (0, _three.MathUtils).generateUUID();
+        this.isNode = true;
+        Object.defineProperty(this, "id", {
+            value: _nodeId++
+        });
+    }
+    get type() {
+        return this.constructor.type;
+    }
+    getSelf() {
+        // Returns non-node object.
+        return this.self || this;
+    }
+    updateReference() {
+        return this;
+    }
+    isGlobal() {
+        return false;
+    }
+    *getChildren() {
+        for (const { childNode } of (0, _nodeUtilsJs.getNodeChildren)(this))yield childNode;
+    }
+    dispose() {
+        this.dispatchEvent({
+            type: "dispose"
+        });
+    }
+    traverse(callback) {
+        callback(this);
+        for (const childNode of this.getChildren())childNode.traverse(callback);
+    }
+    getCacheKey() {
+        return (0, _nodeUtilsJs.getCacheKey)(this);
+    }
+    getHash() {
+        return this.uuid;
+    }
+    getUpdateType() {
+        return this.updateType;
+    }
+    getUpdateBeforeType() {
+        return this.updateBeforeType;
+    }
+    getNodeType(builder) {
+        const nodeProperties = builder.getNodeProperties(this);
+        if (nodeProperties.outputNode) return nodeProperties.outputNode.getNodeType(builder);
+        return this.nodeType;
+    }
+    getShared(builder) {
+        const hash = this.getHash(builder);
+        const nodeFromHash = builder.getNodeFromHash(hash);
+        return nodeFromHash || this;
+    }
+    setup(builder) {
+        const nodeProperties = builder.getNodeProperties(this);
+        for (const childNode of this.getChildren())nodeProperties["_node" + childNode.id] = childNode;
+        // return a outputNode if exists
+        return null;
+    }
+    construct(builder) {
+        console.warn("THREE.Node: construct() is deprecated. Use setup() instead.");
+        return this.setup(builder);
+    }
+    analyze(builder) {
+        const nodeData = builder.getDataFromNode(this);
+        nodeData.dependenciesCount = nodeData.dependenciesCount === undefined ? 1 : nodeData.dependenciesCount + 1;
+        if (nodeData.dependenciesCount === 1) {
+            // node flow children
+            const nodeProperties = builder.getNodeProperties(this);
+            for (const childNode of Object.values(nodeProperties))if (childNode && childNode.isNode === true) childNode.build(builder);
+        }
+    }
+    generate(builder, output) {
+        const { outputNode } = builder.getNodeProperties(this);
+        if (outputNode && outputNode.isNode === true) return outputNode.build(builder, output);
+    }
+    updateBefore() {
+        console.warn("Abstract function.");
+    }
+    update() {
+        console.warn("Abstract function.");
+    }
+    build(builder, output = null) {
+        const refNode = this.getShared(builder);
+        if (this !== refNode) return refNode.build(builder, output);
+        builder.addNode(this);
+        builder.addChain(this);
+        /* Build stages expected results:
+			- "setup"		-> Node
+			- "analyze"		-> null
+			- "generate"	-> String
+		*/ let result = null;
+        const buildStage = builder.getBuildStage();
+        if (buildStage === "setup") {
+            const properties = builder.getNodeProperties(this);
+            if (properties.initialized !== true || builder.context.tempRead === false) {
+                const stackNodesBeforeSetup = builder.stack.nodes.length;
+                properties.initialized = true;
+                properties.outputNode = this.setup(builder);
+                if (properties.outputNode !== null && builder.stack.nodes.length !== stackNodesBeforeSetup) properties.outputNode = builder.stack;
+                for (const childNode of Object.values(properties))if (childNode && childNode.isNode === true) childNode.build(builder);
+            }
+        } else if (buildStage === "analyze") this.analyze(builder);
+        else if (buildStage === "generate") {
+            const isGenerateOnce = this.generate.length === 1;
+            if (isGenerateOnce) {
+                const type = this.getNodeType(builder);
+                const nodeData = builder.getDataFromNode(this);
+                result = nodeData.snippet;
+                if (result === undefined /*|| builder.context.tempRead === false*/ ) {
+                    result = this.generate(builder) || "";
+                    nodeData.snippet = result;
+                }
+                result = builder.format(result, type, output);
+            } else result = this.generate(builder, output) || "";
+        }
+        builder.removeChain(this);
+        return result;
+    }
+    getSerializeChildren() {
+        return (0, _nodeUtilsJs.getNodeChildren)(this);
+    }
+    serialize(json) {
+        const nodeChildren = this.getSerializeChildren();
+        const inputNodes = {};
+        for (const { property, index, childNode } of nodeChildren)if (index !== undefined) {
+            if (inputNodes[property] === undefined) inputNodes[property] = Number.isInteger(index) ? [] : {};
+            inputNodes[property][index] = childNode.toJSON(json.meta).uuid;
+        } else inputNodes[property] = childNode.toJSON(json.meta).uuid;
+        if (Object.keys(inputNodes).length > 0) json.inputNodes = inputNodes;
+    }
+    deserialize(json) {
+        if (json.inputNodes !== undefined) {
+            const nodes = json.meta.nodes;
+            for(const property in json.inputNodes){
+                if (Array.isArray(json.inputNodes[property])) {
+                    const inputArray = [];
+                    for (const uuid of json.inputNodes[property])inputArray.push(nodes[uuid]);
+                    this[property] = inputArray;
+                } else if (typeof json.inputNodes[property] === "object") {
+                    const inputObject = {};
+                    for(const subProperty in json.inputNodes[property]){
+                        const uuid = json.inputNodes[property][subProperty];
+                        inputObject[subProperty] = nodes[uuid];
+                    }
+                    this[property] = inputObject;
+                } else {
+                    const uuid = json.inputNodes[property];
+                    this[property] = nodes[uuid];
+                }
+            }
+        }
+    }
+    toJSON(meta) {
+        const { uuid, type } = this;
+        const isRoot = meta === undefined || typeof meta === "string";
+        if (isRoot) meta = {
+            textures: {},
+            images: {},
+            nodes: {}
+        };
+        // serialize
+        let data = meta.nodes[uuid];
+        if (data === undefined) {
+            data = {
+                uuid,
+                type,
+                meta,
+                metadata: {
+                    version: 4.6,
+                    type: "Node",
+                    generator: "Node.toJSON"
+                }
+            };
+            if (isRoot !== true) meta.nodes[data.uuid] = data;
+            this.serialize(data);
+            delete data.meta;
+        }
+        // TODO: Copied from Object3D.toJSON
+        function extractFromCache(cache) {
+            const values = [];
+            for(const key in cache){
+                const data = cache[key];
+                delete data.metadata;
+                values.push(data);
+            }
+            return values;
+        }
+        if (isRoot) {
+            const textures = extractFromCache(meta.textures);
+            const images = extractFromCache(meta.images);
+            const nodes = extractFromCache(meta.nodes);
+            if (textures.length > 0) data.textures = textures;
+            if (images.length > 0) data.images = images;
+            if (nodes.length > 0) data.nodes = nodes;
+        }
+        return data;
+    }
+}
+exports.default = Node;
+function addNodeClass(type, nodeClass) {
+    if (typeof nodeClass !== "function" || !type) throw new Error(`Node class ${type} is not a class`);
+    if (NodeClasses.has(type)) {
+        console.warn(`Redefinition of node class ${type}`);
+        return;
+    }
+    NodeClasses.set(type, nodeClass);
+    nodeClass.type = type;
+}
+function createNodeFromType(type) {
+    const Class = NodeClasses.get(type);
+    if (Class !== undefined) return new Class();
+}
+
+},{"three":"ktPTu","./constants.js":"6tdkL","./NodeUtils.js":"6F9Ti","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"6F9Ti":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "getCacheKey", ()=>getCacheKey);
+parcelHelpers.export(exports, "getNodeChildren", ()=>getNodeChildren);
+parcelHelpers.export(exports, "getValueType", ()=>getValueType);
+parcelHelpers.export(exports, "getValueFromType", ()=>getValueFromType);
+parcelHelpers.export(exports, "arrayBufferToBase64", ()=>arrayBufferToBase64);
+parcelHelpers.export(exports, "base64ToArrayBuffer", ()=>base64ToArrayBuffer);
+var _three = require("three");
+function getCacheKey(object) {
+    let cacheKey = "{";
+    if (object.isNode === true) cacheKey += object.id;
+    for (const { property, childNode } of getNodeChildren(object))cacheKey += "," + property.slice(0, -4) + ":" + childNode.getCacheKey();
+    cacheKey += "}";
+    return cacheKey;
+}
+function* getNodeChildren(node, toJSON = false) {
+    for(const property in node){
+        // Ignore private properties.
+        if (property.startsWith("_") === true) continue;
+        const object = node[property];
+        if (Array.isArray(object) === true) for(let i = 0; i < object.length; i++){
+            const child = object[i];
+            if (child && (child.isNode === true || toJSON && typeof child.toJSON === "function")) yield {
+                property,
+                index: i,
+                childNode: child
+            };
+        }
+        else if (object && object.isNode === true) yield {
+            property,
+            childNode: object
+        };
+        else if (typeof object === "object") for(const subProperty in object){
+            const child = object[subProperty];
+            if (child && (child.isNode === true || toJSON && typeof child.toJSON === "function")) yield {
+                property,
+                index: subProperty,
+                childNode: child
+            };
+        }
+    }
+}
+function getValueType(value) {
+    if (value === undefined || value === null) return null;
+    const typeOf = typeof value;
+    if (value.isNode === true) return "node";
+    else if (typeOf === "number") return "float";
+    else if (typeOf === "boolean") return "bool";
+    else if (typeOf === "string") return "string";
+    else if (typeOf === "function") return "shader";
+    else if (value.isVector2 === true) return "vec2";
+    else if (value.isVector3 === true) return "vec3";
+    else if (value.isVector4 === true) return "vec4";
+    else if (value.isMatrix3 === true) return "mat3";
+    else if (value.isMatrix4 === true) return "mat4";
+    else if (value.isColor === true) return "color";
+    else if (value instanceof ArrayBuffer) return "ArrayBuffer";
+    return null;
+}
+function getValueFromType(type, ...params) {
+    const last4 = type ? type.slice(-4) : undefined;
+    if (params.length === 1) {
+        if (last4 === "vec2") params = [
+            params[0],
+            params[0]
+        ];
+        else if (last4 === "vec3") params = [
+            params[0],
+            params[0],
+            params[0]
+        ];
+        else if (last4 === "vec4") params = [
+            params[0],
+            params[0],
+            params[0],
+            params[0]
+        ];
+    }
+    if (type === "color") return new (0, _three.Color)(...params);
+    else if (last4 === "vec2") return new (0, _three.Vector2)(...params);
+    else if (last4 === "vec3") return new (0, _three.Vector3)(...params);
+    else if (last4 === "vec4") return new (0, _three.Vector4)(...params);
+    else if (last4 === "mat3") return new (0, _three.Matrix3)(...params);
+    else if (last4 === "mat4") return new (0, _three.Matrix4)(...params);
+    else if (type === "bool") return params[0] || false;
+    else if (type === "float" || type === "int" || type === "uint") return params[0] || 0;
+    else if (type === "string") return params[0] || "";
+    else if (type === "ArrayBuffer") return base64ToArrayBuffer(params[0]);
+    return null;
+}
+function arrayBufferToBase64(arrayBuffer) {
+    let chars = "";
+    const array = new Uint8Array(arrayBuffer);
+    for(let i = 0; i < array.length; i++)chars += String.fromCharCode(array[i]);
+    return btoa(chars);
+}
+function base64ToArrayBuffer(base64) {
+    return Uint8Array.from(atob(base64), (c)=>c.charCodeAt(0)).buffer;
+}
+
+},{"three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"dEXP3":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "uniformGroup", ()=>uniformGroup);
+parcelHelpers.export(exports, "sharedUniformGroup", ()=>sharedUniformGroup);
+parcelHelpers.export(exports, "frameGroup", ()=>frameGroup);
+parcelHelpers.export(exports, "renderGroup", ()=>renderGroup);
+parcelHelpers.export(exports, "objectGroup", ()=>objectGroup);
+var _nodeJs = require("./Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+class UniformGroupNode extends (0, _nodeJsDefault.default) {
+    constructor(name, shared = false){
+        super("string");
+        this.name = name;
+        this.version = 0;
+        this.shared = shared;
+        this.isUniformGroup = true;
+    }
+    set needsUpdate(value) {
+        if (value === true) this.version++;
+    }
+}
+const uniformGroup = (name)=>new UniformGroupNode(name);
+const sharedUniformGroup = (name)=>new UniformGroupNode(name, true);
+const frameGroup = sharedUniformGroup("frame");
+const renderGroup = sharedUniformGroup("render");
+const objectGroup = uniformGroup("object");
+exports.default = UniformGroupNode;
+(0, _nodeJs.addNodeClass)("UniformGroupNode", UniformGroupNode);
+
+},{"./Node.js":"cld0p","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"8Xgcj":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "addNodeElement", ()=>addNodeElement);
+parcelHelpers.export(exports, "getConstNodeType", ()=>getConstNodeType);
+// shader node base
+parcelHelpers.export(exports, "ShaderNode", ()=>ShaderNode);
+parcelHelpers.export(exports, "nodeObject", ()=>nodeObject);
+parcelHelpers.export(exports, "nodeObjects", ()=>nodeObjects);
+parcelHelpers.export(exports, "nodeArray", ()=>nodeArray);
+parcelHelpers.export(exports, "nodeProxy", ()=>nodeProxy);
+parcelHelpers.export(exports, "nodeImmutable", ()=>nodeImmutable);
+parcelHelpers.export(exports, "shader", ()=>shader);
+parcelHelpers.export(exports, "tslFn", ()=>tslFn);
+parcelHelpers.export(exports, "setCurrentStack", ()=>setCurrentStack);
+parcelHelpers.export(exports, "getCurrentStack", ()=>getCurrentStack);
+parcelHelpers.export(exports, "If", ()=>If);
+parcelHelpers.export(exports, "append", ()=>append);
+parcelHelpers.export(exports, "color", ()=>color);
+parcelHelpers.export(exports, "float", ()=>float);
+parcelHelpers.export(exports, "int", ()=>int);
+parcelHelpers.export(exports, "uint", ()=>uint);
+parcelHelpers.export(exports, "bool", ()=>bool);
+parcelHelpers.export(exports, "vec2", ()=>vec2);
+parcelHelpers.export(exports, "ivec2", ()=>ivec2);
+parcelHelpers.export(exports, "uvec2", ()=>uvec2);
+parcelHelpers.export(exports, "bvec2", ()=>bvec2);
+parcelHelpers.export(exports, "vec3", ()=>vec3);
+parcelHelpers.export(exports, "ivec3", ()=>ivec3);
+parcelHelpers.export(exports, "uvec3", ()=>uvec3);
+parcelHelpers.export(exports, "bvec3", ()=>bvec3);
+parcelHelpers.export(exports, "vec4", ()=>vec4);
+parcelHelpers.export(exports, "ivec4", ()=>ivec4);
+parcelHelpers.export(exports, "uvec4", ()=>uvec4);
+parcelHelpers.export(exports, "bvec4", ()=>bvec4);
+parcelHelpers.export(exports, "mat2", ()=>mat2);
+parcelHelpers.export(exports, "imat2", ()=>imat2);
+parcelHelpers.export(exports, "umat2", ()=>umat2);
+parcelHelpers.export(exports, "bmat2", ()=>bmat2);
+parcelHelpers.export(exports, "mat3", ()=>mat3);
+parcelHelpers.export(exports, "imat3", ()=>imat3);
+parcelHelpers.export(exports, "umat3", ()=>umat3);
+parcelHelpers.export(exports, "bmat3", ()=>bmat3);
+parcelHelpers.export(exports, "mat4", ()=>mat4);
+parcelHelpers.export(exports, "imat4", ()=>imat4);
+parcelHelpers.export(exports, "umat4", ()=>umat4);
+parcelHelpers.export(exports, "bmat4", ()=>bmat4);
+parcelHelpers.export(exports, "string", ()=>string);
+parcelHelpers.export(exports, "arrayBuffer", ()=>arrayBuffer);
+parcelHelpers.export(exports, "element", ()=>element);
+parcelHelpers.export(exports, "convert", ()=>convert);
+parcelHelpers.export(exports, "split", ()=>split);
+var _nodeJs = require("../core/Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+var _arrayElementNodeJs = require("../utils/ArrayElementNode.js");
+var _arrayElementNodeJsDefault = parcelHelpers.interopDefault(_arrayElementNodeJs);
+var _convertNodeJs = require("../utils/ConvertNode.js");
+var _convertNodeJsDefault = parcelHelpers.interopDefault(_convertNodeJs);
+var _joinNodeJs = require("../utils/JoinNode.js");
+var _joinNodeJsDefault = parcelHelpers.interopDefault(_joinNodeJs);
+var _splitNodeJs = require("../utils/SplitNode.js");
+var _splitNodeJsDefault = parcelHelpers.interopDefault(_splitNodeJs);
+var _setNodeJs = require("../utils/SetNode.js");
+var _setNodeJsDefault = parcelHelpers.interopDefault(_setNodeJs);
+var _constNodeJs = require("../core/ConstNode.js");
+var _constNodeJsDefault = parcelHelpers.interopDefault(_constNodeJs);
+var _nodeUtilsJs = require("../core/NodeUtils.js");
+//
+let currentStack = null;
+const NodeElements = new Map(); // @TODO: Currently only a few nodes are added, probably also add others
+function addNodeElement(name, nodeElement) {
+    if (NodeElements.has(name)) {
+        console.warn(`Redefinition of node element ${name}`);
+        return;
+    }
+    if (typeof nodeElement !== "function") throw new Error(`Node element ${name} is not a function`);
+    NodeElements.set(name, nodeElement);
+}
+const parseSwizzle = (props)=>props.replace(/r|s/g, "x").replace(/g|t/g, "y").replace(/b|p/g, "z").replace(/a|q/g, "w");
+const shaderNodeHandler = {
+    setup (NodeClosure, params) {
+        const inputs = params.shift();
+        return NodeClosure(nodeObjects(inputs), ...params);
+    },
+    get (node, prop, nodeObj) {
+        if (typeof prop === "string" && node[prop] === undefined) {
+            if (node.isStackNode !== true && prop === "assign") return (...params)=>{
+                currentStack.assign(nodeObj, ...params);
+                return nodeObj;
+            };
+            else if (NodeElements.has(prop)) {
+                const nodeElement = NodeElements.get(prop);
+                return node.isStackNode ? (...params)=>nodeObj.add(nodeElement(...params)) : (...params)=>nodeElement(nodeObj, ...params);
+            } else if (prop === "self") return node;
+            else if (prop.endsWith("Assign") && NodeElements.has(prop.slice(0, prop.length - 6))) {
+                const nodeElement = NodeElements.get(prop.slice(0, prop.length - 6));
+                return node.isStackNode ? (...params)=>nodeObj.assign(params[0], nodeElement(...params)) : (...params)=>nodeObj.assign(nodeElement(nodeObj, ...params));
+            } else if (/^[xyzwrgbastpq]{1,4}$/.test(prop) === true) {
+                // accessing properties ( swizzle )
+                prop = parseSwizzle(prop);
+                return nodeObject(new (0, _splitNodeJsDefault.default)(nodeObj, prop));
+            } else if (/^set[XYZWRGBASTPQ]{1,4}$/.test(prop) === true) {
+                // set properties ( swizzle )
+                prop = parseSwizzle(prop.slice(3).toLowerCase());
+                // sort to xyzw sequence
+                prop = prop.split("").sort().join("");
+                return (value)=>nodeObject(new (0, _setNodeJsDefault.default)(node, prop, value));
+            } else if (prop === "width" || prop === "height" || prop === "depth") {
+                // accessing property
+                if (prop === "width") prop = "x";
+                else if (prop === "height") prop = "y";
+                else if (prop === "depth") prop = "z";
+                return nodeObject(new (0, _splitNodeJsDefault.default)(node, prop));
+            } else if (/^\d+$/.test(prop) === true) // accessing array
+            return nodeObject(new (0, _arrayElementNodeJsDefault.default)(nodeObj, new (0, _constNodeJsDefault.default)(Number(prop), "uint")));
+        }
+        return Reflect.get(node, prop, nodeObj);
+    },
+    set (node, prop, value, nodeObj) {
+        if (typeof prop === "string" && node[prop] === undefined) // setting properties
+        {
+            if (/^[xyzwrgbastpq]{1,4}$/.test(prop) === true || prop === "width" || prop === "height" || prop === "depth" || /^\d+$/.test(prop) === true) {
+                nodeObj[prop].assign(value);
+                return true;
+            }
+        }
+        return Reflect.set(node, prop, value, nodeObj);
+    }
+};
+const nodeObjectsCacheMap = new WeakMap();
+const nodeBuilderFunctionsCacheMap = new WeakMap();
+const ShaderNodeObject = function(obj, altType = null) {
+    const type = (0, _nodeUtilsJs.getValueType)(obj);
+    if (type === "node") {
+        let nodeObject = nodeObjectsCacheMap.get(obj);
+        if (nodeObject === undefined) {
+            nodeObject = new Proxy(obj, shaderNodeHandler);
+            nodeObjectsCacheMap.set(obj, nodeObject);
+            nodeObjectsCacheMap.set(nodeObject, nodeObject);
+        }
+        return nodeObject;
+    } else if (altType === null && (type === "float" || type === "boolean") || type && type !== "shader" && type !== "string") return nodeObject(getConstNode(obj, altType));
+    else if (type === "shader") return tslFn(obj);
+    return obj;
+};
+const ShaderNodeObjects = function(objects, altType = null) {
+    for(const name in objects)objects[name] = nodeObject(objects[name], altType);
+    return objects;
+};
+const ShaderNodeArray = function(array, altType = null) {
+    const len = array.length;
+    for(let i = 0; i < len; i++)array[i] = nodeObject(array[i], altType);
+    return array;
+};
+const ShaderNodeProxy = function(NodeClass, scope = null, factor = null, settings = null) {
+    const assignNode = (node)=>nodeObject(settings !== null ? Object.assign(node, settings) : node);
+    if (scope === null) return (...params)=>{
+        return assignNode(new NodeClass(...nodeArray(params)));
+    };
+    else if (factor !== null) {
+        factor = nodeObject(factor);
+        return (...params)=>{
+            return assignNode(new NodeClass(scope, ...nodeArray(params), factor));
+        };
+    } else return (...params)=>{
+        return assignNode(new NodeClass(scope, ...nodeArray(params)));
+    };
+};
+const ShaderNodeImmutable = function(NodeClass, ...params) {
+    return nodeObject(new NodeClass(...nodeArray(params)));
+};
+class ShaderCallNodeInternal extends (0, _nodeJsDefault.default) {
+    constructor(shaderNode, inputNodes){
+        super();
+        this.shaderNode = shaderNode;
+        this.inputNodes = inputNodes;
+    }
+    getNodeType(builder) {
+        const { outputNode } = builder.getNodeProperties(this);
+        return outputNode ? outputNode.getNodeType(builder) : super.getNodeType(builder);
+    }
+    call(builder) {
+        const { shaderNode, inputNodes } = this;
+        if (shaderNode.layout) {
+            let functionNodesCacheMap = nodeBuilderFunctionsCacheMap.get(builder.constructor);
+            if (functionNodesCacheMap === undefined) {
+                functionNodesCacheMap = new WeakMap();
+                nodeBuilderFunctionsCacheMap.set(builder.constructor, functionNodesCacheMap);
+            }
+            let functionNode = functionNodesCacheMap.get(shaderNode);
+            if (functionNode === undefined) {
+                functionNode = nodeObject(builder.buildFunctionNode(shaderNode));
+                functionNodesCacheMap.set(shaderNode, functionNode);
+            }
+            if (builder.currentFunctionNode !== null) builder.currentFunctionNode.includes.push(functionNode);
+            return nodeObject(functionNode.call(inputNodes));
+        }
+        const jsFunc = shaderNode.jsFunc;
+        const outputNode = inputNodes !== null ? jsFunc(inputNodes, builder.stack, builder) : jsFunc(builder.stack, builder);
+        return nodeObject(outputNode);
+    }
+    setup(builder) {
+        builder.addStack();
+        builder.stack.outputNode = this.call(builder);
+        return builder.removeStack();
+    }
+    generate(builder, output) {
+        const { outputNode } = builder.getNodeProperties(this);
+        if (outputNode === null) // TSL: It's recommended to use `tslFn` in setup() pass.
+        return this.call(builder).build(builder, output);
+        return super.generate(builder, output);
+    }
+}
+class ShaderNodeInternal extends (0, _nodeJsDefault.default) {
+    constructor(jsFunc){
+        super();
+        this.jsFunc = jsFunc;
+        this.layout = null;
+    }
+    get isArrayInput() {
+        return /^\((\s+)?\[/.test(this.jsFunc.toString());
+    }
+    setLayout(layout) {
+        this.layout = layout;
+        return this;
+    }
+    call(inputs = null) {
+        nodeObjects(inputs);
+        return nodeObject(new ShaderCallNodeInternal(this, inputs));
+    }
+    setup() {
+        return this.call();
+    }
+}
+const bools = [
+    false,
+    true
+];
+const uints = [
+    0,
+    1,
+    2,
+    3
+];
+const ints = [
+    -1,
+    -2
+];
+const floats = [
+    0.5,
+    1.5,
+    1 / 3,
+    1e-6,
+    1e6,
+    Math.PI,
+    Math.PI * 2,
+    1 / Math.PI,
+    2 / Math.PI,
+    1 / (Math.PI * 2),
+    Math.PI / 2
+];
+const boolsCacheMap = new Map();
+for (const bool of bools)boolsCacheMap.set(bool, new (0, _constNodeJsDefault.default)(bool));
+const uintsCacheMap = new Map();
+for (const uint of uints)uintsCacheMap.set(uint, new (0, _constNodeJsDefault.default)(uint, "uint"));
+const intsCacheMap = new Map([
+    ...uintsCacheMap
+].map((el)=>new (0, _constNodeJsDefault.default)(el.value, "int")));
+for (const int of ints)intsCacheMap.set(int, new (0, _constNodeJsDefault.default)(int, "int"));
+const floatsCacheMap = new Map([
+    ...intsCacheMap
+].map((el)=>new (0, _constNodeJsDefault.default)(el.value)));
+for (const float of floats)floatsCacheMap.set(float, new (0, _constNodeJsDefault.default)(float));
+for (const float of floats)floatsCacheMap.set(-float, new (0, _constNodeJsDefault.default)(-float));
+const cacheMaps = {
+    bool: boolsCacheMap,
+    uint: uintsCacheMap,
+    ints: intsCacheMap,
+    float: floatsCacheMap
+};
+const constNodesCacheMap = new Map([
+    ...boolsCacheMap,
+    ...floatsCacheMap
+]);
+const getConstNode = (value, type)=>{
+    if (constNodesCacheMap.has(value)) return constNodesCacheMap.get(value);
+    else if (value.isNode === true) return value;
+    else return new (0, _constNodeJsDefault.default)(value, type);
+};
+const safeGetNodeType = (node)=>{
+    try {
+        return node.getNodeType();
+    } catch (_) {
+        return undefined;
+    }
+};
+const ConvertType = function(type, cacheMap = null) {
+    return (...params)=>{
+        if (params.length === 0 || ![
+            "bool",
+            "float",
+            "int",
+            "uint"
+        ].includes(type) && params.every((param)=>typeof param !== "object")) params = [
+            (0, _nodeUtilsJs.getValueFromType)(type, ...params)
+        ];
+        if (params.length === 1 && cacheMap !== null && cacheMap.has(params[0])) return nodeObject(cacheMap.get(params[0]));
+        if (params.length === 1) {
+            const node = getConstNode(params[0], type);
+            if (safeGetNodeType(node) === type) return nodeObject(node);
+            return nodeObject(new (0, _convertNodeJsDefault.default)(node, type));
+        }
+        const nodes = params.map((param)=>getConstNode(param));
+        return nodeObject(new (0, _joinNodeJsDefault.default)(nodes, type));
+    };
+};
+const getConstNodeType = (value)=>value !== undefined && value !== null ? value.nodeType || value.convertTo || (typeof value === "string" ? value : null) : null;
+function ShaderNode(jsFunc) {
+    return new Proxy(new ShaderNodeInternal(jsFunc), shaderNodeHandler);
+}
+const nodeObject = (val, altType = null)=>/* new */ ShaderNodeObject(val, altType);
+const nodeObjects = (val, altType = null)=>new ShaderNodeObjects(val, altType);
+const nodeArray = (val, altType = null)=>new ShaderNodeArray(val, altType);
+const nodeProxy = (...params)=>new ShaderNodeProxy(...params);
+const nodeImmutable = (...params)=>new ShaderNodeImmutable(...params);
+const shader = (jsFunc)=>{
+    console.warn("TSL: shader() is deprecated. Use tslFn() instead.");
+    return new ShaderNode(jsFunc);
+};
+const tslFn = (jsFunc)=>{
+    const shaderNode = new ShaderNode(jsFunc);
+    const fn = (...params)=>{
+        let inputs;
+        nodeObjects(params);
+        if (params[0] && params[0].isNode) inputs = [
+            ...params
+        ];
+        else inputs = params[0];
+        return shaderNode.call(inputs);
+    };
+    fn.shaderNode = shaderNode;
+    fn.setLayout = (layout)=>{
+        shaderNode.setLayout(layout);
+        return fn;
+    };
+    return fn;
+};
+(0, _nodeJs.addNodeClass)("ShaderNode", ShaderNode);
+const setCurrentStack = (stack)=>{
+    currentStack = stack;
+};
+const getCurrentStack = ()=>currentStack;
+const If = (...params)=>currentStack.if(...params);
+function append(node) {
+    if (currentStack) currentStack.add(node);
+    return node;
+}
+addNodeElement("append", append);
+const color = new ConvertType("color");
+const float = new ConvertType("float", cacheMaps.float);
+const int = new ConvertType("int", cacheMaps.int);
+const uint = new ConvertType("uint", cacheMaps.uint);
+const bool = new ConvertType("bool", cacheMaps.bool);
+const vec2 = new ConvertType("vec2");
+const ivec2 = new ConvertType("ivec2");
+const uvec2 = new ConvertType("uvec2");
+const bvec2 = new ConvertType("bvec2");
+const vec3 = new ConvertType("vec3");
+const ivec3 = new ConvertType("ivec3");
+const uvec3 = new ConvertType("uvec3");
+const bvec3 = new ConvertType("bvec3");
+const vec4 = new ConvertType("vec4");
+const ivec4 = new ConvertType("ivec4");
+const uvec4 = new ConvertType("uvec4");
+const bvec4 = new ConvertType("bvec4");
+const mat2 = new ConvertType("mat2");
+const imat2 = new ConvertType("imat2");
+const umat2 = new ConvertType("umat2");
+const bmat2 = new ConvertType("bmat2");
+const mat3 = new ConvertType("mat3");
+const imat3 = new ConvertType("imat3");
+const umat3 = new ConvertType("umat3");
+const bmat3 = new ConvertType("bmat3");
+const mat4 = new ConvertType("mat4");
+const imat4 = new ConvertType("imat4");
+const umat4 = new ConvertType("umat4");
+const bmat4 = new ConvertType("bmat4");
+const string = (value = "")=>nodeObject(new (0, _constNodeJsDefault.default)(value, "string"));
+const arrayBuffer = (value)=>nodeObject(new (0, _constNodeJsDefault.default)(value, "ArrayBuffer"));
+addNodeElement("color", color);
+addNodeElement("float", float);
+addNodeElement("int", int);
+addNodeElement("uint", uint);
+addNodeElement("bool", bool);
+addNodeElement("vec2", vec2);
+addNodeElement("ivec2", ivec2);
+addNodeElement("uvec2", uvec2);
+addNodeElement("bvec2", bvec2);
+addNodeElement("vec3", vec3);
+addNodeElement("ivec3", ivec3);
+addNodeElement("uvec3", uvec3);
+addNodeElement("bvec3", bvec3);
+addNodeElement("vec4", vec4);
+addNodeElement("ivec4", ivec4);
+addNodeElement("uvec4", uvec4);
+addNodeElement("bvec4", bvec4);
+addNodeElement("mat2", mat2);
+addNodeElement("imat2", imat2);
+addNodeElement("umat2", umat2);
+addNodeElement("bmat2", bmat2);
+addNodeElement("mat3", mat3);
+addNodeElement("imat3", imat3);
+addNodeElement("umat3", umat3);
+addNodeElement("bmat3", bmat3);
+addNodeElement("mat4", mat4);
+addNodeElement("imat4", imat4);
+addNodeElement("umat4", umat4);
+addNodeElement("bmat4", bmat4);
+addNodeElement("string", string);
+addNodeElement("arrayBuffer", arrayBuffer);
+const element = nodeProxy((0, _arrayElementNodeJsDefault.default));
+const convert = (node, types)=>nodeObject(new (0, _convertNodeJsDefault.default)(nodeObject(node), types));
+const split = (node, channels)=>nodeObject(new (0, _splitNodeJsDefault.default)(nodeObject(node), channels));
+addNodeElement("element", element);
+addNodeElement("convert", convert);
+
+},{"../core/Node.js":"cld0p","../utils/ArrayElementNode.js":"0HKLv","../utils/ConvertNode.js":"3UILi","../utils/JoinNode.js":"iW5mq","../utils/SplitNode.js":"jGbJg","../utils/SetNode.js":"bv2D9","../core/ConstNode.js":"1hoCT","../core/NodeUtils.js":"6F9Ti","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"0HKLv":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _nodeJs = require("../core/Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+class ArrayElementNode extends (0, _nodeJsDefault.default) {
+    constructor(node, indexNode){
+        super();
+        this.node = node;
+        this.indexNode = indexNode;
+        this.isArrayElementNode = true;
+    }
+    getNodeType(builder) {
+        return this.node.getNodeType(builder);
+    }
+    generate(builder) {
+        const nodeSnippet = this.node.build(builder);
+        const indexSnippet = this.indexNode.build(builder, "uint");
+        if (this.node.isStorageBufferNode && !builder.isAvailable("storageBuffer")) return nodeSnippet;
+        return `${nodeSnippet}[ ${indexSnippet} ]`;
+    }
+}
+exports.default = ArrayElementNode;
+(0, _nodeJs.addNodeClass)("ArrayElementNode", ArrayElementNode);
+
+},{"../core/Node.js":"cld0p","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"3UILi":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _nodeJs = require("../core/Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+class ConvertNode extends (0, _nodeJsDefault.default) {
+    constructor(node, convertTo){
+        super();
+        this.node = node;
+        this.convertTo = convertTo;
+    }
+    getNodeType(builder) {
+        const requestType = this.node.getNodeType(builder);
+        let convertTo = null;
+        for (const overloadingType of this.convertTo.split("|"))if (convertTo === null || builder.getTypeLength(requestType) === builder.getTypeLength(overloadingType)) convertTo = overloadingType;
+        return convertTo;
+    }
+    serialize(data) {
+        super.serialize(data);
+        data.convertTo = this.convertTo;
+    }
+    deserialize(data) {
+        super.deserialize(data);
+        this.convertTo = data.convertTo;
+    }
+    generate(builder, output) {
+        const node = this.node;
+        const type = this.getNodeType(builder);
+        const snippet = node.build(builder, type);
+        return builder.format(snippet, type, output);
+    }
+}
+exports.default = ConvertNode;
+(0, _nodeJs.addNodeClass)("ConvertNode", ConvertNode);
+
+},{"../core/Node.js":"cld0p","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"iW5mq":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _nodeJs = require("../core/Node.js");
+var _tempNodeJs = require("../core/TempNode.js");
+var _tempNodeJsDefault = parcelHelpers.interopDefault(_tempNodeJs);
+class JoinNode extends (0, _tempNodeJsDefault.default) {
+    constructor(nodes = [], nodeType = null){
+        super(nodeType);
+        this.nodes = nodes;
+    }
+    getNodeType(builder) {
+        if (this.nodeType !== null) return builder.getVectorType(this.nodeType);
+        return builder.getTypeFromLength(this.nodes.reduce((count, cur)=>count + builder.getTypeLength(cur.getNodeType(builder)), 0));
+    }
+    generate(builder, output) {
+        const type = this.getNodeType(builder);
+        const nodes = this.nodes;
+        const primitiveType = builder.getComponentType(type);
+        const snippetValues = [];
+        for (const input of nodes){
+            let inputSnippet = input.build(builder);
+            const inputPrimitiveType = builder.getComponentType(input.getNodeType(builder));
+            if (inputPrimitiveType !== primitiveType) inputSnippet = builder.format(inputSnippet, inputPrimitiveType, primitiveType);
+            snippetValues.push(inputSnippet);
+        }
+        const snippet = `${builder.getType(type)}( ${snippetValues.join(", ")} )`;
+        return builder.format(snippet, type, output);
+    }
+}
+exports.default = JoinNode;
+(0, _nodeJs.addNodeClass)("JoinNode", JoinNode);
+
+},{"../core/Node.js":"cld0p","../core/TempNode.js":"l0t0Y","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"l0t0Y":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _nodeJs = require("./Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+class TempNode extends (0, _nodeJsDefault.default) {
+    constructor(type){
+        super(type);
+        this.isTempNode = true;
+    }
+    hasDependencies(builder) {
+        return builder.getDataFromNode(this).dependenciesCount > 1;
+    }
+    build(builder, output) {
+        const buildStage = builder.getBuildStage();
+        if (buildStage === "generate") {
+            const type = builder.getVectorType(this.getNodeType(builder, output));
+            const nodeData = builder.getDataFromNode(this);
+            if (builder.context.tempRead !== false && nodeData.propertyName !== undefined) return builder.format(nodeData.propertyName, type, output);
+            else if (builder.context.tempWrite !== false && type !== "void" && output !== "void" && this.hasDependencies(builder)) {
+                const snippet = super.build(builder, type);
+                const nodeVar = builder.getVarFromNode(this, null, type);
+                const propertyName = builder.getPropertyName(nodeVar);
+                builder.addLineFlowCode(`${propertyName} = ${snippet}`);
+                nodeData.snippet = snippet;
+                nodeData.propertyName = propertyName;
+                return builder.format(nodeData.propertyName, type, output);
+            }
+        }
+        return super.build(builder, output);
+    }
+}
+exports.default = TempNode;
+(0, _nodeJs.addNodeClass)("TempNode", TempNode);
+
+},{"./Node.js":"cld0p","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"jGbJg":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _nodeJs = require("../core/Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+var _constantsJs = require("../core/constants.js");
+const stringVectorComponents = (0, _constantsJs.vectorComponents).join("");
+class SplitNode extends (0, _nodeJsDefault.default) {
+    constructor(node, components = "x"){
+        super();
+        this.node = node;
+        this.components = components;
+        this.isSplitNode = true;
+    }
+    getVectorLength() {
+        let vectorLength = this.components.length;
+        for (const c of this.components)vectorLength = Math.max((0, _constantsJs.vectorComponents).indexOf(c) + 1, vectorLength);
+        return vectorLength;
+    }
+    getComponentType(builder) {
+        return builder.getComponentType(this.node.getNodeType(builder));
+    }
+    getNodeType(builder) {
+        return builder.getTypeFromLength(this.components.length, this.getComponentType(builder));
+    }
+    generate(builder, output) {
+        const node = this.node;
+        const nodeTypeLength = builder.getTypeLength(node.getNodeType(builder));
+        let snippet = null;
+        if (nodeTypeLength > 1) {
+            let type = null;
+            const componentsLength = this.getVectorLength();
+            if (componentsLength >= nodeTypeLength) // needed expand the input node
+            type = builder.getTypeFromLength(this.getVectorLength(), this.getComponentType(builder));
+            const nodeSnippet = node.build(builder, type);
+            if (this.components.length === nodeTypeLength && this.components === stringVectorComponents.slice(0, this.components.length)) // unnecessary swizzle
+            snippet = builder.format(nodeSnippet, type, output);
+            else snippet = builder.format(`${nodeSnippet}.${this.components}`, this.getNodeType(builder), output);
+        } else // ignore .components if .node returns float/integer
+        snippet = node.build(builder, output);
+        return snippet;
+    }
+    serialize(data) {
+        super.serialize(data);
+        data.components = this.components;
+    }
+    deserialize(data) {
+        super.deserialize(data);
+        this.components = data.components;
+    }
+}
+exports.default = SplitNode;
+(0, _nodeJs.addNodeClass)("SplitNode", SplitNode);
+
+},{"../core/Node.js":"cld0p","../core/constants.js":"6tdkL","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"bv2D9":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _nodeJs = require("../core/Node.js");
+var _tempNodeJs = require("../core/TempNode.js");
+var _tempNodeJsDefault = parcelHelpers.interopDefault(_tempNodeJs);
+var _constantsJs = require("../core/constants.js");
+class SetNode extends (0, _tempNodeJsDefault.default) {
+    constructor(sourceNode, components, targetNode){
+        super();
+        this.sourceNode = sourceNode;
+        this.components = components;
+        this.targetNode = targetNode;
+    }
+    getNodeType(builder) {
+        return this.sourceNode.getNodeType(builder);
+    }
+    generate(builder) {
+        const { sourceNode, components, targetNode } = this;
+        const sourceType = this.getNodeType(builder);
+        const targetType = builder.getTypeFromLength(components.length);
+        const targetSnippet = targetNode.build(builder, targetType);
+        const sourceSnippet = sourceNode.build(builder, sourceType);
+        const length = builder.getTypeLength(sourceType);
+        const snippetValues = [];
+        for(let i = 0; i < length; i++){
+            const component = (0, _constantsJs.vectorComponents)[i];
+            if (component === components[0]) {
+                snippetValues.push(targetSnippet);
+                i += components.length - 1;
+            } else snippetValues.push(sourceSnippet + "." + component);
+        }
+        return `${builder.getType(sourceType)}( ${snippetValues.join(", ")} )`;
+    }
+}
+exports.default = SetNode;
+(0, _nodeJs.addNodeClass)("SetNode", SetNode);
+
+},{"../core/Node.js":"cld0p","../core/TempNode.js":"l0t0Y","../core/constants.js":"6tdkL","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"1hoCT":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _inputNodeJs = require("./InputNode.js");
+var _inputNodeJsDefault = parcelHelpers.interopDefault(_inputNodeJs);
+var _nodeJs = require("./Node.js");
+class ConstNode extends (0, _inputNodeJsDefault.default) {
+    constructor(value, nodeType = null){
+        super(value, nodeType);
+        this.isConstNode = true;
+    }
+    generateConst(builder) {
+        return builder.generateConst(this.getNodeType(builder), this.value);
+    }
+    generate(builder, output) {
+        const type = this.getNodeType(builder);
+        return builder.format(this.generateConst(builder), type, output);
+    }
+}
+exports.default = ConstNode;
+(0, _nodeJs.addNodeClass)("ConstNode", ConstNode);
+
+},{"./InputNode.js":"7IGQM","./Node.js":"cld0p","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"jzMAb":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "assign", ()=>assign);
+var _nodeJs = require("../core/Node.js");
+var _tempNodeJs = require("../core/TempNode.js");
+var _tempNodeJsDefault = parcelHelpers.interopDefault(_tempNodeJs);
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class AssignNode extends (0, _tempNodeJsDefault.default) {
+    constructor(targetNode, sourceNode){
+        super();
+        this.targetNode = targetNode;
+        this.sourceNode = sourceNode;
+    }
+    hasDependencies() {
+        return false;
+    }
+    getNodeType(builder, output) {
+        return output !== "void" ? this.targetNode.getNodeType(builder) : "void";
+    }
+    generate(builder, output) {
+        const targetNode = this.targetNode;
+        const sourceNode = this.sourceNode;
+        const targetType = targetNode.getNodeType(builder);
+        const target = targetNode.build(builder);
+        const source = sourceNode.build(builder, targetType);
+        const snippet = `${target} = ${source}`;
+        if (output === "void") {
+            builder.addLineFlowCode(snippet);
+            return;
+        } else {
+            const sourceType = sourceNode.getNodeType(builder);
+            if (sourceType === "void") {
+                builder.addLineFlowCode(snippet);
+                return target;
+            }
+            return builder.format(snippet, targetType, output);
+        }
+    }
+}
+exports.default = AssignNode;
+const assign = (0, _shaderNodeJs.nodeProxy)(AssignNode);
+(0, _nodeJs.addNodeClass)("AssignNode", AssignNode);
+(0, _shaderNodeJs.addNodeElement)("assign", assign);
+
+},{"../core/Node.js":"cld0p","../core/TempNode.js":"l0t0Y","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"8yUip":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "attribute", ()=>attribute);
+var _nodeJs = require("./Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+var _varyingNodeJs = require("./VaryingNode.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class AttributeNode extends (0, _nodeJsDefault.default) {
+    constructor(attributeName, nodeType = null){
+        super(nodeType);
+        this._attributeName = attributeName;
+    }
+    isGlobal() {
+        return true;
+    }
+    getHash(builder) {
+        return this.getAttributeName(builder);
+    }
+    getNodeType(builder) {
+        let nodeType = super.getNodeType(builder);
+        if (nodeType === null) {
+            const attributeName = this.getAttributeName(builder);
+            if (builder.hasGeometryAttribute(attributeName)) {
+                const attribute = builder.geometry.getAttribute(attributeName);
+                nodeType = builder.getTypeFromAttribute(attribute);
+            } else nodeType = "float";
+        }
+        return nodeType;
+    }
+    setAttributeName(attributeName) {
+        this._attributeName = attributeName;
+        return this;
+    }
+    getAttributeName() {
+        return this._attributeName;
+    }
+    generate(builder) {
+        const attributeName = this.getAttributeName(builder);
+        const nodeType = this.getNodeType(builder);
+        const geometryAttribute = builder.hasGeometryAttribute(attributeName);
+        if (geometryAttribute === true) {
+            const attribute = builder.geometry.getAttribute(attributeName);
+            const attributeType = builder.getTypeFromAttribute(attribute);
+            const nodeAttribute = builder.getAttribute(attributeName, attributeType);
+            if (builder.shaderStage === "vertex") return builder.format(nodeAttribute.name, attributeType, nodeType);
+            else {
+                const nodeVarying = (0, _varyingNodeJs.varying)(this);
+                return nodeVarying.build(builder, nodeType);
+            }
+        } else {
+            console.warn(`AttributeNode: Vertex attribute "${attributeName}" not found on geometry.`);
+            return builder.generateConst(nodeType);
+        }
+    }
+}
+exports.default = AttributeNode;
+const attribute = (name, nodeType)=>(0, _shaderNodeJs.nodeObject)(new AttributeNode(name, nodeType));
+(0, _nodeJs.addNodeClass)("AttributeNode", AttributeNode);
+
+},{"./Node.js":"cld0p","./VaryingNode.js":"iEE7L","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"iEE7L":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "varying", ()=>varying);
+var _nodeJs = require("./Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+var _constantsJs = require("./constants.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class VaryingNode extends (0, _nodeJsDefault.default) {
+    constructor(node, name = null){
+        super();
+        this.node = node;
+        this.name = name;
+        this.isVaryingNode = true;
+    }
+    isGlobal() {
+        return true;
+    }
+    getHash(builder) {
+        return this.name || super.getHash(builder);
+    }
+    getNodeType(builder) {
+        // VaryingNode is auto type
+        return this.node.getNodeType(builder);
+    }
+    generate(builder) {
+        const { name, node } = this;
+        const type = this.getNodeType(builder);
+        const nodeVarying = builder.getVaryingFromNode(this, name, type);
+        // this property can be used to check if the varying can be optimized for a var
+        nodeVarying.needsInterpolation || (nodeVarying.needsInterpolation = builder.shaderStage === "fragment");
+        const propertyName = builder.getPropertyName(nodeVarying, (0, _constantsJs.NodeShaderStage).VERTEX);
+        // force node run in vertex stage
+        builder.flowNodeFromShaderStage((0, _constantsJs.NodeShaderStage).VERTEX, node, type, propertyName);
+        return builder.getPropertyName(nodeVarying);
+    }
+}
+exports.default = VaryingNode;
+const varying = (0, _shaderNodeJs.nodeProxy)(VaryingNode);
+(0, _shaderNodeJs.addNodeElement)("varying", varying);
+(0, _nodeJs.addNodeClass)("VaryingNode", VaryingNode);
+
+},{"./Node.js":"cld0p","./constants.js":"6tdkL","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"eOats":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "bypass", ()=>bypass);
+var _nodeJs = require("./Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class BypassNode extends (0, _nodeJsDefault.default) {
+    constructor(returnNode, callNode){
+        super();
+        this.isBypassNode = true;
+        this.outputNode = returnNode;
+        this.callNode = callNode;
+    }
+    getNodeType(builder) {
+        return this.outputNode.getNodeType(builder);
+    }
+    generate(builder) {
+        const snippet = this.callNode.build(builder, "void");
+        if (snippet !== "") builder.addLineFlowCode(snippet);
+        return this.outputNode.build(builder);
+    }
+}
+exports.default = BypassNode;
+const bypass = (0, _shaderNodeJs.nodeProxy)(BypassNode);
+(0, _shaderNodeJs.addNodeElement)("bypass", bypass);
+(0, _nodeJs.addNodeClass)("BypassNode", BypassNode);
+
+},{"./Node.js":"cld0p","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"iHe0r":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "cache", ()=>cache);
+parcelHelpers.export(exports, "globalCache", ()=>globalCache);
+var _nodeJs = require("./Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+var _nodeCacheJs = require("./NodeCache.js");
+var _nodeCacheJsDefault = parcelHelpers.interopDefault(_nodeCacheJs);
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class CacheNode extends (0, _nodeJsDefault.default) {
+    constructor(node, cache = new (0, _nodeCacheJsDefault.default)()){
+        super();
+        this.isCacheNode = true;
+        this.node = node;
+        this.cache = cache;
+    }
+    getNodeType(builder) {
+        return this.node.getNodeType(builder);
+    }
+    build(builder, ...params) {
+        const previousCache = builder.getCache();
+        const cache = this.cache || builder.globalCache;
+        builder.setCache(cache);
+        const data = this.node.build(builder, ...params);
+        builder.setCache(previousCache);
+        return data;
+    }
+}
+exports.default = CacheNode;
+const cache = (0, _shaderNodeJs.nodeProxy)(CacheNode);
+const globalCache = (node)=>cache(node, null);
+(0, _shaderNodeJs.addNodeElement)("cache", cache);
+(0, _shaderNodeJs.addNodeElement)("globalCache", globalCache);
+(0, _nodeJs.addNodeClass)("CacheNode", CacheNode);
+
+},{"./Node.js":"cld0p","./NodeCache.js":"lKkTt","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"lKkTt":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+let id = 0;
+class NodeCache {
+    constructor(){
+        this.id = id++;
+        this.nodesData = new WeakMap();
+    }
+    getNodeData(node) {
+        return this.nodesData.get(node);
+    }
+    setNodeData(node, data) {
+        this.nodesData.set(node, data);
+    }
+}
+exports.default = NodeCache;
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"b5ZKP":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "context", ()=>context);
+parcelHelpers.export(exports, "label", ()=>label);
+var _nodeJs = require("./Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class ContextNode extends (0, _nodeJsDefault.default) {
+    constructor(node, context = {}){
+        super();
+        this.isContextNode = true;
+        this.node = node;
+        this.context = context;
+    }
+    getNodeType(builder) {
+        return this.node.getNodeType(builder);
+    }
+    setup(builder) {
+        const previousContext = builder.getContext();
+        builder.setContext({
+            ...builder.context,
+            ...this.context
+        });
+        const node = this.node.build(builder);
+        builder.setContext(previousContext);
+        return node;
+    }
+    generate(builder, output) {
+        const previousContext = builder.getContext();
+        builder.setContext({
+            ...builder.context,
+            ...this.context
+        });
+        const snippet = this.node.build(builder, output);
+        builder.setContext(previousContext);
+        return snippet;
+    }
+}
+exports.default = ContextNode;
+const context = (0, _shaderNodeJs.nodeProxy)(ContextNode);
+const label = (node, name)=>context(node, {
+        label: name
+    });
+(0, _shaderNodeJs.addNodeElement)("context", context);
+(0, _shaderNodeJs.addNodeElement)("label", label);
+(0, _nodeJs.addNodeClass)("ContextNode", ContextNode);
+
+},{"./Node.js":"cld0p","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"az1vR":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "vertexIndex", ()=>vertexIndex);
+parcelHelpers.export(exports, "instanceIndex", ()=>instanceIndex);
+var _nodeJs = require("./Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+var _varyingNodeJs = require("./VaryingNode.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class IndexNode extends (0, _nodeJsDefault.default) {
+    constructor(scope){
+        super("uint");
+        this.scope = scope;
+        this.isInstanceIndexNode = true;
+    }
+    generate(builder) {
+        const nodeType = this.getNodeType(builder);
+        const scope = this.scope;
+        let propertyName;
+        if (scope === IndexNode.VERTEX) propertyName = builder.getVertexIndex();
+        else if (scope === IndexNode.INSTANCE) propertyName = builder.getInstanceIndex();
+        else throw new Error("THREE.IndexNode: Unknown scope: " + scope);
+        let output;
+        if (builder.shaderStage === "vertex" || builder.shaderStage === "compute") output = propertyName;
+        else {
+            const nodeVarying = (0, _varyingNodeJs.varying)(this);
+            output = nodeVarying.build(builder, nodeType);
+        }
+        return output;
+    }
+}
+IndexNode.VERTEX = "vertex";
+IndexNode.INSTANCE = "instance";
+exports.default = IndexNode;
+const vertexIndex = (0, _shaderNodeJs.nodeImmutable)(IndexNode, IndexNode.VERTEX);
+const instanceIndex = (0, _shaderNodeJs.nodeImmutable)(IndexNode, IndexNode.INSTANCE);
+(0, _nodeJs.addNodeClass)("IndexNode", IndexNode);
+
+},{"./Node.js":"cld0p","./VaryingNode.js":"iEE7L","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"dTTYF":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+class LightingModel {
+    start() {}
+    finish() {}
+    direct() {}
+    indirectDiffuse() {}
+    indirectSpecular() {}
+    ambientOcclusion() {}
+}
+exports.default = LightingModel;
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"4EKsV":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "temp", ()=>temp);
+var _nodeJs = require("./Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class VarNode extends (0, _nodeJsDefault.default) {
+    constructor(node, name = null){
+        super();
+        this.node = node;
+        this.name = name;
+        this.isVarNode = true;
+    }
+    isGlobal() {
+        return true;
+    }
+    getHash(builder) {
+        return this.name || super.getHash(builder);
+    }
+    getNodeType(builder) {
+        return this.node.getNodeType(builder);
+    }
+    generate(builder) {
+        const { node, name } = this;
+        const nodeVar = builder.getVarFromNode(this, name, builder.getVectorType(this.getNodeType(builder)));
+        const propertyName = builder.getPropertyName(nodeVar);
+        const snippet = node.build(builder, nodeVar.type);
+        builder.addLineFlowCode(`${propertyName} = ${snippet}`);
+        return propertyName;
+    }
+}
+exports.default = VarNode;
+const temp = (0, _shaderNodeJs.nodeProxy)(VarNode);
+(0, _shaderNodeJs.addNodeElement)("temp", temp); // @TODO: Will be removed in the future
+(0, _shaderNodeJs.addNodeElement)("toVar", (...params)=>temp(...params).append());
+(0, _nodeJs.addNodeClass)("VarNode", VarNode);
+
+},{"./Node.js":"cld0p","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"8ipJi":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+class NodeAttribute {
+    constructor(name, type, node = null){
+        this.isNodeAttribute = true;
+        this.name = name;
+        this.type = type;
+        this.node = node;
+    }
+}
+exports.default = NodeAttribute;
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"67v0u":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _nodeUniformJs = require("./NodeUniform.js");
+var _nodeUniformJsDefault = parcelHelpers.interopDefault(_nodeUniformJs);
+var _nodeAttributeJs = require("./NodeAttribute.js");
+var _nodeAttributeJsDefault = parcelHelpers.interopDefault(_nodeAttributeJs);
+var _nodeVaryingJs = require("./NodeVarying.js");
+var _nodeVaryingJsDefault = parcelHelpers.interopDefault(_nodeVaryingJs);
+var _nodeVarJs = require("./NodeVar.js");
+var _nodeVarJsDefault = parcelHelpers.interopDefault(_nodeVarJs);
+var _nodeCodeJs = require("./NodeCode.js");
+var _nodeCodeJsDefault = parcelHelpers.interopDefault(_nodeCodeJs);
+var _nodeKeywordsJs = require("./NodeKeywords.js");
+var _nodeKeywordsJsDefault = parcelHelpers.interopDefault(_nodeKeywordsJs);
+var _nodeCacheJs = require("./NodeCache.js");
+var _nodeCacheJsDefault = parcelHelpers.interopDefault(_nodeCacheJs);
+var _parameterNodeJs = require("./ParameterNode.js");
+var _parameterNodeJsDefault = parcelHelpers.interopDefault(_parameterNodeJs);
+var _functionNodeJs = require("../code/FunctionNode.js");
+var _functionNodeJsDefault = parcelHelpers.interopDefault(_functionNodeJs);
+var _nodeMaterialJs = require("../materials/NodeMaterial.js");
+var _nodeMaterialJsDefault = parcelHelpers.interopDefault(_nodeMaterialJs);
+var _constantsJs = require("./constants.js");
+var _nodeUniformJs1 = require("../../renderers/common/nodes/NodeUniform.js");
+var _three = require("three");
+var _stackNodeJs = require("./StackNode.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+var _cubeRenderTargetJs = require("../../renderers/common/CubeRenderTarget.js");
+var _cubeRenderTargetJsDefault = parcelHelpers.interopDefault(_cubeRenderTargetJs);
+var _chainMapJs = require("../../renderers/common/ChainMap.js");
+var _chainMapJsDefault = parcelHelpers.interopDefault(_chainMapJs);
+const uniformsGroupCache = new (0, _chainMapJsDefault.default)();
+const typeFromLength = new Map([
+    [
+        2,
+        "vec2"
+    ],
+    [
+        3,
+        "vec3"
+    ],
+    [
+        4,
+        "vec4"
+    ],
+    [
+        9,
+        "mat3"
+    ],
+    [
+        16,
+        "mat4"
+    ]
+]);
+const typeFromArray = new Map([
+    [
+        Int8Array,
+        "int"
+    ],
+    [
+        Int16Array,
+        "int"
+    ],
+    [
+        Int32Array,
+        "int"
+    ],
+    [
+        Uint8Array,
+        "uint"
+    ],
+    [
+        Uint16Array,
+        "uint"
+    ],
+    [
+        Uint32Array,
+        "uint"
+    ],
+    [
+        Float32Array,
+        "float"
+    ]
+]);
+const toFloat = (value)=>{
+    value = Number(value);
+    return value + (value % 1 ? "" : ".0");
+};
+class NodeBuilder {
+    constructor(object, renderer, parser, scene = null, material = null){
+        this.object = object;
+        this.material = material || object && object.material || null;
+        this.geometry = object && object.geometry || null;
+        this.renderer = renderer;
+        this.parser = parser;
+        this.scene = scene;
+        this.nodes = [];
+        this.updateNodes = [];
+        this.updateBeforeNodes = [];
+        this.hashNodes = {};
+        this.lightsNode = null;
+        this.environmentNode = null;
+        this.fogNode = null;
+        this.toneMappingNode = null;
+        this.vertexShader = null;
+        this.fragmentShader = null;
+        this.computeShader = null;
+        this.flowNodes = {
+            vertex: [],
+            fragment: [],
+            compute: []
+        };
+        this.flowCode = {
+            vertex: "",
+            fragment: "",
+            compute: []
+        };
+        this.uniforms = {
+            vertex: [],
+            fragment: [],
+            compute: [],
+            index: 0
+        };
+        this.structs = {
+            vertex: [],
+            fragment: [],
+            compute: [],
+            index: 0
+        };
+        this.bindings = {
+            vertex: [],
+            fragment: [],
+            compute: []
+        };
+        this.bindingsOffset = {
+            vertex: 0,
+            fragment: 0,
+            compute: 0
+        };
+        this.bindingsArray = null;
+        this.attributes = [];
+        this.bufferAttributes = [];
+        this.varyings = [];
+        this.codes = {};
+        this.vars = {};
+        this.flow = {
+            code: ""
+        };
+        this.chaining = [];
+        this.stack = (0, _stackNodeJs.stack)();
+        this.stacks = [];
+        this.tab = "	";
+        this.currentFunctionNode = null;
+        this.context = {
+            keywords: new (0, _nodeKeywordsJsDefault.default)(),
+            material: this.material
+        };
+        this.cache = new (0, _nodeCacheJsDefault.default)();
+        this.globalCache = this.cache;
+        this.flowsData = new WeakMap();
+        this.shaderStage = null;
+        this.buildStage = null;
+    }
+    getRenderTarget(width, height, options) {
+        return new (0, _three.RenderTarget)(width, height, options);
+    }
+    getCubeRenderTarget(size, options) {
+        return new (0, _cubeRenderTargetJsDefault.default)(size, options);
+    }
+    includes(node) {
+        return this.nodes.includes(node);
+    }
+    _getSharedBindings(bindings) {
+        const shared = [];
+        for (const binding of bindings)if (binding.shared === true) {
+            // nodes is the chainmap key
+            const nodes = binding.getNodes();
+            let sharedBinding = uniformsGroupCache.get(nodes);
+            if (sharedBinding === undefined) {
+                uniformsGroupCache.set(nodes, binding);
+                sharedBinding = binding;
+            }
+            shared.push(sharedBinding);
+        } else shared.push(binding);
+        return shared;
+    }
+    getBindings() {
+        let bindingsArray = this.bindingsArray;
+        if (bindingsArray === null) {
+            const bindings = this.bindings;
+            this.bindingsArray = bindingsArray = this._getSharedBindings(this.material !== null ? [
+                ...bindings.vertex,
+                ...bindings.fragment
+            ] : bindings.compute);
+        }
+        return bindingsArray;
+    }
+    setHashNode(node, hash) {
+        this.hashNodes[hash] = node;
+    }
+    addNode(node) {
+        if (this.nodes.includes(node) === false) {
+            this.nodes.push(node);
+            this.setHashNode(node, node.getHash(this));
+        }
+    }
+    buildUpdateNodes() {
+        for (const node of this.nodes){
+            const updateType = node.getUpdateType();
+            const updateBeforeType = node.getUpdateBeforeType();
+            if (updateType !== (0, _constantsJs.NodeUpdateType).NONE) this.updateNodes.push(node.getSelf());
+            if (updateBeforeType !== (0, _constantsJs.NodeUpdateType).NONE) this.updateBeforeNodes.push(node);
+        }
+    }
+    get currentNode() {
+        return this.chaining[this.chaining.length - 1];
+    }
+    addChain(node) {
+        /*
+		if ( this.chaining.indexOf( node ) !== - 1 ) {
+
+			console.warn( 'Recursive node: ', node );
+
+		}
+		*/ this.chaining.push(node);
+    }
+    removeChain(node) {
+        const lastChain = this.chaining.pop();
+        if (lastChain !== node) throw new Error("NodeBuilder: Invalid node chaining!");
+    }
+    getMethod(method) {
+        return method;
+    }
+    getNodeFromHash(hash) {
+        return this.hashNodes[hash];
+    }
+    addFlow(shaderStage, node) {
+        this.flowNodes[shaderStage].push(node);
+        return node;
+    }
+    setContext(context) {
+        this.context = context;
+    }
+    getContext() {
+        return this.context;
+    }
+    setCache(cache) {
+        this.cache = cache;
+    }
+    getCache() {
+        return this.cache;
+    }
+    isAvailable() {
+        return false;
+    }
+    getVertexIndex() {
+        console.warn("Abstract function.");
+    }
+    getInstanceIndex() {
+        console.warn("Abstract function.");
+    }
+    getFrontFacing() {
+        console.warn("Abstract function.");
+    }
+    getFragCoord() {
+        console.warn("Abstract function.");
+    }
+    isFlipY() {
+        return false;
+    }
+    generateTexture() {
+        console.warn("Abstract function.");
+    }
+    generateTextureLod() {
+        console.warn("Abstract function.");
+    }
+    generateConst(type, value = null) {
+        if (value === null) {
+            if (type === "float" || type === "int" || type === "uint") value = 0;
+            else if (type === "bool") value = false;
+            else if (type === "color") value = new (0, _three.Color)();
+            else if (type === "vec2") value = new (0, _three.Vector2)();
+            else if (type === "vec3") value = new (0, _three.Vector3)();
+            else if (type === "vec4") value = new (0, _three.Vector4)();
+        }
+        if (type === "float") return toFloat(value);
+        if (type === "int") return `${Math.round(value)}`;
+        if (type === "uint") return value >= 0 ? `${Math.round(value)}u` : "0u";
+        if (type === "bool") return value ? "true" : "false";
+        if (type === "color") return `${this.getType("vec3")}( ${toFloat(value.r)}, ${toFloat(value.g)}, ${toFloat(value.b)} )`;
+        const typeLength = this.getTypeLength(type);
+        const componentType = this.getComponentType(type);
+        const generateConst = (value)=>this.generateConst(componentType, value);
+        if (typeLength === 2) return `${this.getType(type)}( ${generateConst(value.x)}, ${generateConst(value.y)} )`;
+        else if (typeLength === 3) return `${this.getType(type)}( ${generateConst(value.x)}, ${generateConst(value.y)}, ${generateConst(value.z)} )`;
+        else if (typeLength === 4) return `${this.getType(type)}( ${generateConst(value.x)}, ${generateConst(value.y)}, ${generateConst(value.z)}, ${generateConst(value.w)} )`;
+        else if (typeLength > 4 && value && (value.isMatrix3 || value.isMatrix4)) return `${this.getType(type)}( ${value.elements.map(generateConst).join(", ")} )`;
+        else if (typeLength > 4) return `${this.getType(type)}()`;
+        throw new Error(`NodeBuilder: Type '${type}' not found in generate constant attempt.`);
+    }
+    getType(type) {
+        if (type === "color") return "vec3";
+        return type;
+    }
+    generateMethod(method) {
+        return method;
+    }
+    hasGeometryAttribute(name) {
+        return this.geometry && this.geometry.getAttribute(name) !== undefined;
+    }
+    getAttribute(name, type) {
+        const attributes = this.attributes;
+        // find attribute
+        for (const attribute of attributes){
+            if (attribute.name === name) return attribute;
+        }
+        // create a new if no exist
+        const attribute = new (0, _nodeAttributeJsDefault.default)(name, type);
+        attributes.push(attribute);
+        return attribute;
+    }
+    getPropertyName(node /*, shaderStage*/ ) {
+        return node.name;
+    }
+    isVector(type) {
+        return /vec\d/.test(type);
+    }
+    isMatrix(type) {
+        return /mat\d/.test(type);
+    }
+    isReference(type) {
+        return type === "void" || type === "property" || type === "sampler" || type === "texture" || type === "cubeTexture" || type === "storageTexture";
+    }
+    needsColorSpaceToLinear() {
+        return false;
+    }
+    /** @deprecated, r152 */ getTextureEncodingFromMap(map) {
+        console.warn("THREE.NodeBuilder: Method .getTextureEncodingFromMap replaced by .getTextureColorSpaceFromMap in r152+.");
+        return this.getTextureColorSpaceFromMap(map) === (0, _three.SRGBColorSpace) ? (0, _three.sRGBEncoding) : (0, _three.LinearEncoding);
+    }
+    getTextureColorSpaceFromMap(map) {
+        let colorSpace;
+        if (map && map.isTexture) colorSpace = map.colorSpace;
+        else if (map && map.isWebGLRenderTarget) colorSpace = map.texture.colorSpace;
+        else colorSpace = (0, _three.NoColorSpace);
+        return colorSpace;
+    }
+    getComponentType(type) {
+        type = this.getVectorType(type);
+        if (type === "float" || type === "bool" || type === "int" || type === "uint") return type;
+        const componentType = /(b|i|u|)(vec|mat)([2-4])/.exec(type);
+        if (componentType === null) return null;
+        if (componentType[1] === "b") return "bool";
+        if (componentType[1] === "i") return "int";
+        if (componentType[1] === "u") return "uint";
+        return "float";
+    }
+    getVectorType(type) {
+        if (type === "color") return "vec3";
+        if (type === "texture" || type === "cubeTexture" || type === "storageTexture") return "vec4";
+        return type;
+    }
+    getTypeFromLength(length, componentType = "float") {
+        if (length === 1) return componentType;
+        const baseType = typeFromLength.get(length);
+        const prefix = componentType === "float" ? "" : componentType[0];
+        return prefix + baseType;
+    }
+    getTypeFromArray(array) {
+        return typeFromArray.get(array.constructor);
+    }
+    getTypeFromAttribute(attribute) {
+        let dataAttribute = attribute;
+        if (attribute.isInterleavedBufferAttribute) dataAttribute = attribute.data;
+        const array = dataAttribute.array;
+        const itemSize = attribute.itemSize;
+        const normalized = attribute.normalized;
+        let arrayType;
+        if (!(attribute instanceof (0, _three.Float16BufferAttribute)) && normalized !== true) arrayType = this.getTypeFromArray(array);
+        return this.getTypeFromLength(itemSize, arrayType);
+    }
+    getTypeLength(type) {
+        const vecType = this.getVectorType(type);
+        const vecNum = /vec([2-4])/.exec(vecType);
+        if (vecNum !== null) return Number(vecNum[1]);
+        if (vecType === "float" || vecType === "bool" || vecType === "int" || vecType === "uint") return 1;
+        if (/mat2/.test(type) === true) return 4;
+        if (/mat3/.test(type) === true) return 9;
+        if (/mat4/.test(type) === true) return 16;
+        return 0;
+    }
+    getVectorFromMatrix(type) {
+        return type.replace("mat", "vec");
+    }
+    changeComponentType(type, newComponentType) {
+        return this.getTypeFromLength(this.getTypeLength(type), newComponentType);
+    }
+    getIntegerType(type) {
+        const componentType = this.getComponentType(type);
+        if (componentType === "int" || componentType === "uint") return type;
+        return this.changeComponentType(type, "int");
+    }
+    addStack() {
+        this.stack = (0, _stackNodeJs.stack)(this.stack);
+        this.stacks.push((0, _shaderNodeJs.getCurrentStack)() || this.stack);
+        (0, _shaderNodeJs.setCurrentStack)(this.stack);
+        return this.stack;
+    }
+    removeStack() {
+        const lastStack = this.stack;
+        this.stack = lastStack.parent;
+        (0, _shaderNodeJs.setCurrentStack)(this.stacks.pop());
+        return lastStack;
+    }
+    getDataFromNode(node, shaderStage = this.shaderStage, cache = null) {
+        cache = cache === null ? node.isGlobal(this) ? this.globalCache : this.cache : cache;
+        let nodeData = cache.getNodeData(node);
+        if (nodeData === undefined) {
+            nodeData = {};
+            cache.setNodeData(node, nodeData);
+        }
+        if (nodeData[shaderStage] === undefined) nodeData[shaderStage] = {};
+        return nodeData[shaderStage];
+    }
+    getNodeProperties(node, shaderStage = "any") {
+        const nodeData = this.getDataFromNode(node, shaderStage);
+        return nodeData.properties || (nodeData.properties = {
+            outputNode: null
+        });
+    }
+    getBufferAttributeFromNode(node, type) {
+        const nodeData = this.getDataFromNode(node);
+        let bufferAttribute = nodeData.bufferAttribute;
+        if (bufferAttribute === undefined) {
+            const index = this.uniforms.index++;
+            bufferAttribute = new (0, _nodeAttributeJsDefault.default)("nodeAttribute" + index, type, node);
+            this.bufferAttributes.push(bufferAttribute);
+            nodeData.bufferAttribute = bufferAttribute;
+        }
+        return bufferAttribute;
+    }
+    getStructTypeFromNode(node, shaderStage = this.shaderStage) {
+        const nodeData = this.getDataFromNode(node, shaderStage);
+        if (nodeData.structType === undefined) {
+            const index = this.structs.index++;
+            node.name = `StructType${index}`;
+            this.structs[shaderStage].push(node);
+            nodeData.structType = node;
+        }
+        return node;
+    }
+    getUniformFromNode(node, type, shaderStage = this.shaderStage, name = null) {
+        const nodeData = this.getDataFromNode(node, shaderStage, this.globalCache);
+        let nodeUniform = nodeData.uniform;
+        if (nodeUniform === undefined) {
+            const index = this.uniforms.index++;
+            nodeUniform = new (0, _nodeUniformJsDefault.default)(name || "nodeUniform" + index, type, node);
+            this.uniforms[shaderStage].push(nodeUniform);
+            nodeData.uniform = nodeUniform;
+        }
+        return nodeUniform;
+    }
+    getVarFromNode(node, name = null, type = node.getNodeType(this), shaderStage = this.shaderStage) {
+        const nodeData = this.getDataFromNode(node, shaderStage);
+        let nodeVar = nodeData.variable;
+        if (nodeVar === undefined) {
+            const vars = this.vars[shaderStage] || (this.vars[shaderStage] = []);
+            if (name === null) name = "nodeVar" + vars.length;
+            nodeVar = new (0, _nodeVarJsDefault.default)(name, type);
+            vars.push(nodeVar);
+            nodeData.variable = nodeVar;
+        }
+        return nodeVar;
+    }
+    getVaryingFromNode(node, name = null, type = node.getNodeType(this)) {
+        const nodeData = this.getDataFromNode(node, "any");
+        let nodeVarying = nodeData.varying;
+        if (nodeVarying === undefined) {
+            const varyings = this.varyings;
+            const index = varyings.length;
+            if (name === null) name = "nodeVarying" + index;
+            nodeVarying = new (0, _nodeVaryingJsDefault.default)(name, type);
+            varyings.push(nodeVarying);
+            nodeData.varying = nodeVarying;
+        }
+        return nodeVarying;
+    }
+    getCodeFromNode(node, type, shaderStage = this.shaderStage) {
+        const nodeData = this.getDataFromNode(node);
+        let nodeCode = nodeData.code;
+        if (nodeCode === undefined) {
+            const codes = this.codes[shaderStage] || (this.codes[shaderStage] = []);
+            const index = codes.length;
+            nodeCode = new (0, _nodeCodeJsDefault.default)("nodeCode" + index, type);
+            codes.push(nodeCode);
+            nodeData.code = nodeCode;
+        }
+        return nodeCode;
+    }
+    addLineFlowCode(code) {
+        if (code === "") return this;
+        code = this.tab + code;
+        if (!/;\s*$/.test(code)) code = code + ";\n";
+        this.flow.code += code;
+        return this;
+    }
+    addFlowCode(code) {
+        this.flow.code += code;
+        return this;
+    }
+    addFlowTab() {
+        this.tab += "	";
+        return this;
+    }
+    removeFlowTab() {
+        this.tab = this.tab.slice(0, -1);
+        return this;
+    }
+    getFlowData(node /*, shaderStage*/ ) {
+        return this.flowsData.get(node);
+    }
+    flowNode(node) {
+        const output = node.getNodeType(this);
+        const flowData = this.flowChildNode(node, output);
+        this.flowsData.set(node, flowData);
+        return flowData;
+    }
+    buildFunctionNode(shaderNode) {
+        const fn = new (0, _functionNodeJsDefault.default)();
+        const previous = this.currentFunctionNode;
+        this.currentFunctionNode = fn;
+        fn.code = this.buildFunctionCode(shaderNode);
+        this.currentFunctionNode = previous;
+        return fn;
+    }
+    flowShaderNode(shaderNode) {
+        const layout = shaderNode.layout;
+        let inputs;
+        if (shaderNode.isArrayInput) {
+            inputs = [];
+            for (const input of layout.inputs)inputs.push(new (0, _parameterNodeJsDefault.default)(input.type, input.name));
+        } else {
+            inputs = {};
+            for (const input of layout.inputs)inputs[input.name] = new (0, _parameterNodeJsDefault.default)(input.type, input.name);
+        }
+        //
+        shaderNode.layout = null;
+        const callNode = shaderNode.call(inputs);
+        const flowData = this.flowStagesNode(callNode, layout.type);
+        shaderNode.layout = layout;
+        return flowData;
+    }
+    flowStagesNode(node, output = null) {
+        const previousFlow = this.flow;
+        const previousVars = this.vars;
+        const previousBuildStage = this.buildStage;
+        const flow = {
+            code: ""
+        };
+        this.flow = flow;
+        this.vars = {};
+        for (const buildStage of (0, _constantsJs.defaultBuildStages)){
+            this.setBuildStage(buildStage);
+            flow.result = node.build(this, output);
+        }
+        flow.vars = this.getVars(this.shaderStage);
+        this.flow = previousFlow;
+        this.vars = previousVars;
+        this.setBuildStage(previousBuildStage);
+        return flow;
+    }
+    getFunctionOperator() {
+        return null;
+    }
+    flowChildNode(node, output = null) {
+        const previousFlow = this.flow;
+        const flow = {
+            code: ""
+        };
+        this.flow = flow;
+        flow.result = node.build(this, output);
+        this.flow = previousFlow;
+        return flow;
+    }
+    flowNodeFromShaderStage(shaderStage, node, output = null, propertyName = null) {
+        const previousShaderStage = this.shaderStage;
+        this.setShaderStage(shaderStage);
+        const flowData = this.flowChildNode(node, output);
+        if (propertyName !== null) flowData.code += `${this.tab + propertyName} = ${flowData.result};\n`;
+        this.flowCode[shaderStage] = this.flowCode[shaderStage] + flowData.code;
+        this.setShaderStage(previousShaderStage);
+        return flowData;
+    }
+    getAttributesArray() {
+        return this.attributes.concat(this.bufferAttributes);
+    }
+    getAttributes() {
+        console.warn("Abstract function.");
+    }
+    getVaryings() {
+        console.warn("Abstract function.");
+    }
+    getVar(type, name) {
+        return `${this.getType(type)} ${name}`;
+    }
+    getVars(shaderStage) {
+        let snippet = "";
+        const vars = this.vars[shaderStage];
+        if (vars !== undefined) for (const variable of vars)snippet += `${this.getVar(variable.type, variable.name)}; `;
+        return snippet;
+    }
+    getUniforms() {
+        console.warn("Abstract function.");
+    }
+    getCodes(shaderStage) {
+        const codes = this.codes[shaderStage];
+        let code = "";
+        if (codes !== undefined) for (const nodeCode of codes)code += nodeCode.code + "\n";
+        return code;
+    }
+    getHash() {
+        return this.vertexShader + this.fragmentShader + this.computeShader;
+    }
+    setShaderStage(shaderStage) {
+        this.shaderStage = shaderStage;
+    }
+    getShaderStage() {
+        return this.shaderStage;
+    }
+    setBuildStage(buildStage) {
+        this.buildStage = buildStage;
+    }
+    getBuildStage() {
+        return this.buildStage;
+    }
+    buildCode() {
+        console.warn("Abstract function.");
+    }
+    build(convertMaterial = true) {
+        const { object, material } = this;
+        if (convertMaterial) {
+            if (material !== null) (0, _nodeMaterialJsDefault.default).fromMaterial(material).build(this);
+            else this.addFlow("compute", object);
+        }
+        // setup() -> stage 1: create possible new nodes and returns an output reference node
+        // analyze()   -> stage 2: analyze nodes to possible optimization and validation
+        // generate()  -> stage 3: generate shader
+        for (const buildStage of (0, _constantsJs.defaultBuildStages)){
+            this.setBuildStage(buildStage);
+            if (this.context.vertex && this.context.vertex.isNode) this.flowNodeFromShaderStage("vertex", this.context.vertex);
+            for (const shaderStage of (0, _constantsJs.shaderStages)){
+                this.setShaderStage(shaderStage);
+                const flowNodes = this.flowNodes[shaderStage];
+                for (const node of flowNodes)if (buildStage === "generate") this.flowNode(node);
+                else node.build(this);
+            }
+        }
+        this.setBuildStage(null);
+        this.setShaderStage(null);
+        // stage 4: build code for a specific output
+        this.buildCode();
+        this.buildUpdateNodes();
+        return this;
+    }
+    getNodeUniform(uniformNode, type) {
+        if (type === "float") return new (0, _nodeUniformJs1.FloatNodeUniform)(uniformNode);
+        if (type === "vec2") return new (0, _nodeUniformJs1.Vector2NodeUniform)(uniformNode);
+        if (type === "vec3") return new (0, _nodeUniformJs1.Vector3NodeUniform)(uniformNode);
+        if (type === "vec4") return new (0, _nodeUniformJs1.Vector4NodeUniform)(uniformNode);
+        if (type === "color") return new (0, _nodeUniformJs1.ColorNodeUniform)(uniformNode);
+        if (type === "mat3") return new (0, _nodeUniformJs1.Matrix3NodeUniform)(uniformNode);
+        if (type === "mat4") return new (0, _nodeUniformJs1.Matrix4NodeUniform)(uniformNode);
+        throw new Error(`Uniform "${type}" not declared.`);
+    }
+    createNodeMaterial(type = "NodeMaterial") {
+        return (0, _nodeMaterialJs.createNodeMaterialFromType)(type);
+    }
+    format(snippet, fromType, toType) {
+        fromType = this.getVectorType(fromType);
+        toType = this.getVectorType(toType);
+        if (fromType === toType || toType === null || this.isReference(toType)) return snippet;
+        const fromTypeLength = this.getTypeLength(fromType);
+        const toTypeLength = this.getTypeLength(toType);
+        if (fromTypeLength > 4) // @TODO: ignore for now
+        return snippet;
+        if (toTypeLength > 4 || toTypeLength === 0) // @TODO: ignore for now
+        return snippet;
+        if (fromTypeLength === toTypeLength) return `${this.getType(toType)}( ${snippet} )`;
+        if (fromTypeLength > toTypeLength) return this.format(`${snippet}.${"xyz".slice(0, toTypeLength)}`, this.getTypeFromLength(toTypeLength, this.getComponentType(fromType)), toType);
+        if (toTypeLength === 4 && fromTypeLength > 1) return `${this.getType(toType)}( ${this.format(snippet, fromType, "vec3")}, 1.0 )`;
+        if (fromTypeLength === 2) return `${this.getType(toType)}( ${this.format(snippet, fromType, "vec2")}, 0.0 )`;
+        if (fromTypeLength === 1 && toTypeLength > 1 && fromType[0] !== toType[0]) // convert a number value to vector type, e.g:
+        // vec3( 1u ) -> vec3( float( 1u ) )
+        snippet = `${this.getType(this.getComponentType(toType))}( ${snippet} )`;
+        return `${this.getType(toType)}( ${snippet} )`; // fromType is float-like
+    }
+    getSignature() {
+        return `// Three.js r${0, _three.REVISION} - NodeMaterial System\n`;
+    }
+}
+exports.default = NodeBuilder;
+
+},{"./NodeUniform.js":"gxszM","./NodeAttribute.js":"8ipJi","./NodeVarying.js":"b7jSE","./NodeVar.js":"fsP2x","./NodeCode.js":"8hnM0","./NodeKeywords.js":"ZSRVc","./NodeCache.js":"lKkTt","./ParameterNode.js":"bbwHV","../code/FunctionNode.js":"4AgZ2","../materials/NodeMaterial.js":"aQCWQ","./constants.js":"6tdkL","../../renderers/common/nodes/NodeUniform.js":"6FYQ8","three":"ktPTu","./StackNode.js":"bxtaz","../shadernode/ShaderNode.js":"8Xgcj","../../renderers/common/CubeRenderTarget.js":"4AWXY","../../renderers/common/ChainMap.js":"8uMsD","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gxszM":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+class NodeUniform {
+    constructor(name, type, node, needsUpdate){
+        this.isNodeUniform = true;
+        this.name = name;
+        this.type = type;
+        this.node = node.getSelf();
+        this.needsUpdate = needsUpdate;
+    }
+    get value() {
+        return this.node.value;
+    }
+    set value(val) {
+        this.node.value = val;
+    }
+    get id() {
+        return this.node.id;
+    }
+    get groupNode() {
+        return this.node.groupNode;
+    }
+}
+exports.default = NodeUniform;
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"b7jSE":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _nodeVarJs = require("./NodeVar.js");
+var _nodeVarJsDefault = parcelHelpers.interopDefault(_nodeVarJs);
+class NodeVarying extends (0, _nodeVarJsDefault.default) {
+    constructor(name, type){
+        super(name, type);
+        this.needsInterpolation = false;
+        this.isNodeVarying = true;
+    }
+}
+exports.default = NodeVarying;
+
+},{"./NodeVar.js":"fsP2x","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"fsP2x":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+class NodeVar {
+    constructor(name, type){
+        this.isNodeVar = true;
+        this.name = name;
+        this.type = type;
+    }
+}
+exports.default = NodeVar;
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"8hnM0":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+class NodeCode {
+    constructor(name, type, code = ""){
+        this.name = name;
+        this.type = type;
+        this.code = code;
+        Object.defineProperty(this, "isNodeCode", {
+            value: true
+        });
+    }
+}
+exports.default = NodeCode;
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"ZSRVc":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+class NodeKeywords {
+    constructor(){
+        this.keywords = [];
+        this.nodes = [];
+        this.keywordsCallback = {};
+    }
+    getNode(name) {
+        let node = this.nodes[name];
+        if (node === undefined && this.keywordsCallback[name] !== undefined) {
+            node = this.keywordsCallback[name](name);
+            this.nodes[name] = node;
+        }
+        return node;
+    }
+    addKeyword(name, callback) {
+        this.keywords.push(name);
+        this.keywordsCallback[name] = callback;
+        return this;
+    }
+    parse(code) {
+        const keywordNames = this.keywords;
+        const regExp = new RegExp(`\\b${keywordNames.join("\\b|\\b")}\\b`, "g");
+        const codeKeywords = code.match(regExp);
+        const keywordNodes = [];
+        if (codeKeywords !== null) for (const keyword of codeKeywords){
+            const node = this.getNode(keyword);
+            if (node !== undefined && keywordNodes.indexOf(node) === -1) keywordNodes.push(node);
+        }
+        return keywordNodes;
+    }
+    include(builder, code) {
+        const keywordNodes = this.parse(code);
+        for (const keywordNode of keywordNodes)keywordNode.build(builder);
+    }
+}
+exports.default = NodeKeywords;
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"bbwHV":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "parameter", ()=>parameter);
+var _nodeJs = require("./Node.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+var _propertyNodeJs = require("./PropertyNode.js");
+var _propertyNodeJsDefault = parcelHelpers.interopDefault(_propertyNodeJs);
+class ParameterNode extends (0, _propertyNodeJsDefault.default) {
+    constructor(nodeType, name = null){
+        super(nodeType, name);
+        this.isParameterNode = true;
+    }
+    getHash() {
+        return this.uuid;
+    }
+    generate() {
+        return this.name;
+    }
+}
+exports.default = ParameterNode;
+const parameter = (type, name)=>(0, _shaderNodeJs.nodeObject)(new ParameterNode(type, name));
+(0, _nodeJs.addNodeClass)("ParameterNode", ParameterNode);
+
+},{"./Node.js":"cld0p","../shadernode/ShaderNode.js":"8Xgcj","./PropertyNode.js":"9JOy4","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"9JOy4":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "property", ()=>property);
+parcelHelpers.export(exports, "varyingProperty", ()=>varyingProperty);
+parcelHelpers.export(exports, "diffuseColor", ()=>diffuseColor);
+parcelHelpers.export(exports, "roughness", ()=>roughness);
+parcelHelpers.export(exports, "metalness", ()=>metalness);
+parcelHelpers.export(exports, "clearcoat", ()=>clearcoat);
+parcelHelpers.export(exports, "clearcoatRoughness", ()=>clearcoatRoughness);
+parcelHelpers.export(exports, "sheen", ()=>sheen);
+parcelHelpers.export(exports, "sheenRoughness", ()=>sheenRoughness);
+parcelHelpers.export(exports, "iridescence", ()=>iridescence);
+parcelHelpers.export(exports, "iridescenceIOR", ()=>iridescenceIOR);
+parcelHelpers.export(exports, "iridescenceThickness", ()=>iridescenceThickness);
+parcelHelpers.export(exports, "specularColor", ()=>specularColor);
+parcelHelpers.export(exports, "shininess", ()=>shininess);
+parcelHelpers.export(exports, "output", ()=>output);
+parcelHelpers.export(exports, "dashSize", ()=>dashSize);
+parcelHelpers.export(exports, "gapSize", ()=>gapSize);
+parcelHelpers.export(exports, "pointWidth", ()=>pointWidth);
+var _nodeJs = require("./Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class PropertyNode extends (0, _nodeJsDefault.default) {
+    constructor(nodeType, name = null, varying = false){
+        super(nodeType);
+        this.name = name;
+        this.varying = varying;
+        this.isPropertyNode = true;
+    }
+    getHash(builder) {
+        return this.name || super.getHash(builder);
+    }
+    isGlobal() {
+        return true;
+    }
+    generate(builder) {
+        let nodeVar;
+        if (this.varying === true) {
+            nodeVar = builder.getVaryingFromNode(this, this.name);
+            nodeVar.needsInterpolation = true;
+        } else nodeVar = builder.getVarFromNode(this, this.name);
+        return builder.getPropertyName(nodeVar);
+    }
+}
+exports.default = PropertyNode;
+const property = (type, name)=>(0, _shaderNodeJs.nodeObject)(new PropertyNode(type, name));
+const varyingProperty = (type, name)=>(0, _shaderNodeJs.nodeObject)(new PropertyNode(type, name, true));
+const diffuseColor = (0, _shaderNodeJs.nodeImmutable)(PropertyNode, "vec4", "DiffuseColor");
+const roughness = (0, _shaderNodeJs.nodeImmutable)(PropertyNode, "float", "Roughness");
+const metalness = (0, _shaderNodeJs.nodeImmutable)(PropertyNode, "float", "Metalness");
+const clearcoat = (0, _shaderNodeJs.nodeImmutable)(PropertyNode, "float", "Clearcoat");
+const clearcoatRoughness = (0, _shaderNodeJs.nodeImmutable)(PropertyNode, "float", "ClearcoatRoughness");
+const sheen = (0, _shaderNodeJs.nodeImmutable)(PropertyNode, "vec3", "Sheen");
+const sheenRoughness = (0, _shaderNodeJs.nodeImmutable)(PropertyNode, "float", "SheenRoughness");
+const iridescence = (0, _shaderNodeJs.nodeImmutable)(PropertyNode, "float", "Iridescence");
+const iridescenceIOR = (0, _shaderNodeJs.nodeImmutable)(PropertyNode, "float", "IridescenceIOR");
+const iridescenceThickness = (0, _shaderNodeJs.nodeImmutable)(PropertyNode, "float", "IridescenceThickness");
+const specularColor = (0, _shaderNodeJs.nodeImmutable)(PropertyNode, "color", "SpecularColor");
+const shininess = (0, _shaderNodeJs.nodeImmutable)(PropertyNode, "float", "Shininess");
+const output = (0, _shaderNodeJs.nodeImmutable)(PropertyNode, "vec4", "Output");
+const dashSize = (0, _shaderNodeJs.nodeImmutable)(PropertyNode, "float", "dashSize");
+const gapSize = (0, _shaderNodeJs.nodeImmutable)(PropertyNode, "float", "gapSize");
+const pointWidth = (0, _shaderNodeJs.nodeImmutable)(PropertyNode, "float", "pointWidth");
+(0, _nodeJs.addNodeClass)("PropertyNode", PropertyNode);
+
+},{"./Node.js":"cld0p","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"4AgZ2":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "glslFn", ()=>glslFn);
+parcelHelpers.export(exports, "wgslFn", ()=>wgslFn);
+parcelHelpers.export(exports, "func", ()=>func);
+var _codeNodeJs = require("./CodeNode.js");
+var _codeNodeJsDefault = parcelHelpers.interopDefault(_codeNodeJs);
+var _nodeJs = require("../core/Node.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class FunctionNode extends (0, _codeNodeJsDefault.default) {
+    constructor(code = "", includes = [], language = ""){
+        super(code, includes, language);
+        this.keywords = {};
+    }
+    getNodeType(builder) {
+        return this.getNodeFunction(builder).type;
+    }
+    getInputs(builder) {
+        return this.getNodeFunction(builder).inputs;
+    }
+    getNodeFunction(builder) {
+        const nodeData = builder.getDataFromNode(this);
+        let nodeFunction = nodeData.nodeFunction;
+        if (nodeFunction === undefined) {
+            nodeFunction = builder.parser.parseFunction(this.code);
+            nodeData.nodeFunction = nodeFunction;
+        }
+        return nodeFunction;
+    }
+    generate(builder, output) {
+        super.generate(builder);
+        const nodeFunction = this.getNodeFunction(builder);
+        const name = nodeFunction.name;
+        const type = nodeFunction.type;
+        const nodeCode = builder.getCodeFromNode(this, type);
+        if (name !== "") // use a custom property name
+        nodeCode.name = name;
+        const propertyName = builder.getPropertyName(nodeCode);
+        let code = this.getNodeFunction(builder).getCode(propertyName);
+        const keywords = this.keywords;
+        const keywordsProperties = Object.keys(keywords);
+        if (keywordsProperties.length > 0) for (const property of keywordsProperties){
+            const propertyRegExp = new RegExp(`\\b${property}\\b`, "g");
+            const nodeProperty = keywords[property].build(builder, "property");
+            code = code.replace(propertyRegExp, nodeProperty);
+        }
+        nodeCode.code = code + "\n";
+        if (output === "property") return propertyName;
+        else return builder.format(`${propertyName}()`, type, output);
+    }
+}
+exports.default = FunctionNode;
+const nativeFn = (code, includes = [], language = "")=>{
+    for(let i = 0; i < includes.length; i++){
+        const include = includes[i];
+        // TSL Function: glslFn, wgslFn
+        if (typeof include === "function") includes[i] = include.functionNode;
+    }
+    const functionNode = (0, _shaderNodeJs.nodeObject)(new FunctionNode(code, includes, language));
+    const fn = (...params)=>functionNode.call(...params);
+    fn.functionNode = functionNode;
+    return fn;
+};
+const glslFn = (code, includes)=>nativeFn(code, includes, "glsl");
+const wgslFn = (code, includes)=>nativeFn(code, includes, "wgsl");
+const func = (code, includes)=>{
+    console.warn("TSL: func() is deprecated. Use nativeFn(), wgslFn() or glslFn() instead.");
+    return (0, _shaderNodeJs.nodeObject)(new FunctionNode(code, includes));
+};
+(0, _nodeJs.addNodeClass)("FunctionNode", FunctionNode);
+
+},{"./CodeNode.js":"hRLHH","../core/Node.js":"cld0p","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"hRLHH":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "code", ()=>code);
+parcelHelpers.export(exports, "js", ()=>js);
+parcelHelpers.export(exports, "wgsl", ()=>wgsl);
+parcelHelpers.export(exports, "glsl", ()=>glsl);
+var _nodeJs = require("../core/Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class CodeNode extends (0, _nodeJsDefault.default) {
+    constructor(code = "", includes = [], language = ""){
+        super("code");
+        this.isCodeNode = true;
+        this.code = code;
+        this.language = language;
+        this.includes = includes;
+    }
+    setIncludes(includes) {
+        this.includes = includes;
+        return this;
+    }
+    getIncludes() {
+        return this.includes;
+    }
+    generate(builder) {
+        const includes = this.getIncludes(builder);
+        for (const include of includes)include.build(builder);
+        const nodeCode = builder.getCodeFromNode(this, this.getNodeType(builder));
+        nodeCode.code = this.code;
+        return nodeCode.code;
+    }
+    serialize(data) {
+        super.serialize(data);
+        data.code = this.code;
+        data.language = this.language;
+    }
+    deserialize(data) {
+        super.deserialize(data);
+        this.code = data.code;
+        this.language = data.language;
+    }
+}
+exports.default = CodeNode;
+const code = (0, _shaderNodeJs.nodeProxy)(CodeNode);
+const js = (src, includes)=>code(src, includes, "js");
+const wgsl = (src, includes)=>code(src, includes, "wgsl");
+const glsl = (src, includes)=>code(src, includes, "glsl");
+(0, _nodeJs.addNodeClass)("CodeNode", CodeNode);
+
+},{"../core/Node.js":"cld0p","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"aQCWQ":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "addNodeMaterial", ()=>addNodeMaterial);
+parcelHelpers.export(exports, "createNodeMaterialFromType", ()=>createNodeMaterialFromType);
+var _three = require("three");
+var _nodeUtilsJs = require("../core/NodeUtils.js");
+var _attributeNodeJs = require("../core/AttributeNode.js");
+var _propertyNodeJs = require("../core/PropertyNode.js");
+var _materialNodeJs = require("../accessors/MaterialNode.js");
+var _modelViewProjectionNodeJs = require("../accessors/ModelViewProjectionNode.js");
+var _normalNodeJs = require("../accessors/NormalNode.js");
+var _instanceNodeJs = require("../accessors/InstanceNode.js");
+var _positionNodeJs = require("../accessors/PositionNode.js");
+var _skinningNodeJs = require("../accessors/SkinningNode.js");
+var _morphNodeJs = require("../accessors/MorphNode.js");
+var _textureNodeJs = require("../accessors/TextureNode.js");
+var _cubeTextureNodeJs = require("../accessors/CubeTextureNode.js");
+var _lightsNodeJs = require("../lighting/LightsNode.js");
+var _mathNodeJs = require("../math/MathNode.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+var _aonodeJs = require("../lighting/AONode.js");
+var _aonodeJsDefault = parcelHelpers.interopDefault(_aonodeJs);
+var _lightingContextNodeJs = require("../lighting/LightingContextNode.js");
+var _environmentNodeJs = require("../lighting/EnvironmentNode.js");
+var _environmentNodeJsDefault = parcelHelpers.interopDefault(_environmentNodeJs);
+var _viewportDepthNodeJs = require("../display/ViewportDepthNode.js");
+var _cameraNodeJs = require("../accessors/CameraNode.js");
+const NodeMaterials = new Map();
+class NodeMaterial extends (0, _three.ShaderMaterial) {
+    constructor(){
+        super();
+        this.isNodeMaterial = true;
+        this.type = this.constructor.type;
+        this.forceSinglePass = false;
+        this.fog = true;
+        this.lights = true;
+        this.normals = true;
+        this.colorSpaced = true;
+        this.lightsNode = null;
+        this.envNode = null;
+        this.colorNode = null;
+        this.normalNode = null;
+        this.opacityNode = null;
+        this.backdropNode = null;
+        this.backdropAlphaNode = null;
+        this.alphaTestNode = null;
+        this.positionNode = null;
+        this.depthNode = null;
+        this.shadowNode = null;
+        this.outputNode = null;
+        this.fragmentNode = null;
+        this.vertexNode = null;
+    }
+    customProgramCacheKey() {
+        return this.type + (0, _nodeUtilsJs.getCacheKey)(this);
+    }
+    build(builder) {
+        this.setup(builder);
+    }
+    setup(builder) {
+        // < VERTEX STAGE >
+        builder.addStack();
+        builder.stack.outputNode = this.vertexNode || this.setupPosition(builder);
+        builder.addFlow("vertex", builder.removeStack());
+        // < FRAGMENT STAGE >
+        builder.addStack();
+        let resultNode;
+        if (this.fragmentNode === null) {
+            if (this.depthWrite === true) this.setupDepth(builder);
+            if (this.normals === true) this.setupNormal(builder);
+            this.setupDiffuseColor(builder);
+            this.setupVariants(builder);
+            const outgoingLightNode = this.setupLighting(builder);
+            resultNode = this.setupOutput(builder, (0, _shaderNodeJs.vec4)(outgoingLightNode, (0, _propertyNodeJs.diffuseColor).a));
+            // OUTPUT NODE
+            (0, _propertyNodeJs.output).assign(resultNode);
+            //
+            if (this.outputNode !== null) resultNode = this.outputNode;
+        } else resultNode = this.setupOutput(builder, this.fragmentNode);
+        builder.stack.outputNode = resultNode;
+        builder.addFlow("fragment", builder.removeStack());
+    }
+    setupDepth(builder) {
+        const { renderer } = builder;
+        // Depth
+        let depthNode = this.depthNode;
+        if (depthNode === null && renderer.logarithmicDepthBuffer === true) {
+            const fragDepth = (0, _modelViewProjectionNodeJs.modelViewProjection)().w.add(1);
+            depthNode = fragDepth.log2().mul((0, _cameraNodeJs.cameraLogDepth)).mul(0.5);
+        }
+        if (depthNode !== null) (0, _viewportDepthNodeJs.depthPixel).assign(depthNode).append();
+    }
+    setupPosition(builder) {
+        const { object } = builder;
+        const geometry = object.geometry;
+        builder.addStack();
+        // Vertex
+        if (geometry.morphAttributes.position || geometry.morphAttributes.normal || geometry.morphAttributes.color) (0, _morphNodeJs.morph)(object).append();
+        if (object.isSkinnedMesh === true) (0, _skinningNodeJs.skinning)(object).append();
+        if (object.instanceMatrix && object.instanceMatrix.isInstancedBufferAttribute === true && builder.isAvailable("instance") === true) (0, _instanceNodeJs.instance)(object).append();
+        if (this.positionNode !== null) (0, _positionNodeJs.positionLocal).assign(this.positionNode);
+        const mvp = (0, _modelViewProjectionNodeJs.modelViewProjection)();
+        builder.context.vertex = builder.removeStack();
+        builder.context.mvp = mvp;
+        return mvp;
+    }
+    setupDiffuseColor({ geometry }) {
+        let colorNode = this.colorNode ? (0, _shaderNodeJs.vec4)(this.colorNode) : (0, _materialNodeJs.materialColor);
+        // VERTEX COLORS
+        if (this.vertexColors === true && geometry.hasAttribute("color")) colorNode = (0, _shaderNodeJs.vec4)(colorNode.xyz.mul((0, _attributeNodeJs.attribute)("color", "vec3")), colorNode.a);
+        // COLOR
+        (0, _propertyNodeJs.diffuseColor).assign(colorNode);
+        // OPACITY
+        const opacityNode = this.opacityNode ? (0, _shaderNodeJs.float)(this.opacityNode) : (0, _materialNodeJs.materialOpacity);
+        (0, _propertyNodeJs.diffuseColor).a.assign((0, _propertyNodeJs.diffuseColor).a.mul(opacityNode));
+        // ALPHA TEST
+        if (this.alphaTestNode !== null || this.alphaTest > 0) {
+            const alphaTestNode = this.alphaTestNode !== null ? (0, _shaderNodeJs.float)(this.alphaTestNode) : (0, _materialNodeJs.materialAlphaTest);
+            (0, _propertyNodeJs.diffuseColor).a.lessThanEqual(alphaTestNode).discard();
+        }
+    }
+    setupVariants() {
+    // Interface function.
+    }
+    setupNormal() {
+        // NORMAL VIEW
+        if (this.flatShading === true) {
+            const normalNode = (0, _positionNodeJs.positionView).dFdx().cross((0, _positionNodeJs.positionView).dFdy()).normalize();
+            (0, _normalNodeJs.transformedNormalView).assign(normalNode);
+        } else {
+            const normalNode = this.normalNode ? (0, _shaderNodeJs.vec3)(this.normalNode) : (0, _materialNodeJs.materialNormal);
+            (0, _normalNodeJs.transformedNormalView).assign(normalNode);
+        }
+    }
+    getEnvNode(builder) {
+        let node = null;
+        if (this.envNode) node = this.envNode;
+        else if (this.envMap) node = this.envMap.isCubeTexture ? (0, _cubeTextureNodeJs.cubeTexture)(this.envMap) : (0, _textureNodeJs.texture)(this.envMap);
+        else if (builder.environmentNode) node = builder.environmentNode;
+        return node;
+    }
+    setupLights(builder) {
+        const envNode = this.getEnvNode(builder);
+        //
+        const materialLightsNode = [];
+        if (envNode) materialLightsNode.push(new (0, _environmentNodeJsDefault.default)(envNode));
+        if (builder.material.aoMap) materialLightsNode.push(new (0, _aonodeJsDefault.default)((0, _textureNodeJs.texture)(builder.material.aoMap)));
+        let lightsN = this.lightsNode || builder.lightsNode;
+        if (materialLightsNode.length > 0) lightsN = (0, _lightsNodeJs.lightsNode)([
+            ...lightsN.lightNodes,
+            ...materialLightsNode
+        ]);
+        return lightsN;
+    }
+    setupLightingModel() {
+    // Interface function.
+    }
+    setupLighting(builder) {
+        const { material } = builder;
+        const { backdropNode, backdropAlphaNode, emissiveNode } = this;
+        // OUTGOING LIGHT
+        const lights = this.lights === true || this.lightsNode !== null;
+        const lightsNode = lights ? this.setupLights(builder) : null;
+        let outgoingLightNode = (0, _propertyNodeJs.diffuseColor).rgb;
+        if (lightsNode && lightsNode.hasLight !== false) {
+            const lightingModel = this.setupLightingModel(builder);
+            outgoingLightNode = (0, _lightingContextNodeJs.lightingContext)(lightsNode, lightingModel, backdropNode, backdropAlphaNode);
+        } else if (backdropNode !== null) outgoingLightNode = (0, _shaderNodeJs.vec3)(backdropAlphaNode !== null ? (0, _mathNodeJs.mix)(outgoingLightNode, backdropNode, backdropAlphaNode) : backdropNode);
+        // EMISSIVE
+        if (emissiveNode && emissiveNode.isNode === true || material.emissive && material.emissive.isColor === true) outgoingLightNode = outgoingLightNode.add((0, _shaderNodeJs.vec3)(emissiveNode ? emissiveNode : (0, _materialNodeJs.materialEmissive)));
+        return outgoingLightNode;
+    }
+    setupOutput(builder, outputNode) {
+        const renderer = builder.renderer;
+        // TONE MAPPING
+        const toneMappingNode = builder.toneMappingNode;
+        if (this.toneMapped === true && toneMappingNode) outputNode = (0, _shaderNodeJs.vec4)(toneMappingNode.context({
+            color: outputNode.rgb
+        }), outputNode.a);
+        // FOG
+        if (this.fog === true) {
+            const fogNode = builder.fogNode;
+            if (fogNode) outputNode = (0, _shaderNodeJs.vec4)(fogNode.mixAssign(outputNode.rgb), outputNode.a);
+        }
+        // ENCODING
+        if (this.colorSpaced === true) {
+            const outputColorSpace = renderer.currentColorSpace;
+            if (outputColorSpace !== (0, _three.LinearSRGBColorSpace) && outputColorSpace !== (0, _three.NoColorSpace)) outputNode = outputNode.linearToColorSpace(outputColorSpace);
+        }
+        return outputNode;
+    }
+    setDefaultValues(material) {
+        // This approach is to reuse the native refreshUniforms*
+        // and turn available the use of features like transmission and environment in core
+        for(const property in material){
+            const value = material[property];
+            if (this[property] === undefined) {
+                this[property] = value;
+                if (value && value.clone) this[property] = value.clone();
+            }
+        }
+        Object.assign(this.defines, material.defines);
+        const descriptors = Object.getOwnPropertyDescriptors(material.constructor.prototype);
+        for(const key in descriptors)if (Object.getOwnPropertyDescriptor(this.constructor.prototype, key) === undefined && descriptors[key].get !== undefined) Object.defineProperty(this.constructor.prototype, key, descriptors[key]);
+    }
+    toJSON(meta) {
+        const isRoot = meta === undefined || typeof meta === "string";
+        if (isRoot) meta = {
+            textures: {},
+            images: {},
+            nodes: {}
+        };
+        const data = (0, _three.Material).prototype.toJSON.call(this, meta);
+        const nodeChildren = (0, _nodeUtilsJs.getNodeChildren)(this);
+        data.inputNodes = {};
+        for (const { property, childNode } of nodeChildren)data.inputNodes[property] = childNode.toJSON(meta).uuid;
+        // TODO: Copied from Object3D.toJSON
+        function extractFromCache(cache) {
+            const values = [];
+            for(const key in cache){
+                const data = cache[key];
+                delete data.metadata;
+                values.push(data);
+            }
+            return values;
+        }
+        if (isRoot) {
+            const textures = extractFromCache(meta.textures);
+            const images = extractFromCache(meta.images);
+            const nodes = extractFromCache(meta.nodes);
+            if (textures.length > 0) data.textures = textures;
+            if (images.length > 0) data.images = images;
+            if (nodes.length > 0) data.nodes = nodes;
+        }
+        return data;
+    }
+    copy(source) {
+        this.lightsNode = source.lightsNode;
+        this.envNode = source.envNode;
+        this.colorNode = source.colorNode;
+        this.normalNode = source.normalNode;
+        this.opacityNode = source.opacityNode;
+        this.backdropNode = source.backdropNode;
+        this.backdropAlphaNode = source.backdropAlphaNode;
+        this.alphaTestNode = source.alphaTestNode;
+        this.positionNode = source.positionNode;
+        this.depthNode = source.depthNode;
+        this.shadowNode = source.shadowNode;
+        this.outputNode = source.outputNode;
+        this.fragmentNode = source.fragmentNode;
+        this.vertexNode = source.vertexNode;
+        return super.copy(source);
+    }
+    static fromMaterial(material) {
+        if (material.isNodeMaterial === true) return material;
+        const type = material.type.replace("Material", "NodeMaterial");
+        const nodeMaterial = createNodeMaterialFromType(type);
+        if (nodeMaterial === undefined) throw new Error(`NodeMaterial: Material "${material.type}" is not compatible.`);
+        for(const key in material)nodeMaterial[key] = material[key];
+        return nodeMaterial;
+    }
+}
+exports.default = NodeMaterial;
+function addNodeMaterial(type, nodeMaterial) {
+    if (typeof nodeMaterial !== "function" || !type) throw new Error(`Node material ${type} is not a class`);
+    if (NodeMaterials.has(type)) {
+        console.warn(`Redefinition of node material ${type}`);
+        return;
+    }
+    NodeMaterials.set(type, nodeMaterial);
+    nodeMaterial.type = type;
+}
+function createNodeMaterialFromType(type) {
+    const Material = NodeMaterials.get(type);
+    if (Material !== undefined) return new Material();
+}
+addNodeMaterial("NodeMaterial", NodeMaterial);
+
+},{"three":"ktPTu","../core/NodeUtils.js":"6F9Ti","../core/AttributeNode.js":"8yUip","../core/PropertyNode.js":"9JOy4","../accessors/MaterialNode.js":"9GQWn","../accessors/ModelViewProjectionNode.js":"1CbCi","../accessors/NormalNode.js":"4n1Pc","../accessors/InstanceNode.js":"gK4TL","../accessors/PositionNode.js":"1WXKm","../accessors/SkinningNode.js":"2bRI1","../accessors/MorphNode.js":"6G8Uj","../accessors/TextureNode.js":"4V1bd","../accessors/CubeTextureNode.js":"6SJcw","../lighting/LightsNode.js":"175Gf","../math/MathNode.js":"84OFe","../shadernode/ShaderNode.js":"8Xgcj","../lighting/AONode.js":"4IVK0","../lighting/LightingContextNode.js":"1uc0x","../lighting/EnvironmentNode.js":"d61UE","../display/ViewportDepthNode.js":"eqnm6","../accessors/CameraNode.js":"kZ1gx","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"9GQWn":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "materialAlphaTest", ()=>materialAlphaTest);
+parcelHelpers.export(exports, "materialColor", ()=>materialColor);
+parcelHelpers.export(exports, "materialShininess", ()=>materialShininess);
+parcelHelpers.export(exports, "materialEmissive", ()=>materialEmissive);
+parcelHelpers.export(exports, "materialOpacity", ()=>materialOpacity);
+parcelHelpers.export(exports, "materialSpecularColor", ()=>materialSpecularColor);
+parcelHelpers.export(exports, "materialSpecularStrength", ()=>materialSpecularStrength);
+parcelHelpers.export(exports, "materialReflectivity", ()=>materialReflectivity);
+parcelHelpers.export(exports, "materialRoughness", ()=>materialRoughness);
+parcelHelpers.export(exports, "materialMetalness", ()=>materialMetalness);
+parcelHelpers.export(exports, "materialNormal", ()=>materialNormal);
+parcelHelpers.export(exports, "materialClearcoat", ()=>materialClearcoat);
+parcelHelpers.export(exports, "materialClearcoatRoughness", ()=>materialClearcoatRoughness);
+parcelHelpers.export(exports, "materialClearcoatNormal", ()=>materialClearcoatNormal);
+parcelHelpers.export(exports, "materialRotation", ()=>materialRotation);
+parcelHelpers.export(exports, "materialSheen", ()=>materialSheen);
+parcelHelpers.export(exports, "materialSheenRoughness", ()=>materialSheenRoughness);
+parcelHelpers.export(exports, "materialIridescence", ()=>materialIridescence);
+parcelHelpers.export(exports, "materialIridescenceIOR", ()=>materialIridescenceIOR);
+parcelHelpers.export(exports, "materialIridescenceThickness", ()=>materialIridescenceThickness);
+parcelHelpers.export(exports, "materialLineScale", ()=>materialLineScale);
+parcelHelpers.export(exports, "materialLineDashSize", ()=>materialLineDashSize);
+parcelHelpers.export(exports, "materialLineGapSize", ()=>materialLineGapSize);
+parcelHelpers.export(exports, "materialLineWidth", ()=>materialLineWidth);
+parcelHelpers.export(exports, "materialLineDashOffset", ()=>materialLineDashOffset);
+parcelHelpers.export(exports, "materialPointWidth", ()=>materialPointWidth);
+var _nodeJs = require("../core/Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+var _referenceNodeJs = require("./ReferenceNode.js");
+var _materialReferenceNodeJs = require("./MaterialReferenceNode.js");
+var _normalNodeJs = require("./NormalNode.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+const _propertyCache = new Map();
+class MaterialNode extends (0, _nodeJsDefault.default) {
+    constructor(scope){
+        super();
+        this.scope = scope;
+    }
+    getCache(property, type) {
+        let node = _propertyCache.get(property);
+        if (node === undefined) {
+            node = (0, _materialReferenceNodeJs.materialReference)(property, type);
+            _propertyCache.set(property, node);
+        }
+        return node;
+    }
+    getFloat(property) {
+        return this.getCache(property, "float");
+    }
+    getColor(property) {
+        return this.getCache(property, "color");
+    }
+    getTexture(property) {
+        return this.getCache(property === "map" ? "map" : property + "Map", "texture");
+    }
+    setup(builder) {
+        const material = builder.context.material;
+        const scope = this.scope;
+        let node = null;
+        if (scope === MaterialNode.COLOR) {
+            const colorNode = this.getColor(scope);
+            if (material.map && material.map.isTexture === true) node = colorNode.mul(this.getTexture("map"));
+            else node = colorNode;
+        } else if (scope === MaterialNode.OPACITY) {
+            const opacityNode = this.getFloat(scope);
+            if (material.alphaMap && material.alphaMap.isTexture === true) node = opacityNode.mul(this.getTexture("alpha"));
+            else node = opacityNode;
+        } else if (scope === MaterialNode.SPECULAR_STRENGTH) {
+            if (material.specularMap && material.specularMap.isTexture === true) node = this.getTexture(scope).r;
+            else node = (0, _shaderNodeJs.float)(1);
+        } else if (scope === MaterialNode.ROUGHNESS) {
+            const roughnessNode = this.getFloat(scope);
+            if (material.roughnessMap && material.roughnessMap.isTexture === true) node = roughnessNode.mul(this.getTexture(scope).g);
+            else node = roughnessNode;
+        } else if (scope === MaterialNode.METALNESS) {
+            const metalnessNode = this.getFloat(scope);
+            if (material.metalnessMap && material.metalnessMap.isTexture === true) node = metalnessNode.mul(this.getTexture(scope).b);
+            else node = metalnessNode;
+        } else if (scope === MaterialNode.EMISSIVE) {
+            const emissiveNode = this.getColor(scope);
+            if (material.emissiveMap && material.emissiveMap.isTexture === true) node = emissiveNode.mul(this.getTexture(scope));
+            else node = emissiveNode;
+        } else if (scope === MaterialNode.NORMAL) {
+            if (material.normalMap) node = this.getTexture("normal").normalMap(this.getCache("normalScale", "vec2"));
+            else if (material.bumpMap) node = this.getTexture("bump").r.bumpMap(this.getFloat("bumpScale"));
+            else node = (0, _normalNodeJs.normalView);
+        } else if (scope === MaterialNode.CLEARCOAT) {
+            const clearcoatNode = this.getFloat(scope);
+            if (material.clearcoatMap && material.clearcoatMap.isTexture === true) node = clearcoatNode.mul(this.getTexture(scope).r);
+            else node = clearcoatNode;
+        } else if (scope === MaterialNode.CLEARCOAT_ROUGHNESS) {
+            const clearcoatRoughnessNode = this.getFloat(scope);
+            if (material.clearcoatRoughnessMap && material.clearcoatRoughnessMap.isTexture === true) node = clearcoatRoughnessNode.mul(this.getTexture(scope).r);
+            else node = clearcoatRoughnessNode;
+        } else if (scope === MaterialNode.CLEARCOAT_NORMAL) {
+            if (material.clearcoatNormalMap) node = this.getTexture(scope).normalMap(this.getCache(scope + "Scale", "vec2"));
+            else node = (0, _normalNodeJs.normalView);
+        } else if (scope === MaterialNode.SHEEN) {
+            const sheenNode = this.getColor("sheenColor").mul(this.getFloat("sheen")); // Move this mul() to CPU
+            if (material.sheenColorMap && material.sheenColorMap.isTexture === true) node = sheenNode.mul(this.getTexture("sheenColor").rgb);
+            else node = sheenNode;
+        } else if (scope === MaterialNode.SHEEN_ROUGHNESS) {
+            const sheenRoughnessNode = this.getFloat(scope);
+            if (material.sheenRoughnessMap && material.sheenRoughnessMap.isTexture === true) node = sheenRoughnessNode.mul(this.getTexture(scope).a);
+            else node = sheenRoughnessNode;
+            node = node.clamp(0.07, 1.0);
+        } else if (scope === MaterialNode.IRIDESCENCE_THICKNESS) {
+            const iridescenceThicknessMaximum = (0, _referenceNodeJs.reference)(1, "float", material.iridescenceThicknessRange);
+            if (material.iridescenceThicknessMap) {
+                const iridescenceThicknessMinimum = (0, _referenceNodeJs.reference)(0, "float", material.iridescenceThicknessRange);
+                node = iridescenceThicknessMaximum.sub(iridescenceThicknessMinimum).mul(this.getTexture(scope).g).add(iridescenceThicknessMinimum);
+            } else node = iridescenceThicknessMaximum;
+        } else {
+            const outputType = this.getNodeType(builder);
+            node = this.getCache(scope, outputType);
+        }
+        return node;
+    }
+}
+MaterialNode.ALPHA_TEST = "alphaTest";
+MaterialNode.COLOR = "color";
+MaterialNode.OPACITY = "opacity";
+MaterialNode.SHININESS = "shininess";
+MaterialNode.SPECULAR_COLOR = "specular";
+MaterialNode.SPECULAR_STRENGTH = "specularStrength";
+MaterialNode.REFLECTIVITY = "reflectivity";
+MaterialNode.ROUGHNESS = "roughness";
+MaterialNode.METALNESS = "metalness";
+MaterialNode.NORMAL = "normal";
+MaterialNode.CLEARCOAT = "clearcoat";
+MaterialNode.CLEARCOAT_ROUGHNESS = "clearcoatRoughness";
+MaterialNode.CLEARCOAT_NORMAL = "clearcoatNormal";
+MaterialNode.EMISSIVE = "emissive";
+MaterialNode.ROTATION = "rotation";
+MaterialNode.SHEEN = "sheen";
+MaterialNode.SHEEN_ROUGHNESS = "sheenRoughness";
+MaterialNode.IRIDESCENCE = "iridescence";
+MaterialNode.IRIDESCENCE_IOR = "iridescenceIOR";
+MaterialNode.IRIDESCENCE_THICKNESS = "iridescenceThickness";
+MaterialNode.LINE_SCALE = "scale";
+MaterialNode.LINE_DASH_SIZE = "dashSize";
+MaterialNode.LINE_GAP_SIZE = "gapSize";
+MaterialNode.LINE_WIDTH = "linewidth";
+MaterialNode.LINE_DASH_OFFSET = "dashOffset";
+MaterialNode.POINT_WIDTH = "pointWidth";
+exports.default = MaterialNode;
+const materialAlphaTest = (0, _shaderNodeJs.nodeImmutable)(MaterialNode, MaterialNode.ALPHA_TEST);
+const materialColor = (0, _shaderNodeJs.nodeImmutable)(MaterialNode, MaterialNode.COLOR);
+const materialShininess = (0, _shaderNodeJs.nodeImmutable)(MaterialNode, MaterialNode.SHININESS);
+const materialEmissive = (0, _shaderNodeJs.nodeImmutable)(MaterialNode, MaterialNode.EMISSIVE);
+const materialOpacity = (0, _shaderNodeJs.nodeImmutable)(MaterialNode, MaterialNode.OPACITY);
+const materialSpecularColor = (0, _shaderNodeJs.nodeImmutable)(MaterialNode, MaterialNode.SPECULAR_COLOR);
+const materialSpecularStrength = (0, _shaderNodeJs.nodeImmutable)(MaterialNode, MaterialNode.SPECULAR_STRENGTH);
+const materialReflectivity = (0, _shaderNodeJs.nodeImmutable)(MaterialNode, MaterialNode.REFLECTIVITY);
+const materialRoughness = (0, _shaderNodeJs.nodeImmutable)(MaterialNode, MaterialNode.ROUGHNESS);
+const materialMetalness = (0, _shaderNodeJs.nodeImmutable)(MaterialNode, MaterialNode.METALNESS);
+const materialNormal = (0, _shaderNodeJs.nodeImmutable)(MaterialNode, MaterialNode.NORMAL);
+const materialClearcoat = (0, _shaderNodeJs.nodeImmutable)(MaterialNode, MaterialNode.CLEARCOAT);
+const materialClearcoatRoughness = (0, _shaderNodeJs.nodeImmutable)(MaterialNode, MaterialNode.CLEARCOAT_ROUGHNESS);
+const materialClearcoatNormal = (0, _shaderNodeJs.nodeImmutable)(MaterialNode, MaterialNode.CLEARCOAT_NORMAL);
+const materialRotation = (0, _shaderNodeJs.nodeImmutable)(MaterialNode, MaterialNode.ROTATION);
+const materialSheen = (0, _shaderNodeJs.nodeImmutable)(MaterialNode, MaterialNode.SHEEN);
+const materialSheenRoughness = (0, _shaderNodeJs.nodeImmutable)(MaterialNode, MaterialNode.SHEEN_ROUGHNESS);
+const materialIridescence = (0, _shaderNodeJs.nodeImmutable)(MaterialNode, MaterialNode.IRIDESCENCE);
+const materialIridescenceIOR = (0, _shaderNodeJs.nodeImmutable)(MaterialNode, MaterialNode.IRIDESCENCE_IOR);
+const materialIridescenceThickness = (0, _shaderNodeJs.nodeImmutable)(MaterialNode, MaterialNode.IRIDESCENCE_THICKNESS);
+const materialLineScale = (0, _shaderNodeJs.nodeImmutable)(MaterialNode, MaterialNode.LINE_SCALE);
+const materialLineDashSize = (0, _shaderNodeJs.nodeImmutable)(MaterialNode, MaterialNode.LINE_DASH_SIZE);
+const materialLineGapSize = (0, _shaderNodeJs.nodeImmutable)(MaterialNode, MaterialNode.LINE_GAP_SIZE);
+const materialLineWidth = (0, _shaderNodeJs.nodeImmutable)(MaterialNode, MaterialNode.LINE_WIDTH);
+const materialLineDashOffset = (0, _shaderNodeJs.nodeImmutable)(MaterialNode, MaterialNode.LINE_DASH_OFFSET);
+const materialPointWidth = (0, _shaderNodeJs.nodeImmutable)(MaterialNode, MaterialNode.POINT_WIDTH);
+(0, _nodeJs.addNodeClass)("MaterialNode", MaterialNode);
+
+},{"../core/Node.js":"cld0p","./ReferenceNode.js":"6ceuI","./MaterialReferenceNode.js":"dR11o","./NormalNode.js":"4n1Pc","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"6ceuI":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "reference", ()=>reference);
+parcelHelpers.export(exports, "referenceIndex", ()=>referenceIndex);
+var _nodeJs = require("../core/Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+var _constantsJs = require("../core/constants.js");
+var _uniformNodeJs = require("../core/UniformNode.js");
+var _textureNodeJs = require("./TextureNode.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class ReferenceNode extends (0, _nodeJsDefault.default) {
+    constructor(property, uniformType, object = null){
+        super();
+        this.property = property;
+        this.index = null;
+        this.uniformType = uniformType;
+        this.object = object;
+        this.reference = null;
+        this.node = null;
+        this.updateType = (0, _constantsJs.NodeUpdateType).OBJECT;
+        this.setNodeType(uniformType);
+    }
+    updateReference(frame) {
+        this.reference = this.object !== null ? this.object : frame.object;
+        return this.reference;
+    }
+    setIndex(index) {
+        this.index = index;
+        return this;
+    }
+    getIndex() {
+        return this.index;
+    }
+    setNodeType(uniformType) {
+        let node = null;
+        if (uniformType === "texture") node = (0, _textureNodeJs.texture)(null);
+        else node = (0, _uniformNodeJs.uniform)(uniformType);
+        this.node = node;
+    }
+    getNodeType(builder) {
+        return this.node.getNodeType(builder);
+    }
+    update() {
+        let value = this.reference[this.property];
+        if (this.index !== null) value = value[this.index];
+        this.node.value = value;
+    }
+    setup() {
+        return this.node;
+    }
+}
+exports.default = ReferenceNode;
+const reference = (name, type, object)=>(0, _shaderNodeJs.nodeObject)(new ReferenceNode(name, type, object));
+const referenceIndex = (name, index, type, object)=>(0, _shaderNodeJs.nodeObject)(new ReferenceNode(name, type, object).setIndex(index));
+(0, _nodeJs.addNodeClass)("ReferenceNode", ReferenceNode);
+
+},{"../core/Node.js":"cld0p","../core/constants.js":"6tdkL","../core/UniformNode.js":"cfhYS","./TextureNode.js":"4V1bd","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"4V1bd":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "texture", ()=>texture);
+parcelHelpers.export(exports, "textureLoad", ()=>textureLoad);
+parcelHelpers.export(exports, "sampler", ()=>sampler);
+var _uniformNodeJs = require("../core/UniformNode.js");
+var _uniformNodeJsDefault = parcelHelpers.interopDefault(_uniformNodeJs);
+var _uvnodeJs = require("./UVNode.js");
+var _textureSizeNodeJs = require("./TextureSizeNode.js");
+var _colorSpaceNodeJs = require("../display/ColorSpaceNode.js");
+var _expressionNodeJs = require("../code/ExpressionNode.js");
+var _nodeJs = require("../core/Node.js");
+var _maxMipLevelNodeJs = require("../utils/MaxMipLevelNode.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+var _constantsJs = require("../core/constants.js");
+class TextureNode extends (0, _uniformNodeJsDefault.default) {
+    constructor(value, uvNode = null, levelNode = null){
+        super(value);
+        this.isTextureNode = true;
+        this.uvNode = uvNode;
+        this.levelNode = levelNode;
+        this.compareNode = null;
+        this.depthNode = null;
+        this.sampler = true;
+        this.updateMatrix = false;
+        this.updateType = (0, _constantsJs.NodeUpdateType).NONE;
+        this.setUpdateMatrix(uvNode === null);
+    }
+    getUniformHash() {
+        return this.value.uuid;
+    }
+    getNodeType() {
+        if (this.value.isDepthTexture === true) return "float";
+        return "vec4";
+    }
+    getInputType() {
+        return "texture";
+    }
+    getDefaultUV() {
+        return (0, _uvnodeJs.uv)(this.value.channel);
+    }
+    updateReference() {
+        return this.value;
+    }
+    getTransformedUV(uvNode) {
+        const texture = this.value;
+        return (0, _uniformNodeJs.uniform)(texture.matrix).mul((0, _shaderNodeJs.vec3)(uvNode, 1)).xy;
+    }
+    setUpdateMatrix(value) {
+        this.updateMatrix = value;
+        this.updateType = value ? (0, _constantsJs.NodeUpdateType).FRAME : (0, _constantsJs.NodeUpdateType).NONE;
+        return this;
+    }
+    setupUV(builder, uvNode) {
+        const texture = this.value;
+        if (builder.isFlipY() && (texture.isRenderTargetTexture === true || texture.isFramebufferTexture === true || texture.isDepthTexture === true)) uvNode = uvNode.setY(uvNode.y.oneMinus());
+        return uvNode;
+    }
+    setup(builder) {
+        const properties = builder.getNodeProperties(this);
+        //
+        let uvNode = this.uvNode;
+        if ((uvNode === null || builder.context.forceUVContext === true) && builder.context.getUV) uvNode = builder.context.getUV(this);
+        if (!uvNode) uvNode = this.getDefaultUV();
+        if (this.updateMatrix === true) uvNode = this.getTransformedUV(uvNode);
+        uvNode = this.setupUV(builder, uvNode);
+        //
+        let levelNode = this.levelNode;
+        if (levelNode === null && builder.context.getTextureLevel) levelNode = builder.context.getTextureLevel(this);
+        if (levelNode !== null && builder.context.getTextureLevelAlgorithm !== undefined) levelNode = builder.context.getTextureLevelAlgorithm(this, levelNode);
+        //
+        properties.uvNode = uvNode;
+        properties.levelNode = levelNode;
+        properties.compareNode = this.compareNode;
+        properties.depthNode = this.depthNode;
+    }
+    generateUV(builder, uvNode) {
+        return uvNode.build(builder, this.sampler === true ? "vec2" : "ivec2");
+    }
+    generateSnippet(builder, textureProperty, uvSnippet, levelSnippet, depthSnippet, compareSnippet) {
+        const texture = this.value;
+        let snippet;
+        if (levelSnippet) snippet = builder.generateTextureLevel(texture, textureProperty, uvSnippet, levelSnippet, depthSnippet);
+        else if (compareSnippet) snippet = builder.generateTextureCompare(texture, textureProperty, uvSnippet, compareSnippet, depthSnippet);
+        else if (this.sampler === false) snippet = builder.generateTextureLoad(texture, textureProperty, uvSnippet, depthSnippet);
+        else snippet = builder.generateTexture(texture, textureProperty, uvSnippet, depthSnippet);
+        return snippet;
+    }
+    generate(builder, output) {
+        const properties = builder.getNodeProperties(this);
+        const texture = this.value;
+        if (!texture || texture.isTexture !== true) throw new Error("TextureNode: Need a three.js texture.");
+        const textureProperty = super.generate(builder, "property");
+        if (output === "sampler") return textureProperty + "_sampler";
+        else if (builder.isReference(output)) return textureProperty;
+        else {
+            const nodeData = builder.getDataFromNode(this);
+            let propertyName = nodeData.propertyName;
+            if (propertyName === undefined) {
+                const { uvNode, levelNode, compareNode, depthNode } = properties;
+                const uvSnippet = this.generateUV(builder, uvNode);
+                const levelSnippet = levelNode ? levelNode.build(builder, "float") : null;
+                const depthSnippet = depthNode ? depthNode.build(builder, "int") : null;
+                const compareSnippet = compareNode ? compareNode.build(builder, "float") : null;
+                const nodeVar = builder.getVarFromNode(this);
+                propertyName = builder.getPropertyName(nodeVar);
+                const snippet = this.generateSnippet(builder, textureProperty, uvSnippet, levelSnippet, depthSnippet, compareSnippet);
+                builder.addLineFlowCode(`${propertyName} = ${snippet}`);
+                if (builder.context.tempWrite !== false) {
+                    nodeData.snippet = snippet;
+                    nodeData.propertyName = propertyName;
+                }
+            }
+            let snippet = propertyName;
+            const nodeType = this.getNodeType(builder);
+            if (builder.needsColorSpaceToLinear(texture)) snippet = (0, _colorSpaceNodeJs.colorSpaceToLinear)((0, _expressionNodeJs.expression)(snippet, nodeType), texture.colorSpace).setup(builder).build(builder, nodeType);
+            return builder.format(snippet, nodeType, output);
+        }
+    }
+    setSampler(value) {
+        this.sampler = value;
+        return this;
+    }
+    getSampler() {
+        return this.sampler;
+    }
+    // @TODO: Move to TSL
+    uv(uvNode) {
+        const textureNode = this.clone();
+        textureNode.uvNode = uvNode;
+        return (0, _shaderNodeJs.nodeObject)(textureNode);
+    }
+    blur(levelNode) {
+        const textureNode = this.clone();
+        textureNode.levelNode = levelNode.mul((0, _maxMipLevelNodeJs.maxMipLevel)(textureNode));
+        return (0, _shaderNodeJs.nodeObject)(textureNode);
+    }
+    level(levelNode) {
+        const textureNode = this.clone();
+        textureNode.levelNode = levelNode;
+        return textureNode;
+    }
+    size(levelNode) {
+        return (0, _textureSizeNodeJs.textureSize)(this, levelNode);
+    }
+    compare(compareNode) {
+        const textureNode = this.clone();
+        textureNode.compareNode = (0, _shaderNodeJs.nodeObject)(compareNode);
+        return (0, _shaderNodeJs.nodeObject)(textureNode);
+    }
+    depth(depthNode) {
+        const textureNode = this.clone();
+        textureNode.depthNode = (0, _shaderNodeJs.nodeObject)(depthNode);
+        return (0, _shaderNodeJs.nodeObject)(textureNode);
+    }
+    // --
+    serialize(data) {
+        super.serialize(data);
+        data.value = this.value.toJSON(data.meta).uuid;
+    }
+    deserialize(data) {
+        super.deserialize(data);
+        this.value = data.meta.textures[data.value];
+    }
+    update() {
+        const texture = this.value;
+        if (texture.matrixAutoUpdate === true) texture.updateMatrix();
+    }
+    clone() {
+        const newNode = new this.constructor(this.value, this.uvNode, this.levelNode);
+        newNode.sampler = this.sampler;
+        return newNode;
+    }
+}
+exports.default = TextureNode;
+const texture = (0, _shaderNodeJs.nodeProxy)(TextureNode);
+const textureLoad = (...params)=>texture(...params).setSampler(false);
+const sampler = (aTexture)=>(aTexture.isNode === true ? aTexture : texture(aTexture)).convert("sampler");
+(0, _shaderNodeJs.addNodeElement)("texture", texture);
+//addNodeElement( 'textureLevel', textureLevel );
+(0, _nodeJs.addNodeClass)("TextureNode", TextureNode);
+
+},{"../core/UniformNode.js":"cfhYS","./UVNode.js":"dj0CK","./TextureSizeNode.js":"iZjsd","../display/ColorSpaceNode.js":"cCeUS","../code/ExpressionNode.js":"15ome","../core/Node.js":"cld0p","../utils/MaxMipLevelNode.js":"cMslS","../shadernode/ShaderNode.js":"8Xgcj","../core/constants.js":"6tdkL","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"dj0CK":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "uv", ()=>uv);
+var _nodeJs = require("../core/Node.js");
+var _attributeNodeJs = require("../core/AttributeNode.js");
+var _attributeNodeJsDefault = parcelHelpers.interopDefault(_attributeNodeJs);
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class UVNode extends (0, _attributeNodeJsDefault.default) {
+    constructor(index = 0){
+        super(null, "vec2");
+        this.isUVNode = true;
+        this.index = index;
+    }
+    getAttributeName() {
+        const index = this.index;
+        return "uv" + (index > 0 ? index : "");
+    }
+    serialize(data) {
+        super.serialize(data);
+        data.index = this.index;
+    }
+    deserialize(data) {
+        super.deserialize(data);
+        this.index = data.index;
+    }
+}
+exports.default = UVNode;
+const uv = (...params)=>(0, _shaderNodeJs.nodeObject)(new UVNode(...params));
+(0, _nodeJs.addNodeClass)("UVNode", UVNode);
+
+},{"../core/Node.js":"cld0p","../core/AttributeNode.js":"8yUip","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"iZjsd":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "textureSize", ()=>textureSize);
+var _nodeJs = require("../core/Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class TextureSizeNode extends (0, _nodeJsDefault.default) {
+    constructor(textureNode, levelNode = null){
+        super("uvec2");
+        this.isTextureSizeNode = true;
+        this.textureNode = textureNode;
+        this.levelNode = levelNode;
+    }
+    generate(builder, output) {
+        const textureProperty = this.textureNode.build(builder, "property");
+        const levelNode = this.levelNode.build(builder, "int");
+        return builder.format(`${builder.getMethod("textureDimensions")}( ${textureProperty}, ${levelNode} )`, this.getNodeType(builder), output);
+    }
+}
+exports.default = TextureSizeNode;
+const textureSize = (0, _shaderNodeJs.nodeProxy)(TextureSizeNode);
+(0, _shaderNodeJs.addNodeElement)("textureSize", textureSize);
+(0, _nodeJs.addNodeClass)("TextureSizeNode", TextureSizeNode);
+
+},{"../core/Node.js":"cld0p","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"cCeUS":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "linearToColorSpace", ()=>linearToColorSpace);
+parcelHelpers.export(exports, "colorSpaceToLinear", ()=>colorSpaceToLinear);
+parcelHelpers.export(exports, "linearTosRGB", ()=>linearTosRGB);
+parcelHelpers.export(exports, "sRGBToLinear", ()=>sRGBToLinear);
+var _tempNodeJs = require("../core/TempNode.js");
+var _tempNodeJsDefault = parcelHelpers.interopDefault(_tempNodeJs);
+var _mathNodeJs = require("../math/MathNode.js");
+var _nodeJs = require("../core/Node.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+var _three = require("three");
+const sRGBToLinearShader = (0, _shaderNodeJs.tslFn)((inputs)=>{
+    const { value } = inputs;
+    const { rgb } = value;
+    const a = rgb.mul(0.9478672986).add(0.0521327014).pow(2.4);
+    const b = rgb.mul(0.0773993808);
+    const factor = rgb.lessThanEqual(0.04045);
+    const rgbResult = (0, _mathNodeJs.mix)(a, b, factor);
+    return (0, _shaderNodeJs.vec4)(rgbResult, value.a);
+});
+const LinearTosRGBShader = (0, _shaderNodeJs.tslFn)((inputs)=>{
+    const { value } = inputs;
+    const { rgb } = value;
+    const a = rgb.pow(0.41666).mul(1.055).sub(0.055);
+    const b = rgb.mul(12.92);
+    const factor = rgb.lessThanEqual(0.0031308);
+    const rgbResult = (0, _mathNodeJs.mix)(a, b, factor);
+    return (0, _shaderNodeJs.vec4)(rgbResult, value.a);
+});
+const getColorSpaceMethod = (colorSpace)=>{
+    let method = null;
+    if (colorSpace === (0, _three.LinearSRGBColorSpace)) method = "Linear";
+    else if (colorSpace === (0, _three.SRGBColorSpace)) method = "sRGB";
+    return method;
+};
+const getMethod = (source, target)=>{
+    return getColorSpaceMethod(source) + "To" + getColorSpaceMethod(target);
+};
+class ColorSpaceNode extends (0, _tempNodeJsDefault.default) {
+    constructor(method, node){
+        super("vec4");
+        this.method = method;
+        this.node = node;
+    }
+    setup() {
+        const { method, node } = this;
+        if (method === ColorSpaceNode.LINEAR_TO_LINEAR) return node;
+        return Methods[method]({
+            value: node
+        });
+    }
+}
+ColorSpaceNode.LINEAR_TO_LINEAR = "LinearToLinear";
+ColorSpaceNode.LINEAR_TO_sRGB = "LinearTosRGB";
+ColorSpaceNode.sRGB_TO_LINEAR = "sRGBToLinear";
+const Methods = {
+    [ColorSpaceNode.LINEAR_TO_sRGB]: LinearTosRGBShader,
+    [ColorSpaceNode.sRGB_TO_LINEAR]: sRGBToLinearShader
+};
+exports.default = ColorSpaceNode;
+const linearToColorSpace = (node, colorSpace)=>(0, _shaderNodeJs.nodeObject)(new ColorSpaceNode(getMethod((0, _three.LinearSRGBColorSpace), colorSpace), (0, _shaderNodeJs.nodeObject)(node)));
+const colorSpaceToLinear = (node, colorSpace)=>(0, _shaderNodeJs.nodeObject)(new ColorSpaceNode(getMethod(colorSpace, (0, _three.LinearSRGBColorSpace)), (0, _shaderNodeJs.nodeObject)(node)));
+const linearTosRGB = (0, _shaderNodeJs.nodeProxy)(ColorSpaceNode, ColorSpaceNode.LINEAR_TO_sRGB);
+const sRGBToLinear = (0, _shaderNodeJs.nodeProxy)(ColorSpaceNode, ColorSpaceNode.sRGB_TO_LINEAR);
+(0, _shaderNodeJs.addNodeElement)("linearTosRGB", linearTosRGB);
+(0, _shaderNodeJs.addNodeElement)("sRGBToLinear", sRGBToLinear);
+(0, _shaderNodeJs.addNodeElement)("linearToColorSpace", linearToColorSpace);
+(0, _shaderNodeJs.addNodeElement)("colorSpaceToLinear", colorSpaceToLinear);
+(0, _nodeJs.addNodeClass)("ColorSpaceNode", ColorSpaceNode);
+
+},{"../core/TempNode.js":"l0t0Y","../math/MathNode.js":"84OFe","../core/Node.js":"cld0p","../shadernode/ShaderNode.js":"8Xgcj","three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"84OFe":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "EPSILON", ()=>EPSILON);
+parcelHelpers.export(exports, "INFINITY", ()=>INFINITY);
+parcelHelpers.export(exports, "PI", ()=>PI);
+parcelHelpers.export(exports, "PI2", ()=>PI2);
+parcelHelpers.export(exports, "radians", ()=>radians);
+parcelHelpers.export(exports, "degrees", ()=>degrees);
+parcelHelpers.export(exports, "exp", ()=>exp);
+parcelHelpers.export(exports, "exp2", ()=>exp2);
+parcelHelpers.export(exports, "log", ()=>log);
+parcelHelpers.export(exports, "log2", ()=>log2);
+parcelHelpers.export(exports, "sqrt", ()=>sqrt);
+parcelHelpers.export(exports, "inverseSqrt", ()=>inverseSqrt);
+parcelHelpers.export(exports, "floor", ()=>floor);
+parcelHelpers.export(exports, "ceil", ()=>ceil);
+parcelHelpers.export(exports, "normalize", ()=>normalize);
+parcelHelpers.export(exports, "fract", ()=>fract);
+parcelHelpers.export(exports, "sin", ()=>sin);
+parcelHelpers.export(exports, "cos", ()=>cos);
+parcelHelpers.export(exports, "tan", ()=>tan);
+parcelHelpers.export(exports, "asin", ()=>asin);
+parcelHelpers.export(exports, "acos", ()=>acos);
+parcelHelpers.export(exports, "atan", ()=>atan);
+parcelHelpers.export(exports, "abs", ()=>abs);
+parcelHelpers.export(exports, "sign", ()=>sign);
+parcelHelpers.export(exports, "length", ()=>length);
+parcelHelpers.export(exports, "negate", ()=>negate);
+parcelHelpers.export(exports, "oneMinus", ()=>oneMinus);
+parcelHelpers.export(exports, "dFdx", ()=>dFdx);
+parcelHelpers.export(exports, "dFdy", ()=>dFdy);
+parcelHelpers.export(exports, "round", ()=>round);
+parcelHelpers.export(exports, "reciprocal", ()=>reciprocal);
+parcelHelpers.export(exports, "trunc", ()=>trunc);
+parcelHelpers.export(exports, "fwidth", ()=>fwidth);
+parcelHelpers.export(exports, "bitcast", ()=>bitcast);
+parcelHelpers.export(exports, "atan2", ()=>atan2);
+parcelHelpers.export(exports, "min", ()=>min);
+parcelHelpers.export(exports, "max", ()=>max);
+parcelHelpers.export(exports, "mod", ()=>mod);
+parcelHelpers.export(exports, "step", ()=>step);
+parcelHelpers.export(exports, "reflect", ()=>reflect);
+parcelHelpers.export(exports, "distance", ()=>distance);
+parcelHelpers.export(exports, "difference", ()=>difference);
+parcelHelpers.export(exports, "dot", ()=>dot);
+parcelHelpers.export(exports, "cross", ()=>cross);
+parcelHelpers.export(exports, "pow", ()=>pow);
+parcelHelpers.export(exports, "pow2", ()=>pow2);
+parcelHelpers.export(exports, "pow3", ()=>pow3);
+parcelHelpers.export(exports, "pow4", ()=>pow4);
+parcelHelpers.export(exports, "transformDirection", ()=>transformDirection);
+parcelHelpers.export(exports, "cbrt", ()=>cbrt);
+parcelHelpers.export(exports, "lengthSq", ()=>lengthSq);
+parcelHelpers.export(exports, "mix", ()=>mix);
+parcelHelpers.export(exports, "clamp", ()=>clamp);
+parcelHelpers.export(exports, "saturate", ()=>saturate);
+parcelHelpers.export(exports, "refract", ()=>refract);
+parcelHelpers.export(exports, "smoothstep", ()=>smoothstep);
+parcelHelpers.export(exports, "faceForward", ()=>faceForward);
+parcelHelpers.export(exports, "mixElement", ()=>mixElement);
+parcelHelpers.export(exports, "smoothstepElement", ()=>smoothstepElement);
+var _tempNodeJs = require("../core/TempNode.js");
+var _tempNodeJsDefault = parcelHelpers.interopDefault(_tempNodeJs);
+var _operatorNodeJs = require("./OperatorNode.js");
+var _nodeJs = require("../core/Node.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class MathNode extends (0, _tempNodeJsDefault.default) {
+    constructor(method, aNode, bNode = null, cNode = null){
+        super();
+        this.method = method;
+        this.aNode = aNode;
+        this.bNode = bNode;
+        this.cNode = cNode;
+    }
+    getInputType(builder) {
+        const aType = this.aNode.getNodeType(builder);
+        const bType = this.bNode ? this.bNode.getNodeType(builder) : null;
+        const cType = this.cNode ? this.cNode.getNodeType(builder) : null;
+        const aLen = builder.isMatrix(aType) ? 0 : builder.getTypeLength(aType);
+        const bLen = builder.isMatrix(bType) ? 0 : builder.getTypeLength(bType);
+        const cLen = builder.isMatrix(cType) ? 0 : builder.getTypeLength(cType);
+        if (aLen > bLen && aLen > cLen) return aType;
+        else if (bLen > cLen) return bType;
+        else if (cLen > aLen) return cType;
+        return aType;
+    }
+    getNodeType(builder) {
+        const method = this.method;
+        if (method === MathNode.LENGTH || method === MathNode.DISTANCE || method === MathNode.DOT) return "float";
+        else if (method === MathNode.CROSS) return "vec3";
+        else if (method === MathNode.MOD) return this.aNode.getNodeType(builder);
+        else return this.getInputType(builder);
+    }
+    generate(builder, output) {
+        const method = this.method;
+        const type = this.getNodeType(builder);
+        const inputType = this.getInputType(builder);
+        const a = this.aNode;
+        const b = this.bNode;
+        const c = this.cNode;
+        const isWebGL = builder.renderer.isWebGLRenderer === true;
+        if (method === MathNode.TRANSFORM_DIRECTION) {
+            // dir can be either a direction vector or a normal vector
+            // upper-left 3x3 of matrix is assumed to be orthogonal
+            let tA = a;
+            let tB = b;
+            if (builder.isMatrix(tA.getNodeType(builder))) tB = (0, _shaderNodeJs.vec4)((0, _shaderNodeJs.vec3)(tB), 0.0);
+            else tA = (0, _shaderNodeJs.vec4)((0, _shaderNodeJs.vec3)(tA), 0.0);
+            const mulNode = (0, _operatorNodeJs.mul)(tA, tB).xyz;
+            return normalize(mulNode).build(builder, output);
+        } else if (method === MathNode.NEGATE) return builder.format("( - " + a.build(builder, inputType) + " )", type, output);
+        else if (method === MathNode.ONE_MINUS) return (0, _operatorNodeJs.sub)(1.0, a).build(builder, output);
+        else if (method === MathNode.RECIPROCAL) return (0, _operatorNodeJs.div)(1.0, a).build(builder, output);
+        else if (method === MathNode.DIFFERENCE) return abs((0, _operatorNodeJs.sub)(a, b)).build(builder, output);
+        else {
+            const params = [];
+            if (method === MathNode.CROSS || method === MathNode.MOD) params.push(a.build(builder, type), b.build(builder, type));
+            else if (method === MathNode.STEP) params.push(a.build(builder, builder.getTypeLength(a.getNodeType(builder)) === 1 ? "float" : inputType), b.build(builder, inputType));
+            else if (isWebGL && (method === MathNode.MIN || method === MathNode.MAX) || method === MathNode.MOD) params.push(a.build(builder, inputType), b.build(builder, builder.getTypeLength(b.getNodeType(builder)) === 1 ? "float" : inputType));
+            else if (method === MathNode.REFRACT) params.push(a.build(builder, inputType), b.build(builder, inputType), c.build(builder, "float"));
+            else if (method === MathNode.MIX) params.push(a.build(builder, inputType), b.build(builder, inputType), c.build(builder, builder.getTypeLength(c.getNodeType(builder)) === 1 ? "float" : inputType));
+            else {
+                params.push(a.build(builder, inputType));
+                if (b !== null) params.push(b.build(builder, inputType));
+                if (c !== null) params.push(c.build(builder, inputType));
+            }
+            return builder.format(`${builder.getMethod(method, type)}( ${params.join(", ")} )`, type, output);
+        }
+    }
+    serialize(data) {
+        super.serialize(data);
+        data.method = this.method;
+    }
+    deserialize(data) {
+        super.deserialize(data);
+        this.method = data.method;
+    }
+}
+// 1 input
+MathNode.RADIANS = "radians";
+MathNode.DEGREES = "degrees";
+MathNode.EXP = "exp";
+MathNode.EXP2 = "exp2";
+MathNode.LOG = "log";
+MathNode.LOG2 = "log2";
+MathNode.SQRT = "sqrt";
+MathNode.INVERSE_SQRT = "inversesqrt";
+MathNode.FLOOR = "floor";
+MathNode.CEIL = "ceil";
+MathNode.NORMALIZE = "normalize";
+MathNode.FRACT = "fract";
+MathNode.SIN = "sin";
+MathNode.COS = "cos";
+MathNode.TAN = "tan";
+MathNode.ASIN = "asin";
+MathNode.ACOS = "acos";
+MathNode.ATAN = "atan";
+MathNode.ABS = "abs";
+MathNode.SIGN = "sign";
+MathNode.LENGTH = "length";
+MathNode.NEGATE = "negate";
+MathNode.ONE_MINUS = "oneMinus";
+MathNode.DFDX = "dFdx";
+MathNode.DFDY = "dFdy";
+MathNode.ROUND = "round";
+MathNode.RECIPROCAL = "reciprocal";
+MathNode.TRUNC = "trunc";
+MathNode.FWIDTH = "fwidth";
+MathNode.BITCAST = "bitcast";
+// 2 inputs
+MathNode.ATAN2 = "atan2";
+MathNode.MIN = "min";
+MathNode.MAX = "max";
+MathNode.MOD = "mod";
+MathNode.STEP = "step";
+MathNode.REFLECT = "reflect";
+MathNode.DISTANCE = "distance";
+MathNode.DIFFERENCE = "difference";
+MathNode.DOT = "dot";
+MathNode.CROSS = "cross";
+MathNode.POW = "pow";
+MathNode.TRANSFORM_DIRECTION = "transformDirection";
+// 3 inputs
+MathNode.MIX = "mix";
+MathNode.CLAMP = "clamp";
+MathNode.REFRACT = "refract";
+MathNode.SMOOTHSTEP = "smoothstep";
+MathNode.FACEFORWARD = "faceforward";
+exports.default = MathNode;
+const EPSILON = (0, _shaderNodeJs.float)(1e-6);
+const INFINITY = (0, _shaderNodeJs.float)(1e6);
+const PI = (0, _shaderNodeJs.float)(Math.PI);
+const PI2 = (0, _shaderNodeJs.float)(Math.PI * 2);
+const radians = (0, _shaderNodeJs.nodeProxy)(MathNode, MathNode.RADIANS);
+const degrees = (0, _shaderNodeJs.nodeProxy)(MathNode, MathNode.DEGREES);
+const exp = (0, _shaderNodeJs.nodeProxy)(MathNode, MathNode.EXP);
+const exp2 = (0, _shaderNodeJs.nodeProxy)(MathNode, MathNode.EXP2);
+const log = (0, _shaderNodeJs.nodeProxy)(MathNode, MathNode.LOG);
+const log2 = (0, _shaderNodeJs.nodeProxy)(MathNode, MathNode.LOG2);
+const sqrt = (0, _shaderNodeJs.nodeProxy)(MathNode, MathNode.SQRT);
+const inverseSqrt = (0, _shaderNodeJs.nodeProxy)(MathNode, MathNode.INVERSE_SQRT);
+const floor = (0, _shaderNodeJs.nodeProxy)(MathNode, MathNode.FLOOR);
+const ceil = (0, _shaderNodeJs.nodeProxy)(MathNode, MathNode.CEIL);
+const normalize = (0, _shaderNodeJs.nodeProxy)(MathNode, MathNode.NORMALIZE);
+const fract = (0, _shaderNodeJs.nodeProxy)(MathNode, MathNode.FRACT);
+const sin = (0, _shaderNodeJs.nodeProxy)(MathNode, MathNode.SIN);
+const cos = (0, _shaderNodeJs.nodeProxy)(MathNode, MathNode.COS);
+const tan = (0, _shaderNodeJs.nodeProxy)(MathNode, MathNode.TAN);
+const asin = (0, _shaderNodeJs.nodeProxy)(MathNode, MathNode.ASIN);
+const acos = (0, _shaderNodeJs.nodeProxy)(MathNode, MathNode.ACOS);
+const atan = (0, _shaderNodeJs.nodeProxy)(MathNode, MathNode.ATAN);
+const abs = (0, _shaderNodeJs.nodeProxy)(MathNode, MathNode.ABS);
+const sign = (0, _shaderNodeJs.nodeProxy)(MathNode, MathNode.SIGN);
+const length = (0, _shaderNodeJs.nodeProxy)(MathNode, MathNode.LENGTH);
+const negate = (0, _shaderNodeJs.nodeProxy)(MathNode, MathNode.NEGATE);
+const oneMinus = (0, _shaderNodeJs.nodeProxy)(MathNode, MathNode.ONE_MINUS);
+const dFdx = (0, _shaderNodeJs.nodeProxy)(MathNode, MathNode.DFDX);
+const dFdy = (0, _shaderNodeJs.nodeProxy)(MathNode, MathNode.DFDY);
+const round = (0, _shaderNodeJs.nodeProxy)(MathNode, MathNode.ROUND);
+const reciprocal = (0, _shaderNodeJs.nodeProxy)(MathNode, MathNode.RECIPROCAL);
+const trunc = (0, _shaderNodeJs.nodeProxy)(MathNode, MathNode.TRUNC);
+const fwidth = (0, _shaderNodeJs.nodeProxy)(MathNode, MathNode.FWIDTH);
+const bitcast = (0, _shaderNodeJs.nodeProxy)(MathNode, MathNode.BITCAST);
+const atan2 = (0, _shaderNodeJs.nodeProxy)(MathNode, MathNode.ATAN2);
+const min = (0, _shaderNodeJs.nodeProxy)(MathNode, MathNode.MIN);
+const max = (0, _shaderNodeJs.nodeProxy)(MathNode, MathNode.MAX);
+const mod = (0, _shaderNodeJs.nodeProxy)(MathNode, MathNode.MOD);
+const step = (0, _shaderNodeJs.nodeProxy)(MathNode, MathNode.STEP);
+const reflect = (0, _shaderNodeJs.nodeProxy)(MathNode, MathNode.REFLECT);
+const distance = (0, _shaderNodeJs.nodeProxy)(MathNode, MathNode.DISTANCE);
+const difference = (0, _shaderNodeJs.nodeProxy)(MathNode, MathNode.DIFFERENCE);
+const dot = (0, _shaderNodeJs.nodeProxy)(MathNode, MathNode.DOT);
+const cross = (0, _shaderNodeJs.nodeProxy)(MathNode, MathNode.CROSS);
+const pow = (0, _shaderNodeJs.nodeProxy)(MathNode, MathNode.POW);
+const pow2 = (0, _shaderNodeJs.nodeProxy)(MathNode, MathNode.POW, 2);
+const pow3 = (0, _shaderNodeJs.nodeProxy)(MathNode, MathNode.POW, 3);
+const pow4 = (0, _shaderNodeJs.nodeProxy)(MathNode, MathNode.POW, 4);
+const transformDirection = (0, _shaderNodeJs.nodeProxy)(MathNode, MathNode.TRANSFORM_DIRECTION);
+const cbrt = (a)=>(0, _operatorNodeJs.mul)(sign(a), pow(abs(a), 1.0 / 3.0));
+const lengthSq = (a)=>dot(a, a);
+const mix = (0, _shaderNodeJs.nodeProxy)(MathNode, MathNode.MIX);
+const clamp = (value, low = 0, high = 1)=>(0, _shaderNodeJs.nodeObject)(new MathNode(MathNode.CLAMP, (0, _shaderNodeJs.nodeObject)(value), (0, _shaderNodeJs.nodeObject)(low), (0, _shaderNodeJs.nodeObject)(high)));
+const saturate = (value)=>clamp(value);
+const refract = (0, _shaderNodeJs.nodeProxy)(MathNode, MathNode.REFRACT);
+const smoothstep = (0, _shaderNodeJs.nodeProxy)(MathNode, MathNode.SMOOTHSTEP);
+const faceForward = (0, _shaderNodeJs.nodeProxy)(MathNode, MathNode.FACEFORWARD);
+const mixElement = (t, e1, e2)=>mix(e1, e2, t);
+const smoothstepElement = (x, low, high)=>smoothstep(low, high, x);
+(0, _shaderNodeJs.addNodeElement)("radians", radians);
+(0, _shaderNodeJs.addNodeElement)("degrees", degrees);
+(0, _shaderNodeJs.addNodeElement)("exp", exp);
+(0, _shaderNodeJs.addNodeElement)("exp2", exp2);
+(0, _shaderNodeJs.addNodeElement)("log", log);
+(0, _shaderNodeJs.addNodeElement)("log2", log2);
+(0, _shaderNodeJs.addNodeElement)("sqrt", sqrt);
+(0, _shaderNodeJs.addNodeElement)("inverseSqrt", inverseSqrt);
+(0, _shaderNodeJs.addNodeElement)("floor", floor);
+(0, _shaderNodeJs.addNodeElement)("ceil", ceil);
+(0, _shaderNodeJs.addNodeElement)("normalize", normalize);
+(0, _shaderNodeJs.addNodeElement)("fract", fract);
+(0, _shaderNodeJs.addNodeElement)("sin", sin);
+(0, _shaderNodeJs.addNodeElement)("cos", cos);
+(0, _shaderNodeJs.addNodeElement)("tan", tan);
+(0, _shaderNodeJs.addNodeElement)("asin", asin);
+(0, _shaderNodeJs.addNodeElement)("acos", acos);
+(0, _shaderNodeJs.addNodeElement)("atan", atan);
+(0, _shaderNodeJs.addNodeElement)("abs", abs);
+(0, _shaderNodeJs.addNodeElement)("sign", sign);
+(0, _shaderNodeJs.addNodeElement)("length", length);
+(0, _shaderNodeJs.addNodeElement)("lengthSq", lengthSq);
+(0, _shaderNodeJs.addNodeElement)("negate", negate);
+(0, _shaderNodeJs.addNodeElement)("oneMinus", oneMinus);
+(0, _shaderNodeJs.addNodeElement)("dFdx", dFdx);
+(0, _shaderNodeJs.addNodeElement)("dFdy", dFdy);
+(0, _shaderNodeJs.addNodeElement)("round", round);
+(0, _shaderNodeJs.addNodeElement)("reciprocal", reciprocal);
+(0, _shaderNodeJs.addNodeElement)("trunc", trunc);
+(0, _shaderNodeJs.addNodeElement)("fwidth", fwidth);
+(0, _shaderNodeJs.addNodeElement)("atan2", atan2);
+(0, _shaderNodeJs.addNodeElement)("min", min);
+(0, _shaderNodeJs.addNodeElement)("max", max);
+(0, _shaderNodeJs.addNodeElement)("mod", mod);
+(0, _shaderNodeJs.addNodeElement)("step", step);
+(0, _shaderNodeJs.addNodeElement)("reflect", reflect);
+(0, _shaderNodeJs.addNodeElement)("distance", distance);
+(0, _shaderNodeJs.addNodeElement)("dot", dot);
+(0, _shaderNodeJs.addNodeElement)("cross", cross);
+(0, _shaderNodeJs.addNodeElement)("pow", pow);
+(0, _shaderNodeJs.addNodeElement)("pow2", pow2);
+(0, _shaderNodeJs.addNodeElement)("pow3", pow3);
+(0, _shaderNodeJs.addNodeElement)("pow4", pow4);
+(0, _shaderNodeJs.addNodeElement)("transformDirection", transformDirection);
+(0, _shaderNodeJs.addNodeElement)("mix", mixElement);
+(0, _shaderNodeJs.addNodeElement)("clamp", clamp);
+(0, _shaderNodeJs.addNodeElement)("refract", refract);
+(0, _shaderNodeJs.addNodeElement)("smoothstep", smoothstepElement);
+(0, _shaderNodeJs.addNodeElement)("faceForward", faceForward);
+(0, _shaderNodeJs.addNodeElement)("difference", difference);
+(0, _shaderNodeJs.addNodeElement)("saturate", saturate);
+(0, _shaderNodeJs.addNodeElement)("cbrt", cbrt);
+(0, _nodeJs.addNodeClass)("MathNode", MathNode);
+
+},{"../core/TempNode.js":"l0t0Y","./OperatorNode.js":"hCYI5","../core/Node.js":"cld0p","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"hCYI5":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "add", ()=>add);
+parcelHelpers.export(exports, "sub", ()=>sub);
+parcelHelpers.export(exports, "mul", ()=>mul);
+parcelHelpers.export(exports, "div", ()=>div);
+parcelHelpers.export(exports, "remainder", ()=>remainder);
+parcelHelpers.export(exports, "equal", ()=>equal);
+parcelHelpers.export(exports, "notEqual", ()=>notEqual);
+parcelHelpers.export(exports, "lessThan", ()=>lessThan);
+parcelHelpers.export(exports, "greaterThan", ()=>greaterThan);
+parcelHelpers.export(exports, "lessThanEqual", ()=>lessThanEqual);
+parcelHelpers.export(exports, "greaterThanEqual", ()=>greaterThanEqual);
+parcelHelpers.export(exports, "and", ()=>and);
+parcelHelpers.export(exports, "or", ()=>or);
+parcelHelpers.export(exports, "not", ()=>not);
+parcelHelpers.export(exports, "xor", ()=>xor);
+parcelHelpers.export(exports, "bitAnd", ()=>bitAnd);
+parcelHelpers.export(exports, "bitNot", ()=>bitNot);
+parcelHelpers.export(exports, "bitOr", ()=>bitOr);
+parcelHelpers.export(exports, "bitXor", ()=>bitXor);
+parcelHelpers.export(exports, "shiftLeft", ()=>shiftLeft);
+parcelHelpers.export(exports, "shiftRight", ()=>shiftRight);
+var _tempNodeJs = require("../core/TempNode.js");
+var _tempNodeJsDefault = parcelHelpers.interopDefault(_tempNodeJs);
+var _nodeJs = require("../core/Node.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class OperatorNode extends (0, _tempNodeJsDefault.default) {
+    constructor(op, aNode, bNode, ...params){
+        super();
+        this.op = op;
+        if (params.length > 0) {
+            let finalBNode = bNode;
+            for(let i = 0; i < params.length; i++)finalBNode = new OperatorNode(op, finalBNode, params[i]);
+            bNode = finalBNode;
+        }
+        this.aNode = aNode;
+        this.bNode = bNode;
+    }
+    getNodeType(builder, output) {
+        const op = this.op;
+        const aNode = this.aNode;
+        const bNode = this.bNode;
+        const typeA = aNode.getNodeType(builder);
+        const typeB = typeof bNode !== "undefined" ? bNode.getNodeType(builder) : null;
+        if (typeA === "void" || typeB === "void") return "void";
+        else if (op === "%") return typeA;
+        else if (op === "~" || op === "&" || op === "|" || op === "^" || op === ">>" || op === "<<") return builder.getIntegerType(typeA);
+        else if (op === "!" || op === "==" || op === "&&" || op === "||" || op === "^^") return "bool";
+        else if (op === "<" || op === ">" || op === "<=" || op === ">=") {
+            const typeLength = output ? builder.getTypeLength(output) : Math.max(builder.getTypeLength(typeA), builder.getTypeLength(typeB));
+            return typeLength > 1 ? `bvec${typeLength}` : "bool";
+        } else {
+            if (typeA === "float" && builder.isMatrix(typeB)) return typeB;
+            else if (builder.isMatrix(typeA) && builder.isVector(typeB)) // matrix x vector
+            return builder.getVectorFromMatrix(typeA);
+            else if (builder.isVector(typeA) && builder.isMatrix(typeB)) // vector x matrix
+            return builder.getVectorFromMatrix(typeB);
+            else if (builder.getTypeLength(typeB) > builder.getTypeLength(typeA)) // anytype x anytype: use the greater length vector
+            return typeB;
+            return typeA;
+        }
+    }
+    generate(builder, output) {
+        const op = this.op;
+        const aNode = this.aNode;
+        const bNode = this.bNode;
+        const type = this.getNodeType(builder, output);
+        let typeA = null;
+        let typeB = null;
+        if (type !== "void") {
+            typeA = aNode.getNodeType(builder);
+            typeB = typeof bNode !== "undefined" ? bNode.getNodeType(builder) : null;
+            if (op === "<" || op === ">" || op === "<=" || op === ">=" || op === "==") {
+                if (builder.isVector(typeA)) typeB = typeA;
+                else typeA = typeB = "float";
+            } else if (op === ">>" || op === "<<") {
+                typeA = type;
+                typeB = builder.changeComponentType(typeB, "uint");
+            } else if (builder.isMatrix(typeA) && builder.isVector(typeB)) // matrix x vector
+            typeB = builder.getVectorFromMatrix(typeA);
+            else if (builder.isVector(typeA) && builder.isMatrix(typeB)) // vector x matrix
+            typeA = builder.getVectorFromMatrix(typeB);
+            else // anytype x anytype
+            typeA = typeB = type;
+        } else typeA = typeB = type;
+        const a = aNode.build(builder, typeA);
+        const b = typeof bNode !== "undefined" ? bNode.build(builder, typeB) : null;
+        const outputLength = builder.getTypeLength(output);
+        const fnOpSnippet = builder.getFunctionOperator(op);
+        if (output !== "void") {
+            if (op === "<" && outputLength > 1) return builder.format(`${builder.getMethod("lessThan")}( ${a}, ${b} )`, type, output);
+            else if (op === "<=" && outputLength > 1) return builder.format(`${builder.getMethod("lessThanEqual")}( ${a}, ${b} )`, type, output);
+            else if (op === ">" && outputLength > 1) return builder.format(`${builder.getMethod("greaterThan")}( ${a}, ${b} )`, type, output);
+            else if (op === ">=" && outputLength > 1) return builder.format(`${builder.getMethod("greaterThanEqual")}( ${a}, ${b} )`, type, output);
+            else if (op === "!" || op === "~") return builder.format(`(${op}${a})`, typeA, output);
+            else if (fnOpSnippet) return builder.format(`${fnOpSnippet}( ${a}, ${b} )`, type, output);
+            else return builder.format(`( ${a} ${op} ${b} )`, type, output);
+        } else if (typeA !== "void") {
+            if (fnOpSnippet) return builder.format(`${fnOpSnippet}( ${a}, ${b} )`, type, output);
+            else return builder.format(`${a} ${op} ${b}`, type, output);
+        }
+    }
+    serialize(data) {
+        super.serialize(data);
+        data.op = this.op;
+    }
+    deserialize(data) {
+        super.deserialize(data);
+        this.op = data.op;
+    }
+}
+exports.default = OperatorNode;
+const add = (0, _shaderNodeJs.nodeProxy)(OperatorNode, "+");
+const sub = (0, _shaderNodeJs.nodeProxy)(OperatorNode, "-");
+const mul = (0, _shaderNodeJs.nodeProxy)(OperatorNode, "*");
+const div = (0, _shaderNodeJs.nodeProxy)(OperatorNode, "/");
+const remainder = (0, _shaderNodeJs.nodeProxy)(OperatorNode, "%");
+const equal = (0, _shaderNodeJs.nodeProxy)(OperatorNode, "==");
+const notEqual = (0, _shaderNodeJs.nodeProxy)(OperatorNode, "!=");
+const lessThan = (0, _shaderNodeJs.nodeProxy)(OperatorNode, "<");
+const greaterThan = (0, _shaderNodeJs.nodeProxy)(OperatorNode, ">");
+const lessThanEqual = (0, _shaderNodeJs.nodeProxy)(OperatorNode, "<=");
+const greaterThanEqual = (0, _shaderNodeJs.nodeProxy)(OperatorNode, ">=");
+const and = (0, _shaderNodeJs.nodeProxy)(OperatorNode, "&&");
+const or = (0, _shaderNodeJs.nodeProxy)(OperatorNode, "||");
+const not = (0, _shaderNodeJs.nodeProxy)(OperatorNode, "!");
+const xor = (0, _shaderNodeJs.nodeProxy)(OperatorNode, "^^");
+const bitAnd = (0, _shaderNodeJs.nodeProxy)(OperatorNode, "&");
+const bitNot = (0, _shaderNodeJs.nodeProxy)(OperatorNode, "~");
+const bitOr = (0, _shaderNodeJs.nodeProxy)(OperatorNode, "|");
+const bitXor = (0, _shaderNodeJs.nodeProxy)(OperatorNode, "^");
+const shiftLeft = (0, _shaderNodeJs.nodeProxy)(OperatorNode, "<<");
+const shiftRight = (0, _shaderNodeJs.nodeProxy)(OperatorNode, ">>");
+(0, _shaderNodeJs.addNodeElement)("add", add);
+(0, _shaderNodeJs.addNodeElement)("sub", sub);
+(0, _shaderNodeJs.addNodeElement)("mul", mul);
+(0, _shaderNodeJs.addNodeElement)("div", div);
+(0, _shaderNodeJs.addNodeElement)("remainder", remainder);
+(0, _shaderNodeJs.addNodeElement)("equal", equal);
+(0, _shaderNodeJs.addNodeElement)("notEqual", notEqual);
+(0, _shaderNodeJs.addNodeElement)("lessThan", lessThan);
+(0, _shaderNodeJs.addNodeElement)("greaterThan", greaterThan);
+(0, _shaderNodeJs.addNodeElement)("lessThanEqual", lessThanEqual);
+(0, _shaderNodeJs.addNodeElement)("greaterThanEqual", greaterThanEqual);
+(0, _shaderNodeJs.addNodeElement)("and", and);
+(0, _shaderNodeJs.addNodeElement)("or", or);
+(0, _shaderNodeJs.addNodeElement)("not", not);
+(0, _shaderNodeJs.addNodeElement)("xor", xor);
+(0, _shaderNodeJs.addNodeElement)("bitAnd", bitAnd);
+(0, _shaderNodeJs.addNodeElement)("bitNot", bitNot);
+(0, _shaderNodeJs.addNodeElement)("bitOr", bitOr);
+(0, _shaderNodeJs.addNodeElement)("bitXor", bitXor);
+(0, _shaderNodeJs.addNodeElement)("shiftLeft", shiftLeft);
+(0, _shaderNodeJs.addNodeElement)("shiftRight", shiftRight);
+(0, _nodeJs.addNodeClass)("OperatorNode", OperatorNode);
+
+},{"../core/TempNode.js":"l0t0Y","../core/Node.js":"cld0p","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"15ome":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "expression", ()=>expression);
+var _nodeJs = require("../core/Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class ExpressionNode extends (0, _nodeJsDefault.default) {
+    constructor(snippet = "", nodeType = "void"){
+        super(nodeType);
+        this.snippet = snippet;
+    }
+    generate(builder, output) {
+        const type = this.getNodeType(builder);
+        const snippet = this.snippet;
+        if (type === "void") builder.addLineFlowCode(snippet);
+        else return builder.format(`( ${snippet} )`, type, output);
+    }
+}
+exports.default = ExpressionNode;
+const expression = (0, _shaderNodeJs.nodeProxy)(ExpressionNode);
+(0, _nodeJs.addNodeClass)("ExpressionNode", ExpressionNode);
+
+},{"../core/Node.js":"cld0p","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"cMslS":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "maxMipLevel", ()=>maxMipLevel);
+var _uniformNodeJs = require("../core/UniformNode.js");
+var _uniformNodeJsDefault = parcelHelpers.interopDefault(_uniformNodeJs);
+var _constantsJs = require("../core/constants.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+var _nodeJs = require("../core/Node.js");
+class MaxMipLevelNode extends (0, _uniformNodeJsDefault.default) {
+    constructor(textureNode){
+        super(0);
+        this.textureNode = textureNode;
+        this.updateType = (0, _constantsJs.NodeUpdateType).FRAME;
+    }
+    get texture() {
+        return this.textureNode.value;
+    }
+    update() {
+        const texture = this.texture;
+        const images = texture.images;
+        const image = images && images.length > 0 ? images[0] && images[0].image || images[0] : texture.image;
+        if (image && image.width !== undefined) {
+            const { width, height } = image;
+            this.value = Math.log2(Math.max(width, height));
+        }
+    }
+}
+exports.default = MaxMipLevelNode;
+const maxMipLevel = (0, _shaderNodeJs.nodeProxy)(MaxMipLevelNode);
+(0, _nodeJs.addNodeClass)("MaxMipLevelNode", MaxMipLevelNode);
+
+},{"../core/UniformNode.js":"cfhYS","../core/constants.js":"6tdkL","../shadernode/ShaderNode.js":"8Xgcj","../core/Node.js":"cld0p","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"dR11o":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "materialReference", ()=>materialReference);
+var _referenceNodeJs = require("./ReferenceNode.js");
+var _referenceNodeJsDefault = parcelHelpers.interopDefault(_referenceNodeJs);
+//import { renderGroup } from '../core/UniformGroupNode.js';
+//import { NodeUpdateType } from '../core/constants.js';
+var _nodeJs = require("../core/Node.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class MaterialReferenceNode extends (0, _referenceNodeJsDefault.default) {
+    constructor(property, inputType, material = null){
+        super(property, inputType, material);
+        this.material = material;
+    //this.updateType = NodeUpdateType.RENDER;
+    }
+    /*setNodeType( node ) {
+
+		super.setNodeType( node );
+
+		this.node.groupNode = renderGroup;
+
+	}*/ updateReference(frame) {
+        this.reference = this.material !== null ? this.material : frame.material;
+        return this.reference;
+    }
+    setup(builder) {
+        const material = this.material !== null ? this.material : builder.material;
+        this.node.value = material[this.property];
+        return super.setup(builder);
+    }
+}
+exports.default = MaterialReferenceNode;
+const materialReference = (name, type, material)=>(0, _shaderNodeJs.nodeObject)(new MaterialReferenceNode(name, type, material));
+(0, _nodeJs.addNodeClass)("MaterialReferenceNode", MaterialReferenceNode);
+
+},{"./ReferenceNode.js":"6ceuI","../core/Node.js":"cld0p","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"4n1Pc":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "normalGeometry", ()=>normalGeometry);
+parcelHelpers.export(exports, "normalLocal", ()=>normalLocal);
+parcelHelpers.export(exports, "normalView", ()=>normalView);
+parcelHelpers.export(exports, "normalWorld", ()=>normalWorld);
+parcelHelpers.export(exports, "transformedNormalView", ()=>transformedNormalView);
+parcelHelpers.export(exports, "transformedNormalWorld", ()=>transformedNormalWorld);
+parcelHelpers.export(exports, "transformedClearcoatNormalView", ()=>transformedClearcoatNormalView);
+var _nodeJs = require("../core/Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+var _attributeNodeJs = require("../core/AttributeNode.js");
+var _varyingNodeJs = require("../core/VaryingNode.js");
+var _propertyNodeJs = require("../core/PropertyNode.js");
+var _mathNodeJs = require("../math/MathNode.js");
+var _cameraNodeJs = require("./CameraNode.js");
+var _modelNodeJs = require("./ModelNode.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class NormalNode extends (0, _nodeJsDefault.default) {
+    constructor(scope = NormalNode.LOCAL){
+        super("vec3");
+        this.scope = scope;
+    }
+    isGlobal() {
+        return true;
+    }
+    getHash() {
+        return `normal-${this.scope}`;
+    }
+    generate(builder) {
+        const scope = this.scope;
+        let outputNode = null;
+        if (scope === NormalNode.GEOMETRY) outputNode = (0, _attributeNodeJs.attribute)("normal", "vec3");
+        else if (scope === NormalNode.LOCAL) outputNode = (0, _varyingNodeJs.varying)(normalGeometry);
+        else if (scope === NormalNode.VIEW) {
+            const vertexNode = (0, _modelNodeJs.modelNormalMatrix).mul(normalLocal);
+            outputNode = (0, _mathNodeJs.normalize)((0, _varyingNodeJs.varying)(vertexNode));
+        } else if (scope === NormalNode.WORLD) {
+            // To use inverseTransformDirection only inverse the param order like this: cameraViewMatrix.transformDirection( normalView )
+            const vertexNode = normalView.transformDirection((0, _cameraNodeJs.cameraViewMatrix));
+            outputNode = (0, _mathNodeJs.normalize)((0, _varyingNodeJs.varying)(vertexNode));
+        }
+        return outputNode.build(builder, this.getNodeType(builder));
+    }
+    serialize(data) {
+        super.serialize(data);
+        data.scope = this.scope;
+    }
+    deserialize(data) {
+        super.deserialize(data);
+        this.scope = data.scope;
+    }
+}
+NormalNode.GEOMETRY = "geometry";
+NormalNode.LOCAL = "local";
+NormalNode.VIEW = "view";
+NormalNode.WORLD = "world";
+exports.default = NormalNode;
+const normalGeometry = (0, _shaderNodeJs.nodeImmutable)(NormalNode, NormalNode.GEOMETRY);
+const normalLocal = (0, _shaderNodeJs.nodeImmutable)(NormalNode, NormalNode.LOCAL).temp("Normal");
+const normalView = (0, _shaderNodeJs.nodeImmutable)(NormalNode, NormalNode.VIEW);
+const normalWorld = (0, _shaderNodeJs.nodeImmutable)(NormalNode, NormalNode.WORLD);
+const transformedNormalView = (0, _propertyNodeJs.property)("vec3", "TransformedNormalView");
+const transformedNormalWorld = transformedNormalView.transformDirection((0, _cameraNodeJs.cameraViewMatrix)).normalize();
+const transformedClearcoatNormalView = (0, _propertyNodeJs.property)("vec3", "TransformedClearcoatNormalView");
+(0, _nodeJs.addNodeClass)("NormalNode", NormalNode);
+
+},{"../core/Node.js":"cld0p","../core/AttributeNode.js":"8yUip","../core/VaryingNode.js":"iEE7L","../core/PropertyNode.js":"9JOy4","../math/MathNode.js":"84OFe","./CameraNode.js":"kZ1gx","./ModelNode.js":"ix99b","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"kZ1gx":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "cameraProjectionMatrix", ()=>cameraProjectionMatrix);
+parcelHelpers.export(exports, "cameraProjectionMatrixInverse", ()=>cameraProjectionMatrixInverse);
+parcelHelpers.export(exports, "cameraNear", ()=>cameraNear);
+parcelHelpers.export(exports, "cameraFar", ()=>cameraFar);
+parcelHelpers.export(exports, "cameraLogDepth", ()=>cameraLogDepth);
+parcelHelpers.export(exports, "cameraViewMatrix", ()=>cameraViewMatrix);
+parcelHelpers.export(exports, "cameraNormalMatrix", ()=>cameraNormalMatrix);
+parcelHelpers.export(exports, "cameraWorldMatrix", ()=>cameraWorldMatrix);
+parcelHelpers.export(exports, "cameraPosition", ()=>cameraPosition);
+var _object3DNodeJs = require("./Object3DNode.js");
+var _object3DNodeJsDefault = parcelHelpers.interopDefault(_object3DNodeJs);
+var _nodeJs = require("../core/Node.js");
+var _constantsJs = require("../core/constants.js");
+//import { sharedUniformGroup } from '../core/UniformGroupNode.js';
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+//const cameraGroup = sharedUniformGroup( 'camera' );
+class CameraNode extends (0, _object3DNodeJsDefault.default) {
+    constructor(scope = CameraNode.POSITION){
+        super(scope);
+        this.updateType = (0, _constantsJs.NodeUpdateType).RENDER;
+    //this._uniformNode.groupNode = cameraGroup;
+    }
+    getNodeType(builder) {
+        const scope = this.scope;
+        if (scope === CameraNode.PROJECTION_MATRIX || scope === CameraNode.PROJECTION_MATRIX_INVERSE) return "mat4";
+        else if (scope === CameraNode.NEAR || scope === CameraNode.FAR || scope === CameraNode.LOG_DEPTH) return "float";
+        return super.getNodeType(builder);
+    }
+    update(frame) {
+        const camera = frame.camera;
+        const uniformNode = this._uniformNode;
+        const scope = this.scope;
+        //cameraGroup.needsUpdate = true;
+        if (scope === CameraNode.VIEW_MATRIX) uniformNode.value = camera.matrixWorldInverse;
+        else if (scope === CameraNode.PROJECTION_MATRIX) uniformNode.value = camera.projectionMatrix;
+        else if (scope === CameraNode.PROJECTION_MATRIX_INVERSE) uniformNode.value = camera.projectionMatrixInverse;
+        else if (scope === CameraNode.NEAR) uniformNode.value = camera.near;
+        else if (scope === CameraNode.FAR) uniformNode.value = camera.far;
+        else if (scope === CameraNode.LOG_DEPTH) uniformNode.value = 2.0 / (Math.log(camera.far + 1.0) / Math.LN2);
+        else {
+            this.object3d = camera;
+            super.update(frame);
+        }
+    }
+    generate(builder) {
+        const scope = this.scope;
+        if (scope === CameraNode.PROJECTION_MATRIX || scope === CameraNode.PROJECTION_MATRIX_INVERSE) this._uniformNode.nodeType = "mat4";
+        else if (scope === CameraNode.NEAR || scope === CameraNode.FAR || scope === CameraNode.LOG_DEPTH) this._uniformNode.nodeType = "float";
+        return super.generate(builder);
+    }
+}
+CameraNode.PROJECTION_MATRIX = "projectionMatrix";
+CameraNode.PROJECTION_MATRIX_INVERSE = "projectionMatrixInverse";
+CameraNode.NEAR = "near";
+CameraNode.FAR = "far";
+CameraNode.LOG_DEPTH = "logDepth";
+exports.default = CameraNode;
+const cameraProjectionMatrix = (0, _shaderNodeJs.nodeImmutable)(CameraNode, CameraNode.PROJECTION_MATRIX);
+const cameraProjectionMatrixInverse = (0, _shaderNodeJs.nodeImmutable)(CameraNode, CameraNode.PROJECTION_MATRIX_INVERSE);
+const cameraNear = (0, _shaderNodeJs.nodeImmutable)(CameraNode, CameraNode.NEAR);
+const cameraFar = (0, _shaderNodeJs.nodeImmutable)(CameraNode, CameraNode.FAR);
+const cameraLogDepth = (0, _shaderNodeJs.nodeImmutable)(CameraNode, CameraNode.LOG_DEPTH);
+const cameraViewMatrix = (0, _shaderNodeJs.nodeImmutable)(CameraNode, CameraNode.VIEW_MATRIX);
+const cameraNormalMatrix = (0, _shaderNodeJs.nodeImmutable)(CameraNode, CameraNode.NORMAL_MATRIX);
+const cameraWorldMatrix = (0, _shaderNodeJs.nodeImmutable)(CameraNode, CameraNode.WORLD_MATRIX);
+const cameraPosition = (0, _shaderNodeJs.nodeImmutable)(CameraNode, CameraNode.POSITION);
+(0, _nodeJs.addNodeClass)("CameraNode", CameraNode);
+
+},{"./Object3DNode.js":"jydh6","../core/Node.js":"cld0p","../core/constants.js":"6tdkL","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"jydh6":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "objectDirection", ()=>objectDirection);
+parcelHelpers.export(exports, "objectViewMatrix", ()=>objectViewMatrix);
+parcelHelpers.export(exports, "objectNormalMatrix", ()=>objectNormalMatrix);
+parcelHelpers.export(exports, "objectWorldMatrix", ()=>objectWorldMatrix);
+parcelHelpers.export(exports, "objectPosition", ()=>objectPosition);
+parcelHelpers.export(exports, "objectScale", ()=>objectScale);
+parcelHelpers.export(exports, "objectViewPosition", ()=>objectViewPosition);
+var _nodeJs = require("../core/Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+var _constantsJs = require("../core/constants.js");
+var _uniformNodeJs = require("../core/UniformNode.js");
+var _uniformNodeJsDefault = parcelHelpers.interopDefault(_uniformNodeJs);
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+var _three = require("three");
+class Object3DNode extends (0, _nodeJsDefault.default) {
+    constructor(scope = Object3DNode.VIEW_MATRIX, object3d = null){
+        super();
+        this.scope = scope;
+        this.object3d = object3d;
+        this.updateType = (0, _constantsJs.NodeUpdateType).OBJECT;
+        this._uniformNode = new (0, _uniformNodeJsDefault.default)(null);
+    }
+    getNodeType() {
+        const scope = this.scope;
+        if (scope === Object3DNode.WORLD_MATRIX || scope === Object3DNode.VIEW_MATRIX) return "mat4";
+        else if (scope === Object3DNode.NORMAL_MATRIX) return "mat3";
+        else if (scope === Object3DNode.POSITION || scope === Object3DNode.VIEW_POSITION || scope === Object3DNode.DIRECTION || scope === Object3DNode.SCALE) return "vec3";
+    }
+    update(frame) {
+        const object = this.object3d;
+        const uniformNode = this._uniformNode;
+        const scope = this.scope;
+        if (scope === Object3DNode.VIEW_MATRIX) uniformNode.value = object.modelViewMatrix;
+        else if (scope === Object3DNode.NORMAL_MATRIX) uniformNode.value = object.normalMatrix;
+        else if (scope === Object3DNode.WORLD_MATRIX) uniformNode.value = object.matrixWorld;
+        else if (scope === Object3DNode.POSITION) {
+            uniformNode.value = uniformNode.value || new (0, _three.Vector3)();
+            uniformNode.value.setFromMatrixPosition(object.matrixWorld);
+        } else if (scope === Object3DNode.SCALE) {
+            uniformNode.value = uniformNode.value || new (0, _three.Vector3)();
+            uniformNode.value.setFromMatrixScale(object.matrixWorld);
+        } else if (scope === Object3DNode.DIRECTION) {
+            uniformNode.value = uniformNode.value || new (0, _three.Vector3)();
+            object.getWorldDirection(uniformNode.value);
+        } else if (scope === Object3DNode.VIEW_POSITION) {
+            const camera = frame.camera;
+            uniformNode.value = uniformNode.value || new (0, _three.Vector3)();
+            uniformNode.value.setFromMatrixPosition(object.matrixWorld);
+            uniformNode.value.applyMatrix4(camera.matrixWorldInverse);
+        }
+    }
+    generate(builder) {
+        const scope = this.scope;
+        if (scope === Object3DNode.WORLD_MATRIX || scope === Object3DNode.VIEW_MATRIX) this._uniformNode.nodeType = "mat4";
+        else if (scope === Object3DNode.NORMAL_MATRIX) this._uniformNode.nodeType = "mat3";
+        else if (scope === Object3DNode.POSITION || scope === Object3DNode.VIEW_POSITION || scope === Object3DNode.DIRECTION || scope === Object3DNode.SCALE) this._uniformNode.nodeType = "vec3";
+        return this._uniformNode.build(builder);
+    }
+    serialize(data) {
+        super.serialize(data);
+        data.scope = this.scope;
+    }
+    deserialize(data) {
+        super.deserialize(data);
+        this.scope = data.scope;
+    }
+}
+Object3DNode.VIEW_MATRIX = "viewMatrix";
+Object3DNode.NORMAL_MATRIX = "normalMatrix";
+Object3DNode.WORLD_MATRIX = "worldMatrix";
+Object3DNode.POSITION = "position";
+Object3DNode.SCALE = "scale";
+Object3DNode.VIEW_POSITION = "viewPosition";
+Object3DNode.DIRECTION = "direction";
+exports.default = Object3DNode;
+const objectDirection = (0, _shaderNodeJs.nodeProxy)(Object3DNode, Object3DNode.DIRECTION);
+const objectViewMatrix = (0, _shaderNodeJs.nodeProxy)(Object3DNode, Object3DNode.VIEW_MATRIX);
+const objectNormalMatrix = (0, _shaderNodeJs.nodeProxy)(Object3DNode, Object3DNode.NORMAL_MATRIX);
+const objectWorldMatrix = (0, _shaderNodeJs.nodeProxy)(Object3DNode, Object3DNode.WORLD_MATRIX);
+const objectPosition = (0, _shaderNodeJs.nodeProxy)(Object3DNode, Object3DNode.POSITION);
+const objectScale = (0, _shaderNodeJs.nodeProxy)(Object3DNode, Object3DNode.SCALE);
+const objectViewPosition = (0, _shaderNodeJs.nodeProxy)(Object3DNode, Object3DNode.VIEW_POSITION);
+(0, _nodeJs.addNodeClass)("Object3DNode", Object3DNode);
+
+},{"../core/Node.js":"cld0p","../core/constants.js":"6tdkL","../core/UniformNode.js":"cfhYS","../shadernode/ShaderNode.js":"8Xgcj","three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"ix99b":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "modelDirection", ()=>modelDirection);
+parcelHelpers.export(exports, "modelViewMatrix", ()=>modelViewMatrix);
+parcelHelpers.export(exports, "modelNormalMatrix", ()=>modelNormalMatrix);
+parcelHelpers.export(exports, "modelWorldMatrix", ()=>modelWorldMatrix);
+parcelHelpers.export(exports, "modelPosition", ()=>modelPosition);
+parcelHelpers.export(exports, "modelScale", ()=>modelScale);
+parcelHelpers.export(exports, "modelViewPosition", ()=>modelViewPosition);
+var _object3DNodeJs = require("./Object3DNode.js");
+var _object3DNodeJsDefault = parcelHelpers.interopDefault(_object3DNodeJs);
+var _nodeJs = require("../core/Node.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class ModelNode extends (0, _object3DNodeJsDefault.default) {
+    constructor(scope = ModelNode.VIEW_MATRIX){
+        super(scope);
+    }
+    update(frame) {
+        this.object3d = frame.object;
+        super.update(frame);
+    }
+}
+exports.default = ModelNode;
+const modelDirection = (0, _shaderNodeJs.nodeImmutable)(ModelNode, ModelNode.DIRECTION);
+const modelViewMatrix = (0, _shaderNodeJs.nodeImmutable)(ModelNode, ModelNode.VIEW_MATRIX).label("modelViewMatrix").temp("ModelViewMatrix");
+const modelNormalMatrix = (0, _shaderNodeJs.nodeImmutable)(ModelNode, ModelNode.NORMAL_MATRIX);
+const modelWorldMatrix = (0, _shaderNodeJs.nodeImmutable)(ModelNode, ModelNode.WORLD_MATRIX);
+const modelPosition = (0, _shaderNodeJs.nodeImmutable)(ModelNode, ModelNode.POSITION);
+const modelScale = (0, _shaderNodeJs.nodeImmutable)(ModelNode, ModelNode.SCALE);
+const modelViewPosition = (0, _shaderNodeJs.nodeImmutable)(ModelNode, ModelNode.VIEW_POSITION);
+(0, _nodeJs.addNodeClass)("ModelNode", ModelNode);
+
+},{"./Object3DNode.js":"jydh6","../core/Node.js":"cld0p","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"1CbCi":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "modelViewProjection", ()=>modelViewProjection);
+var _nodeJs = require("../core/Node.js");
+var _tempNodeJs = require("../core/TempNode.js");
+var _tempNodeJsDefault = parcelHelpers.interopDefault(_tempNodeJs);
+var _cameraNodeJs = require("./CameraNode.js");
+var _modelNodeJs = require("./ModelNode.js");
+var _positionNodeJs = require("./PositionNode.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+var _varyingNodeJs = require("../core/VaryingNode.js");
+class ModelViewProjectionNode extends (0, _tempNodeJsDefault.default) {
+    constructor(positionNode = null){
+        super("vec4");
+        this.positionNode = positionNode;
+    }
+    setup(builder) {
+        if (builder.shaderStage === "fragment") return (0, _varyingNodeJs.varying)(builder.context.mvp);
+        const position = this.positionNode || (0, _positionNodeJs.positionLocal);
+        return (0, _cameraNodeJs.cameraProjectionMatrix).mul((0, _modelNodeJs.modelViewMatrix)).mul(position);
+    }
+}
+exports.default = ModelViewProjectionNode;
+const modelViewProjection = (0, _shaderNodeJs.nodeProxy)(ModelViewProjectionNode);
+(0, _nodeJs.addNodeClass)("ModelViewProjectionNode", ModelViewProjectionNode);
+
+},{"../core/Node.js":"cld0p","../core/TempNode.js":"l0t0Y","./CameraNode.js":"kZ1gx","./ModelNode.js":"ix99b","./PositionNode.js":"1WXKm","../shadernode/ShaderNode.js":"8Xgcj","../core/VaryingNode.js":"iEE7L","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"1WXKm":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "positionGeometry", ()=>positionGeometry);
+parcelHelpers.export(exports, "positionLocal", ()=>positionLocal);
+parcelHelpers.export(exports, "positionWorld", ()=>positionWorld);
+parcelHelpers.export(exports, "positionWorldDirection", ()=>positionWorldDirection);
+parcelHelpers.export(exports, "positionView", ()=>positionView);
+parcelHelpers.export(exports, "positionViewDirection", ()=>positionViewDirection);
+var _nodeJs = require("../core/Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+var _attributeNodeJs = require("../core/AttributeNode.js");
+var _varyingNodeJs = require("../core/VaryingNode.js");
+var _mathNodeJs = require("../math/MathNode.js");
+var _modelNodeJs = require("./ModelNode.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class PositionNode extends (0, _nodeJsDefault.default) {
+    constructor(scope = PositionNode.LOCAL){
+        super("vec3");
+        this.scope = scope;
+    }
+    isGlobal() {
+        return true;
+    }
+    getHash() {
+        return `position-${this.scope}`;
+    }
+    generate(builder) {
+        const scope = this.scope;
+        let outputNode = null;
+        if (scope === PositionNode.GEOMETRY) outputNode = (0, _attributeNodeJs.attribute)("position", "vec3");
+        else if (scope === PositionNode.LOCAL) outputNode = (0, _varyingNodeJs.varying)(positionGeometry);
+        else if (scope === PositionNode.WORLD) {
+            const vertexPositionNode = (0, _modelNodeJs.modelWorldMatrix).mul(positionLocal);
+            outputNode = (0, _varyingNodeJs.varying)(vertexPositionNode);
+        } else if (scope === PositionNode.VIEW) {
+            const vertexPositionNode = (0, _modelNodeJs.modelViewMatrix).mul(positionLocal);
+            outputNode = (0, _varyingNodeJs.varying)(vertexPositionNode);
+        } else if (scope === PositionNode.VIEW_DIRECTION) {
+            const vertexPositionNode = positionView.negate();
+            outputNode = (0, _mathNodeJs.normalize)((0, _varyingNodeJs.varying)(vertexPositionNode));
+        } else if (scope === PositionNode.WORLD_DIRECTION) {
+            const vertexPositionNode = positionLocal.transformDirection((0, _modelNodeJs.modelWorldMatrix));
+            outputNode = (0, _mathNodeJs.normalize)((0, _varyingNodeJs.varying)(vertexPositionNode));
+        }
+        return outputNode.build(builder, this.getNodeType(builder));
+    }
+    serialize(data) {
+        super.serialize(data);
+        data.scope = this.scope;
+    }
+    deserialize(data) {
+        super.deserialize(data);
+        this.scope = data.scope;
+    }
+}
+PositionNode.GEOMETRY = "geometry";
+PositionNode.LOCAL = "local";
+PositionNode.WORLD = "world";
+PositionNode.WORLD_DIRECTION = "worldDirection";
+PositionNode.VIEW = "view";
+PositionNode.VIEW_DIRECTION = "viewDirection";
+exports.default = PositionNode;
+const positionGeometry = (0, _shaderNodeJs.nodeImmutable)(PositionNode, PositionNode.GEOMETRY);
+const positionLocal = (0, _shaderNodeJs.nodeImmutable)(PositionNode, PositionNode.LOCAL).temp("Position");
+const positionWorld = (0, _shaderNodeJs.nodeImmutable)(PositionNode, PositionNode.WORLD);
+const positionWorldDirection = (0, _shaderNodeJs.nodeImmutable)(PositionNode, PositionNode.WORLD_DIRECTION);
+const positionView = (0, _shaderNodeJs.nodeImmutable)(PositionNode, PositionNode.VIEW);
+const positionViewDirection = (0, _shaderNodeJs.nodeImmutable)(PositionNode, PositionNode.VIEW_DIRECTION);
+(0, _nodeJs.addNodeClass)("PositionNode", PositionNode);
+
+},{"../core/Node.js":"cld0p","../core/AttributeNode.js":"8yUip","../core/VaryingNode.js":"iEE7L","../math/MathNode.js":"84OFe","./ModelNode.js":"ix99b","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gK4TL":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "instance", ()=>instance);
+var _nodeJs = require("../core/Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+var _bufferAttributeNodeJs = require("./BufferAttributeNode.js");
+var _normalNodeJs = require("./NormalNode.js");
+var _positionNodeJs = require("./PositionNode.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+var _three = require("three");
+class InstanceNode extends (0, _nodeJsDefault.default) {
+    constructor(instanceMesh){
+        super("void");
+        this.instanceMesh = instanceMesh;
+        this.instanceMatrixNode = null;
+    }
+    setup() {
+        let instanceMatrixNode = this.instanceMatrixNode;
+        if (instanceMatrixNode === null) {
+            const instanceMesh = this.instanceMesh;
+            const instanceAttribute = instanceMesh.instanceMatrix;
+            const buffer = new (0, _three.InstancedInterleavedBuffer)(instanceAttribute.array, 16, 1);
+            const bufferFn = instanceAttribute.usage === (0, _three.DynamicDrawUsage) ? (0, _bufferAttributeNodeJs.instancedDynamicBufferAttribute) : (0, _bufferAttributeNodeJs.instancedBufferAttribute);
+            const instanceBuffers = [
+                // F.Signature -> bufferAttribute( array, type, stride, offset )
+                bufferFn(buffer, "vec4", 16, 0),
+                bufferFn(buffer, "vec4", 16, 4),
+                bufferFn(buffer, "vec4", 16, 8),
+                bufferFn(buffer, "vec4", 16, 12)
+            ];
+            instanceMatrixNode = (0, _shaderNodeJs.mat4)(...instanceBuffers);
+            this.instanceMatrixNode = instanceMatrixNode;
+        }
+        // POSITION
+        const instancePosition = instanceMatrixNode.mul((0, _positionNodeJs.positionLocal)).xyz;
+        // NORMAL
+        const m = (0, _shaderNodeJs.mat3)(instanceMatrixNode[0].xyz, instanceMatrixNode[1].xyz, instanceMatrixNode[2].xyz);
+        const transformedNormal = (0, _normalNodeJs.normalLocal).div((0, _shaderNodeJs.vec3)(m[0].dot(m[0]), m[1].dot(m[1]), m[2].dot(m[2])));
+        const instanceNormal = m.mul(transformedNormal).xyz;
+        // ASSIGNS
+        (0, _positionNodeJs.positionLocal).assign(instancePosition);
+        (0, _normalNodeJs.normalLocal).assign(instanceNormal);
+    }
+}
+exports.default = InstanceNode;
+const instance = (0, _shaderNodeJs.nodeProxy)(InstanceNode);
+(0, _nodeJs.addNodeClass)("InstanceNode", InstanceNode);
+
+},{"../core/Node.js":"cld0p","./BufferAttributeNode.js":"Zd84g","./NormalNode.js":"4n1Pc","./PositionNode.js":"1WXKm","../shadernode/ShaderNode.js":"8Xgcj","three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"Zd84g":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "bufferAttribute", ()=>bufferAttribute);
+parcelHelpers.export(exports, "dynamicBufferAttribute", ()=>dynamicBufferAttribute);
+parcelHelpers.export(exports, "instancedBufferAttribute", ()=>instancedBufferAttribute);
+parcelHelpers.export(exports, "instancedDynamicBufferAttribute", ()=>instancedDynamicBufferAttribute);
+var _inputNodeJs = require("../core/InputNode.js");
+var _inputNodeJsDefault = parcelHelpers.interopDefault(_inputNodeJs);
+var _nodeJs = require("../core/Node.js");
+var _varyingNodeJs = require("../core/VaryingNode.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+var _three = require("three");
+class BufferAttributeNode extends (0, _inputNodeJsDefault.default) {
+    constructor(value, bufferType = null, bufferStride = 0, bufferOffset = 0){
+        super(value, bufferType);
+        this.isBufferNode = true;
+        this.bufferType = bufferType;
+        this.bufferStride = bufferStride;
+        this.bufferOffset = bufferOffset;
+        this.usage = (0, _three.StaticDrawUsage);
+        this.instanced = false;
+        this.attribute = null;
+        if (value && value.isBufferAttribute === true) {
+            this.attribute = value;
+            this.usage = value.usage;
+            this.instanced = value.isInstancedBufferAttribute;
+        }
+    }
+    getNodeType(builder) {
+        if (this.bufferType === null) this.bufferType = builder.getTypeFromAttribute(this.attribute);
+        return this.bufferType;
+    }
+    setup(builder) {
+        if (this.attribute !== null) return;
+        const type = this.getNodeType(builder);
+        const array = this.value;
+        const itemSize = builder.getTypeLength(type);
+        const stride = this.bufferStride || itemSize;
+        const offset = this.bufferOffset;
+        const buffer = array.isInterleavedBuffer === true ? array : new (0, _three.InterleavedBuffer)(array, stride);
+        const bufferAttribute = new (0, _three.InterleavedBufferAttribute)(buffer, itemSize, offset);
+        buffer.setUsage(this.usage);
+        this.attribute = bufferAttribute;
+        this.attribute.isInstancedBufferAttribute = this.instanced; // @TODO: Add a possible: InstancedInterleavedBufferAttribute
+    }
+    generate(builder) {
+        const nodeType = this.getNodeType(builder);
+        const nodeAttribute = builder.getBufferAttributeFromNode(this, nodeType);
+        const propertyName = builder.getPropertyName(nodeAttribute);
+        let output = null;
+        if (builder.shaderStage === "vertex" || builder.shaderStage === "compute") {
+            this.name = propertyName;
+            output = propertyName;
+        } else {
+            const nodeVarying = (0, _varyingNodeJs.varying)(this);
+            output = nodeVarying.build(builder, nodeType);
+        }
+        return output;
+    }
+    getInputType() {
+        return "bufferAttribute";
+    }
+    setUsage(value) {
+        this.usage = value;
+        return this;
+    }
+    setInstanced(value) {
+        this.instanced = value;
+        return this;
+    }
+}
+exports.default = BufferAttributeNode;
+const bufferAttribute = (array, type, stride, offset)=>(0, _shaderNodeJs.nodeObject)(new BufferAttributeNode(array, type, stride, offset));
+const dynamicBufferAttribute = (array, type, stride, offset)=>bufferAttribute(array, type, stride, offset).setUsage((0, _three.DynamicDrawUsage));
+const instancedBufferAttribute = (array, type, stride, offset)=>bufferAttribute(array, type, stride, offset).setInstanced(true);
+const instancedDynamicBufferAttribute = (array, type, stride, offset)=>dynamicBufferAttribute(array, type, stride, offset).setInstanced(true);
+(0, _shaderNodeJs.addNodeElement)("toAttribute", (bufferNode)=>bufferAttribute(bufferNode.value));
+(0, _nodeJs.addNodeClass)("BufferAttributeNode", BufferAttributeNode);
+
+},{"../core/InputNode.js":"7IGQM","../core/Node.js":"cld0p","../core/VaryingNode.js":"iEE7L","../shadernode/ShaderNode.js":"8Xgcj","three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"2bRI1":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "skinning", ()=>skinning);
+var _nodeJs = require("../core/Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+var _constantsJs = require("../core/constants.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+var _attributeNodeJs = require("../core/AttributeNode.js");
+var _uniformNodeJs = require("../core/UniformNode.js");
+var _operatorNodeJs = require("../math/OperatorNode.js");
+var _bufferNodeJs = require("./BufferNode.js");
+var _normalNodeJs = require("./NormalNode.js");
+var _positionNodeJs = require("./PositionNode.js");
+var _tangentNodeJs = require("./TangentNode.js");
+class SkinningNode extends (0, _nodeJsDefault.default) {
+    constructor(skinnedMesh){
+        super("void");
+        this.skinnedMesh = skinnedMesh;
+        this.updateType = (0, _constantsJs.NodeUpdateType).OBJECT;
+        //
+        this.skinIndexNode = (0, _attributeNodeJs.attribute)("skinIndex", "uvec4");
+        this.skinWeightNode = (0, _attributeNodeJs.attribute)("skinWeight", "vec4");
+        this.bindMatrixNode = (0, _uniformNodeJs.uniform)(skinnedMesh.bindMatrix, "mat4");
+        this.bindMatrixInverseNode = (0, _uniformNodeJs.uniform)(skinnedMesh.bindMatrixInverse, "mat4");
+        this.boneMatricesNode = (0, _bufferNodeJs.buffer)(skinnedMesh.skeleton.boneMatrices, "mat4", skinnedMesh.skeleton.bones.length);
+    }
+    setup(builder) {
+        const { skinIndexNode, skinWeightNode, bindMatrixNode, bindMatrixInverseNode, boneMatricesNode } = this;
+        const boneMatX = boneMatricesNode.element(skinIndexNode.x);
+        const boneMatY = boneMatricesNode.element(skinIndexNode.y);
+        const boneMatZ = boneMatricesNode.element(skinIndexNode.z);
+        const boneMatW = boneMatricesNode.element(skinIndexNode.w);
+        // POSITION
+        const skinVertex = bindMatrixNode.mul((0, _positionNodeJs.positionLocal));
+        const skinned = (0, _operatorNodeJs.add)(boneMatX.mul(skinWeightNode.x).mul(skinVertex), boneMatY.mul(skinWeightNode.y).mul(skinVertex), boneMatZ.mul(skinWeightNode.z).mul(skinVertex), boneMatW.mul(skinWeightNode.w).mul(skinVertex));
+        const skinPosition = bindMatrixInverseNode.mul(skinned).xyz;
+        // NORMAL
+        let skinMatrix = (0, _operatorNodeJs.add)(skinWeightNode.x.mul(boneMatX), skinWeightNode.y.mul(boneMatY), skinWeightNode.z.mul(boneMatZ), skinWeightNode.w.mul(boneMatW));
+        skinMatrix = bindMatrixInverseNode.mul(skinMatrix).mul(bindMatrixNode);
+        const skinNormal = skinMatrix.transformDirection((0, _normalNodeJs.normalLocal)).xyz;
+        // ASSIGNS
+        (0, _positionNodeJs.positionLocal).assign(skinPosition);
+        (0, _normalNodeJs.normalLocal).assign(skinNormal);
+        if (builder.hasGeometryAttribute("tangent")) (0, _tangentNodeJs.tangentLocal).assign(skinNormal);
+    }
+    generate(builder, output) {
+        if (output !== "void") return (0, _positionNodeJs.positionLocal).build(builder, output);
+    }
+    update() {
+        this.skinnedMesh.skeleton.update();
+    }
+}
+exports.default = SkinningNode;
+const skinning = (0, _shaderNodeJs.nodeProxy)(SkinningNode);
+(0, _nodeJs.addNodeClass)("SkinningNode", SkinningNode);
+
+},{"../core/Node.js":"cld0p","../core/constants.js":"6tdkL","../shadernode/ShaderNode.js":"8Xgcj","../core/AttributeNode.js":"8yUip","../core/UniformNode.js":"cfhYS","../math/OperatorNode.js":"hCYI5","./BufferNode.js":"5k9aZ","./NormalNode.js":"4n1Pc","./PositionNode.js":"1WXKm","./TangentNode.js":"kLjM0","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"5k9aZ":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "buffer", ()=>buffer);
+var _uniformNodeJs = require("../core/UniformNode.js");
+var _uniformNodeJsDefault = parcelHelpers.interopDefault(_uniformNodeJs);
+var _nodeJs = require("../core/Node.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class BufferNode extends (0, _uniformNodeJsDefault.default) {
+    constructor(value, bufferType, bufferCount = 0){
+        super(value, bufferType);
+        this.isBufferNode = true;
+        this.bufferType = bufferType;
+        this.bufferCount = bufferCount;
+    }
+    getInputType() {
+        return "buffer";
+    }
+}
+exports.default = BufferNode;
+const buffer = (value, type, count)=>(0, _shaderNodeJs.nodeObject)(new BufferNode(value, type, count));
+(0, _nodeJs.addNodeClass)("BufferNode", BufferNode);
+
+},{"../core/UniformNode.js":"cfhYS","../core/Node.js":"cld0p","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"kLjM0":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "tangentGeometry", ()=>tangentGeometry);
+parcelHelpers.export(exports, "tangentLocal", ()=>tangentLocal);
+parcelHelpers.export(exports, "tangentView", ()=>tangentView);
+parcelHelpers.export(exports, "tangentWorld", ()=>tangentWorld);
+parcelHelpers.export(exports, "transformedTangentView", ()=>transformedTangentView);
+parcelHelpers.export(exports, "transformedTangentWorld", ()=>transformedTangentWorld);
+var _nodeJs = require("../core/Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+var _attributeNodeJs = require("../core/AttributeNode.js");
+var _varNodeJs = require("../core/VarNode.js");
+var _varyingNodeJs = require("../core/VaryingNode.js");
+var _mathNodeJs = require("../math/MathNode.js");
+var _cameraNodeJs = require("./CameraNode.js");
+var _modelNodeJs = require("./ModelNode.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class TangentNode extends (0, _nodeJsDefault.default) {
+    constructor(scope = TangentNode.LOCAL){
+        super();
+        this.scope = scope;
+    }
+    getHash() {
+        return `tangent-${this.scope}`;
+    }
+    getNodeType() {
+        const scope = this.scope;
+        if (scope === TangentNode.GEOMETRY) return "vec4";
+        return "vec3";
+    }
+    generate(builder) {
+        const scope = this.scope;
+        let outputNode = null;
+        if (scope === TangentNode.GEOMETRY) outputNode = (0, _attributeNodeJs.attribute)("tangent", "vec4");
+        else if (scope === TangentNode.LOCAL) outputNode = (0, _varyingNodeJs.varying)(tangentGeometry.xyz);
+        else if (scope === TangentNode.VIEW) {
+            const vertexNode = (0, _modelNodeJs.modelViewMatrix).mul(tangentLocal).xyz;
+            outputNode = (0, _mathNodeJs.normalize)((0, _varyingNodeJs.varying)(vertexNode));
+        } else if (scope === TangentNode.WORLD) {
+            const vertexNode = tangentView.transformDirection((0, _cameraNodeJs.cameraViewMatrix));
+            outputNode = (0, _mathNodeJs.normalize)((0, _varyingNodeJs.varying)(vertexNode));
+        }
+        return outputNode.build(builder, this.getNodeType(builder));
+    }
+    serialize(data) {
+        super.serialize(data);
+        data.scope = this.scope;
+    }
+    deserialize(data) {
+        super.deserialize(data);
+        this.scope = data.scope;
+    }
+}
+TangentNode.GEOMETRY = "geometry";
+TangentNode.LOCAL = "local";
+TangentNode.VIEW = "view";
+TangentNode.WORLD = "world";
+exports.default = TangentNode;
+const tangentGeometry = (0, _shaderNodeJs.nodeImmutable)(TangentNode, TangentNode.GEOMETRY);
+const tangentLocal = (0, _shaderNodeJs.nodeImmutable)(TangentNode, TangentNode.LOCAL);
+const tangentView = (0, _shaderNodeJs.nodeImmutable)(TangentNode, TangentNode.VIEW);
+const tangentWorld = (0, _shaderNodeJs.nodeImmutable)(TangentNode, TangentNode.WORLD);
+const transformedTangentView = (0, _varNodeJs.temp)(tangentView, "TransformedTangentView");
+const transformedTangentWorld = (0, _mathNodeJs.normalize)(transformedTangentView.transformDirection((0, _cameraNodeJs.cameraViewMatrix)));
+(0, _nodeJs.addNodeClass)("TangentNode", TangentNode);
+
+},{"../core/Node.js":"cld0p","../core/AttributeNode.js":"8yUip","../core/VarNode.js":"4EKsV","../core/VaryingNode.js":"iEE7L","../math/MathNode.js":"84OFe","./CameraNode.js":"kZ1gx","./ModelNode.js":"ix99b","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"6G8Uj":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "morph", ()=>morph);
+var _nodeJs = require("../core/Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+var _constantsJs = require("../core/constants.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+var _uniformNodeJs = require("../core/UniformNode.js");
+var _referenceNodeJs = require("./ReferenceNode.js");
+var _positionNodeJs = require("./PositionNode.js");
+var _normalNodeJs = require("./NormalNode.js");
+var _textureNodeJs = require("./TextureNode.js");
+var _indexNodeJs = require("../core/IndexNode.js");
+var _three = require("three");
+const morphTextures = new WeakMap();
+const morphVec4 = new (0, _three.Vector4)();
+const getMorph = (0, _shaderNodeJs.tslFn)(({ bufferMap, influence, stride, width, depth, offset })=>{
+    const texelIndex = (0, _shaderNodeJs.int)((0, _indexNodeJs.vertexIndex)).mul(stride).add(offset);
+    const y = texelIndex.div(width);
+    const x = texelIndex.sub(y.mul(width));
+    const bufferAttrib = (0, _textureNodeJs.textureLoad)(bufferMap, (0, _shaderNodeJs.ivec2)(x, y)).depth(depth);
+    return bufferAttrib.mul(influence);
+});
+function getEntry(geometry) {
+    const hasMorphPosition = geometry.morphAttributes.position !== undefined;
+    const hasMorphNormals = geometry.morphAttributes.normal !== undefined;
+    const hasMorphColors = geometry.morphAttributes.color !== undefined;
+    // instead of using attributes, the WebGL 2 code path encodes morph targets
+    // into an array of data textures. Each layer represents a single morph target.
+    const morphAttribute = geometry.morphAttributes.position || geometry.morphAttributes.normal || geometry.morphAttributes.color;
+    const morphTargetsCount = morphAttribute !== undefined ? morphAttribute.length : 0;
+    let entry = morphTextures.get(geometry);
+    if (entry === undefined || entry.count !== morphTargetsCount) {
+        if (entry !== undefined) entry.texture.dispose();
+        const morphTargets = geometry.morphAttributes.position || [];
+        const morphNormals = geometry.morphAttributes.normal || [];
+        const morphColors = geometry.morphAttributes.color || [];
+        let vertexDataCount = 0;
+        if (hasMorphPosition === true) vertexDataCount = 1;
+        if (hasMorphNormals === true) vertexDataCount = 2;
+        if (hasMorphColors === true) vertexDataCount = 3;
+        let width = geometry.attributes.position.count * vertexDataCount;
+        let height = 1;
+        const maxTextureSize = 4096; // @TODO: Use 'capabilities.maxTextureSize'
+        if (width > maxTextureSize) {
+            height = Math.ceil(width / maxTextureSize);
+            width = maxTextureSize;
+        }
+        const buffer = new Float32Array(width * height * 4 * morphTargetsCount);
+        const bufferTexture = new (0, _three.DataArrayTexture)(buffer, width, height, morphTargetsCount);
+        bufferTexture.type = (0, _three.FloatType);
+        bufferTexture.needsUpdate = true;
+        // fill buffer
+        const vertexDataStride = vertexDataCount * 4;
+        for(let i = 0; i < morphTargetsCount; i++){
+            const morphTarget = morphTargets[i];
+            const morphNormal = morphNormals[i];
+            const morphColor = morphColors[i];
+            const offset = width * height * 4 * i;
+            for(let j = 0; j < morphTarget.count; j++){
+                const stride = j * vertexDataStride;
+                if (hasMorphPosition === true) {
+                    morphVec4.fromBufferAttribute(morphTarget, j);
+                    buffer[offset + stride + 0] = morphVec4.x;
+                    buffer[offset + stride + 1] = morphVec4.y;
+                    buffer[offset + stride + 2] = morphVec4.z;
+                    buffer[offset + stride + 3] = 0;
+                }
+                if (hasMorphNormals === true) {
+                    morphVec4.fromBufferAttribute(morphNormal, j);
+                    buffer[offset + stride + 4] = morphVec4.x;
+                    buffer[offset + stride + 5] = morphVec4.y;
+                    buffer[offset + stride + 6] = morphVec4.z;
+                    buffer[offset + stride + 7] = 0;
+                }
+                if (hasMorphColors === true) {
+                    morphVec4.fromBufferAttribute(morphColor, j);
+                    buffer[offset + stride + 8] = morphVec4.x;
+                    buffer[offset + stride + 9] = morphVec4.y;
+                    buffer[offset + stride + 10] = morphVec4.z;
+                    buffer[offset + stride + 11] = morphColor.itemSize === 4 ? morphVec4.w : 1;
+                }
+            }
+        }
+        entry = {
+            count: morphTargetsCount,
+            texture: bufferTexture,
+            stride: vertexDataCount,
+            size: new (0, _three.Vector2)(width, height)
+        };
+        morphTextures.set(geometry, entry);
+        function disposeTexture() {
+            bufferTexture.dispose();
+            morphTextures.delete(geometry);
+            geometry.removeEventListener("dispose", disposeTexture);
+        }
+        geometry.addEventListener("dispose", disposeTexture);
+    }
+    return entry;
+}
+class MorphNode extends (0, _nodeJsDefault.default) {
+    constructor(mesh){
+        super("void");
+        this.mesh = mesh;
+        this.morphBaseInfluence = (0, _uniformNodeJs.uniform)(1);
+        this.updateType = (0, _constantsJs.NodeUpdateType).OBJECT;
+    }
+    setup(builder) {
+        const { geometry } = builder;
+        const hasMorphPosition = geometry.morphAttributes.position !== undefined;
+        const hasMorphNormals = geometry.morphAttributes.normal !== undefined;
+        const morphAttribute = geometry.morphAttributes.position || geometry.morphAttributes.normal || geometry.morphAttributes.color;
+        const morphTargetsCount = morphAttribute !== undefined ? morphAttribute.length : 0;
+        // nodes
+        const { texture: bufferMap, stride, size } = getEntry(geometry);
+        if (hasMorphPosition === true) (0, _positionNodeJs.positionLocal).mulAssign(this.morphBaseInfluence);
+        if (hasMorphNormals === true) (0, _normalNodeJs.normalLocal).mulAssign(this.morphBaseInfluence);
+        const width = (0, _shaderNodeJs.int)(size.width);
+        for(let i = 0; i < morphTargetsCount; i++){
+            const influence = (0, _referenceNodeJs.referenceIndex)("morphTargetInfluences", i, "float");
+            const depth = (0, _shaderNodeJs.int)(i);
+            if (hasMorphPosition === true) (0, _positionNodeJs.positionLocal).addAssign(getMorph({
+                bufferMap,
+                influence,
+                stride,
+                width,
+                depth,
+                offset: (0, _shaderNodeJs.int)(0)
+            }));
+            if (hasMorphNormals === true) (0, _normalNodeJs.normalLocal).addAssign(getMorph({
+                bufferMap,
+                influence,
+                stride,
+                width,
+                depth,
+                offset: (0, _shaderNodeJs.int)(1)
+            }));
+        }
+    }
+    update() {
+        const morphBaseInfluence = this.morphBaseInfluence;
+        if (this.mesh.geometry.morphTargetsRelative) morphBaseInfluence.value = 1;
+        else morphBaseInfluence.value = 1 - this.mesh.morphTargetInfluences.reduce((a, b)=>a + b, 0);
+    }
+}
+exports.default = MorphNode;
+const morph = (0, _shaderNodeJs.nodeProxy)(MorphNode);
+(0, _nodeJs.addNodeClass)("MorphNode", MorphNode);
+
+},{"../core/Node.js":"cld0p","../core/constants.js":"6tdkL","../shadernode/ShaderNode.js":"8Xgcj","../core/UniformNode.js":"cfhYS","./ReferenceNode.js":"6ceuI","./PositionNode.js":"1WXKm","./NormalNode.js":"4n1Pc","./TextureNode.js":"4V1bd","../core/IndexNode.js":"az1vR","three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"6SJcw":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "cubeTexture", ()=>cubeTexture);
+var _textureNodeJs = require("./TextureNode.js");
+var _textureNodeJsDefault = parcelHelpers.interopDefault(_textureNodeJs);
+var _reflectVectorNodeJs = require("./ReflectVectorNode.js");
+var _nodeJs = require("../core/Node.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+var _three = require("three");
+class CubeTextureNode extends (0, _textureNodeJsDefault.default) {
+    constructor(value, uvNode = null, levelNode = null){
+        super(value, uvNode, levelNode);
+        this.isCubeTextureNode = true;
+    }
+    getInputType() {
+        return "cubeTexture";
+    }
+    getDefaultUV() {
+        return 0, _reflectVectorNodeJs.reflectVector;
+    }
+    setUpdateMatrix() {}
+    setupUV(builder, uvNode) {
+        const texture = this.value;
+        if (builder.renderer.coordinateSystem === (0, _three.WebGPUCoordinateSystem) || !texture.isRenderTargetTexture) return (0, _shaderNodeJs.vec3)(uvNode.x.negate(), uvNode.yz);
+        else return uvNode;
+    }
+    generateUV(builder, cubeUV) {
+        return cubeUV.build(builder, "vec3");
+    }
+}
+exports.default = CubeTextureNode;
+const cubeTexture = (0, _shaderNodeJs.nodeProxy)(CubeTextureNode);
+(0, _shaderNodeJs.addNodeElement)("cubeTexture", cubeTexture);
+(0, _nodeJs.addNodeClass)("CubeTextureNode", CubeTextureNode);
+
+},{"./TextureNode.js":"4V1bd","./ReflectVectorNode.js":"5vFM7","../core/Node.js":"cld0p","../shadernode/ShaderNode.js":"8Xgcj","three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"5vFM7":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "reflectVector", ()=>reflectVector);
+var _nodeJs = require("../core/Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+var _cameraNodeJs = require("./CameraNode.js");
+var _normalNodeJs = require("./NormalNode.js");
+var _positionNodeJs = require("./PositionNode.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class ReflectVectorNode extends (0, _nodeJsDefault.default) {
+    constructor(){
+        super("vec3");
+    }
+    getHash() {
+        return "reflectVector";
+    }
+    setup() {
+        const reflectView = (0, _positionNodeJs.positionViewDirection).negate().reflect((0, _normalNodeJs.transformedNormalView));
+        return reflectView.transformDirection((0, _cameraNodeJs.cameraViewMatrix));
+    }
+}
+exports.default = ReflectVectorNode;
+const reflectVector = (0, _shaderNodeJs.nodeImmutable)(ReflectVectorNode);
+(0, _nodeJs.addNodeClass)("ReflectVectorNode", ReflectVectorNode);
+
+},{"../core/Node.js":"cld0p","./CameraNode.js":"kZ1gx","./NormalNode.js":"4n1Pc","./PositionNode.js":"1WXKm","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"175Gf":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "lights", ()=>lights);
+parcelHelpers.export(exports, "lightsNode", ()=>lightsNode);
+parcelHelpers.export(exports, "addLightNode", ()=>addLightNode);
+var _nodeJs = require("../core/Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+var _analyticLightNodeJs = require("./AnalyticLightNode.js");
+var _analyticLightNodeJsDefault = parcelHelpers.interopDefault(_analyticLightNodeJs);
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+const LightNodes = new WeakMap();
+const sortLights = (lights)=>{
+    return lights.sort((a, b)=>a.id - b.id);
+};
+class LightsNode extends (0, _nodeJsDefault.default) {
+    constructor(lightNodes = []){
+        super("vec3");
+        this.totalDiffuseNode = (0, _shaderNodeJs.vec3)().temp("totalDiffuse");
+        this.totalSpecularNode = (0, _shaderNodeJs.vec3)().temp("totalSpecular");
+        this.outgoingLightNode = (0, _shaderNodeJs.vec3)().temp("outgoingLight");
+        this.lightNodes = lightNodes;
+        this._hash = null;
+    }
+    get hasLight() {
+        return this.lightNodes.length > 0;
+    }
+    getHash() {
+        if (this._hash === null) {
+            const hash = [];
+            for (const lightNode of this.lightNodes)hash.push(lightNode.getHash());
+            this._hash = "lights-" + hash.join(",");
+        }
+        return this._hash;
+    }
+    setup(builder) {
+        const context = builder.context;
+        const lightingModel = context.lightingModel;
+        let outgoingLightNode = this.outgoingLightNode;
+        if (lightingModel) {
+            const { lightNodes, totalDiffuseNode, totalSpecularNode } = this;
+            context.outgoingLight = outgoingLightNode;
+            const stack = builder.addStack();
+            //
+            lightingModel.start(context, stack, builder);
+            // lights
+            for (const lightNode of lightNodes)lightNode.build(builder);
+            //
+            lightingModel.indirectDiffuse(context, stack, builder);
+            lightingModel.indirectSpecular(context, stack, builder);
+            lightingModel.ambientOcclusion(context, stack, builder);
+            //
+            const { backdrop, backdropAlpha } = context;
+            const { directDiffuse, directSpecular, indirectDiffuse, indirectSpecular } = context.reflectedLight;
+            let totalDiffuse = directDiffuse.add(indirectDiffuse);
+            if (backdrop !== null) totalDiffuse = (0, _shaderNodeJs.vec3)(backdropAlpha !== null ? backdropAlpha.mix(totalDiffuse, backdrop) : backdrop);
+            totalDiffuseNode.assign(totalDiffuse);
+            totalSpecularNode.assign(directSpecular.add(indirectSpecular));
+            outgoingLightNode.assign(totalDiffuseNode.add(totalSpecularNode));
+            //
+            lightingModel.finish(context, stack, builder);
+            //
+            outgoingLightNode = outgoingLightNode.bypass(builder.removeStack());
+        }
+        return outgoingLightNode;
+    }
+    _getLightNodeById(id) {
+        for (const lightNode of this.lightNodes){
+            if (lightNode.isAnalyticLightNode && lightNode.light.id === id) return lightNode;
+        }
+        return null;
+    }
+    fromLights(lights = []) {
+        const lightNodes = [];
+        lights = sortLights(lights);
+        for (const light of lights){
+            let lightNode = this._getLightNodeById(light.id);
+            if (lightNode === null) {
+                const lightClass = light.constructor;
+                const lightNodeClass = LightNodes.has(lightClass) ? LightNodes.get(lightClass) : (0, _analyticLightNodeJsDefault.default);
+                lightNode = (0, _shaderNodeJs.nodeObject)(new lightNodeClass(light));
+            }
+            lightNodes.push(lightNode);
+        }
+        this.lightNodes = lightNodes;
+        this._hash = null;
+        return this;
+    }
+}
+exports.default = LightsNode;
+const lights = (lights)=>(0, _shaderNodeJs.nodeObject)(new LightsNode().fromLights(lights));
+const lightsNode = (0, _shaderNodeJs.nodeProxy)(LightsNode);
+function addLightNode(lightClass, lightNodeClass) {
+    if (LightNodes.has(lightClass)) {
+        console.warn(`Redefinition of light node ${lightNodeClass.type}`);
+        return;
+    }
+    if (typeof lightClass !== "function") throw new Error(`Light ${lightClass.name} is not a class`);
+    if (typeof lightNodeClass !== "function" || !lightNodeClass.type) throw new Error(`Light node ${lightNodeClass.type} is not a class`);
+    LightNodes.set(lightClass, lightNodeClass);
+}
+
+},{"../core/Node.js":"cld0p","./AnalyticLightNode.js":"ckR1j","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"ckR1j":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _lightingNodeJs = require("./LightingNode.js");
+var _lightingNodeJsDefault = parcelHelpers.interopDefault(_lightingNodeJs);
+var _constantsJs = require("../core/constants.js");
+var _uniformNodeJs = require("../core/UniformNode.js");
+var _nodeJs = require("../core/Node.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+var _referenceNodeJs = require("../accessors/ReferenceNode.js");
+var _textureNodeJs = require("../accessors/TextureNode.js");
+var _positionNodeJs = require("../accessors/PositionNode.js");
+var _normalNodeJs = require("../accessors/NormalNode.js");
+var _three = require("three");
+let overrideMaterial = null;
+class AnalyticLightNode extends (0, _lightingNodeJsDefault.default) {
+    constructor(light = null){
+        super();
+        this.updateType = (0, _constantsJs.NodeUpdateType).FRAME;
+        this.light = light;
+        this.rtt = null;
+        this.shadowNode = null;
+        this.color = new (0, _three.Color)();
+        this._defaultColorNode = (0, _uniformNodeJs.uniform)(this.color);
+        this.colorNode = this._defaultColorNode;
+        this.isAnalyticLightNode = true;
+    }
+    getCacheKey() {
+        return super.getCacheKey() + "-" + (this.light.id + "-" + (this.light.castShadow ? "1" : "0"));
+    }
+    getHash() {
+        return this.light.uuid;
+    }
+    setupShadow(builder) {
+        let shadowNode = this.shadowNode;
+        if (shadowNode === null) {
+            if (overrideMaterial === null) {
+                overrideMaterial = builder.createNodeMaterial();
+                overrideMaterial.fragmentNode = (0, _shaderNodeJs.vec4)(0, 0, 0, 1);
+                overrideMaterial.isShadowNodeMaterial = true; // Use to avoid other overrideMaterial override material.fragmentNode unintentionally when using material.shadowNode
+            }
+            const shadow = this.light.shadow;
+            const rtt = builder.getRenderTarget(shadow.mapSize.width, shadow.mapSize.height);
+            const depthTexture = new (0, _three.DepthTexture)();
+            depthTexture.minFilter = (0, _three.NearestFilter);
+            depthTexture.magFilter = (0, _three.NearestFilter);
+            depthTexture.image.width = shadow.mapSize.width;
+            depthTexture.image.height = shadow.mapSize.height;
+            depthTexture.compareFunction = (0, _three.LessCompare);
+            rtt.depthTexture = depthTexture;
+            shadow.camera.updateProjectionMatrix();
+            //
+            const bias = (0, _referenceNodeJs.reference)("bias", "float", shadow);
+            const normalBias = (0, _referenceNodeJs.reference)("normalBias", "float", shadow);
+            let shadowCoord = (0, _uniformNodeJs.uniform)(shadow.matrix).mul((0, _positionNodeJs.positionWorld).add((0, _normalNodeJs.normalWorld).mul(normalBias)));
+            shadowCoord = shadowCoord.xyz.div(shadowCoord.w);
+            const frustumTest = shadowCoord.x.greaterThanEqual(0).and(shadowCoord.x.lessThanEqual(1)).and(shadowCoord.y.greaterThanEqual(0)).and(shadowCoord.y.lessThanEqual(1)).and(shadowCoord.z.lessThanEqual(1));
+            let coordZ = shadowCoord.z.add(bias);
+            if (builder.renderer.coordinateSystem === (0, _three.WebGPUCoordinateSystem)) coordZ = coordZ.mul(2).sub(1); // WebGPU: Convertion [ 0, 1 ] to [ - 1, 1 ]
+            shadowCoord = (0, _shaderNodeJs.vec3)(shadowCoord.x, shadowCoord.y.oneMinus(), coordZ);
+            const textureCompare = (depthTexture, shadowCoord, compare)=>(0, _textureNodeJs.texture)(depthTexture, shadowCoord).compare(compare);
+            //const textureCompare = ( depthTexture, shadowCoord, compare ) => compare.step( texture( depthTexture, shadowCoord ) );
+            // BasicShadowMap
+            shadowNode = textureCompare(depthTexture, shadowCoord.xy, shadowCoord.z);
+            // PCFShadowMap
+            /*
+			const mapSize = reference( 'mapSize', 'vec2', shadow );
+			const radius = reference( 'radius', 'float', shadow );
+
+			const texelSize = vec2( 1 ).div( mapSize );
+			const dx0 = texelSize.x.negate().mul( radius );
+			const dy0 = texelSize.y.negate().mul( radius );
+			const dx1 = texelSize.x.mul( radius );
+			const dy1 = texelSize.y.mul( radius );
+			const dx2 = dx0.mul( 2 );
+			const dy2 = dy0.mul( 2 );
+			const dx3 = dx1.mul( 2 );
+			const dy3 = dy1.mul( 2 );
+
+			shadowNode = add(
+				textureCompare( depthTexture, shadowCoord.xy.add( vec2( dx0, dy0 ) ), shadowCoord.z ),
+				textureCompare( depthTexture, shadowCoord.xy.add( vec2( 0, dy0 ) ), shadowCoord.z ),
+				textureCompare( depthTexture, shadowCoord.xy.add( vec2( dx1, dy0 ) ), shadowCoord.z ),
+				textureCompare( depthTexture, shadowCoord.xy.add( vec2( dx2, dy2 ) ), shadowCoord.z ),
+				textureCompare( depthTexture, shadowCoord.xy.add( vec2( 0, dy2 ) ), shadowCoord.z ),
+				textureCompare( depthTexture, shadowCoord.xy.add( vec2( dx3, dy2 ) ), shadowCoord.z ),
+				textureCompare( depthTexture, shadowCoord.xy.add( vec2( dx0, 0 ) ), shadowCoord.z ),
+				textureCompare( depthTexture, shadowCoord.xy.add( vec2( dx2, 0 ) ), shadowCoord.z ),
+				textureCompare( depthTexture, shadowCoord.xy, shadowCoord.z ),
+				textureCompare( depthTexture, shadowCoord.xy.add( vec2( dx3, 0 ) ), shadowCoord.z ),
+				textureCompare( depthTexture, shadowCoord.xy.add( vec2( dx1, 0 ) ), shadowCoord.z ),
+				textureCompare( depthTexture, shadowCoord.xy.add( vec2( dx2, dy3 ) ), shadowCoord.z ),
+				textureCompare( depthTexture, shadowCoord.xy.add( vec2( 0, dy3 ) ), shadowCoord.z ),
+				textureCompare( depthTexture, shadowCoord.xy.add( vec2( dx3, dy3 ) ), shadowCoord.z ),
+				textureCompare( depthTexture, shadowCoord.xy.add( vec2( dx0, dy1 ) ), shadowCoord.z ),
+				textureCompare( depthTexture, shadowCoord.xy.add( vec2( 0, dy1 ) ), shadowCoord.z ),
+				textureCompare( depthTexture, shadowCoord.xy.add( vec2( dx1, dy1 ) ), shadowCoord.z )
+			).mul( 1 / 17 );
+			*/ //
+            const shadowColor = (0, _textureNodeJs.texture)(rtt.texture, shadowCoord);
+            this.rtt = rtt;
+            this.colorNode = this.colorNode.mul(frustumTest.mix(1, shadowNode.mix(shadowColor.a.mix(1, shadowColor), 1)));
+            this.shadowNode = shadowNode;
+            //
+            this.updateBeforeType = (0, _constantsJs.NodeUpdateType).RENDER;
+        }
+    }
+    setup(builder) {
+        if (this.light.castShadow) this.setupShadow(builder);
+        else if (this.shadowNode !== null) this.disposeShadow();
+    }
+    updateShadow(frame) {
+        const { rtt, light } = this;
+        const { renderer, scene } = frame;
+        const currentOverrideMaterial = scene.overrideMaterial;
+        scene.overrideMaterial = overrideMaterial;
+        rtt.setSize(light.shadow.mapSize.width, light.shadow.mapSize.height);
+        light.shadow.updateMatrices(light);
+        const currentRenderTarget = renderer.getRenderTarget();
+        const currentRenderObjectFunction = renderer.getRenderObjectFunction();
+        renderer.setRenderObjectFunction((object, ...params)=>{
+            if (object.castShadow === true) renderer.renderObject(object, ...params);
+        });
+        renderer.setRenderTarget(rtt);
+        renderer.render(scene, light.shadow.camera);
+        renderer.setRenderTarget(currentRenderTarget);
+        renderer.setRenderObjectFunction(currentRenderObjectFunction);
+        scene.overrideMaterial = currentOverrideMaterial;
+    }
+    disposeShadow() {
+        this.rtt.dispose();
+        this.shadowNode = null;
+        this.rtt = null;
+        this.colorNode = this._defaultColorNode;
+    }
+    updateBefore(frame) {
+        const { light } = this;
+        if (light.castShadow) this.updateShadow(frame);
+    }
+    update() {
+        const { light } = this;
+        this.color.copy(light.color).multiplyScalar(light.intensity);
+    }
+}
+exports.default = AnalyticLightNode;
+(0, _nodeJs.addNodeClass)("AnalyticLightNode", AnalyticLightNode);
+
+},{"./LightingNode.js":"2j6fa","../core/constants.js":"6tdkL","../core/UniformNode.js":"cfhYS","../core/Node.js":"cld0p","../shadernode/ShaderNode.js":"8Xgcj","../accessors/ReferenceNode.js":"6ceuI","../accessors/TextureNode.js":"4V1bd","../accessors/PositionNode.js":"1WXKm","../accessors/NormalNode.js":"4n1Pc","three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"2j6fa":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _nodeJs = require("../core/Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+class LightingNode extends (0, _nodeJsDefault.default) {
+    constructor(){
+        super("vec3");
+    }
+    generate() {
+        console.warn("Abstract function.");
+    }
+}
+exports.default = LightingNode;
+(0, _nodeJs.addNodeClass)("LightingNode", LightingNode);
+
+},{"../core/Node.js":"cld0p","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"4IVK0":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _lightingNodeJs = require("./LightingNode.js");
+var _lightingNodeJsDefault = parcelHelpers.interopDefault(_lightingNodeJs);
+var _nodeJs = require("../core/Node.js");
+class AONode extends (0, _lightingNodeJsDefault.default) {
+    constructor(aoNode = null){
+        super();
+        this.aoNode = aoNode;
+    }
+    setup(builder) {
+        const aoIntensity = 1;
+        const aoNode = this.aoNode.x.sub(1.0).mul(aoIntensity).add(1.0);
+        builder.context.ambientOcclusion.mulAssign(aoNode);
+    }
+}
+exports.default = AONode;
+(0, _nodeJs.addNodeClass)("AONode", AONode);
+
+},{"./LightingNode.js":"2j6fa","../core/Node.js":"cld0p","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"1uc0x":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "lightingContext", ()=>lightingContext);
+var _contextNodeJs = require("../core/ContextNode.js");
+var _contextNodeJsDefault = parcelHelpers.interopDefault(_contextNodeJs);
+var _nodeJs = require("../core/Node.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class LightingContextNode extends (0, _contextNodeJsDefault.default) {
+    constructor(node, lightingModel = null, backdropNode = null, backdropAlphaNode = null){
+        super(node);
+        this.lightingModel = lightingModel;
+        this.backdropNode = backdropNode;
+        this.backdropAlphaNode = backdropAlphaNode;
+        this._context = null;
+    }
+    getContext() {
+        const { backdropNode, backdropAlphaNode } = this;
+        const directDiffuse = (0, _shaderNodeJs.vec3)().temp("directDiffuse"), directSpecular = (0, _shaderNodeJs.vec3)().temp("directSpecular"), indirectDiffuse = (0, _shaderNodeJs.vec3)().temp("indirectDiffuse"), indirectSpecular = (0, _shaderNodeJs.vec3)().temp("indirectSpecular");
+        const reflectedLight = {
+            directDiffuse,
+            directSpecular,
+            indirectDiffuse,
+            indirectSpecular
+        };
+        const context = {
+            radiance: (0, _shaderNodeJs.vec3)().temp("radiance"),
+            irradiance: (0, _shaderNodeJs.vec3)().temp("irradiance"),
+            iblIrradiance: (0, _shaderNodeJs.vec3)().temp("iblIrradiance"),
+            ambientOcclusion: (0, _shaderNodeJs.float)(1).temp("ambientOcclusion"),
+            reflectedLight,
+            backdrop: backdropNode,
+            backdropAlpha: backdropAlphaNode
+        };
+        return context;
+    }
+    setup(builder) {
+        this.context = this._context || (this._context = this.getContext());
+        this.context.lightingModel = this.lightingModel || builder.context.lightingModel;
+        return super.setup(builder);
+    }
+}
+exports.default = LightingContextNode;
+const lightingContext = (0, _shaderNodeJs.nodeProxy)(LightingContextNode);
+(0, _shaderNodeJs.addNodeElement)("lightingContext", lightingContext);
+(0, _nodeJs.addNodeClass)("LightingContextNode", LightingContextNode);
+
+},{"../core/ContextNode.js":"b5ZKP","../core/Node.js":"cld0p","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"d61UE":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _lightingNodeJs = require("./LightingNode.js");
+var _lightingNodeJsDefault = parcelHelpers.interopDefault(_lightingNodeJs);
+var _cacheNodeJs = require("../core/CacheNode.js");
+var _contextNodeJs = require("../core/ContextNode.js");
+var _maxMipLevelNodeJs = require("../utils/MaxMipLevelNode.js");
+var _propertyNodeJs = require("../core/PropertyNode.js");
+var _equirectUVNodeJs = require("../utils/EquirectUVNode.js");
+var _specularMIPLevelNodeJs = require("../utils/SpecularMIPLevelNode.js");
+var _cameraNodeJs = require("../accessors/CameraNode.js");
+var _normalNodeJs = require("../accessors/NormalNode.js");
+var _positionNodeJs = require("../accessors/PositionNode.js");
+var _nodeJs = require("../core/Node.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+var _cubeTextureNodeJs = require("../accessors/CubeTextureNode.js");
+var _referenceNodeJs = require("../accessors/ReferenceNode.js");
+const envNodeCache = new WeakMap();
+class EnvironmentNode extends (0, _lightingNodeJsDefault.default) {
+    constructor(envNode = null){
+        super();
+        this.envNode = envNode;
+    }
+    setup(builder) {
+        let envNode = this.envNode;
+        if (envNode.isTextureNode && envNode.value.isCubeTexture !== true) {
+            let cacheEnvNode = envNodeCache.get(envNode.value);
+            if (cacheEnvNode === undefined) {
+                const texture = envNode.value;
+                const renderer = builder.renderer;
+                // @TODO: Add dispose logic here
+                const cubeRTT = builder.getCubeRenderTarget(512).fromEquirectangularTexture(renderer, texture);
+                cacheEnvNode = (0, _cubeTextureNodeJs.cubeTexture)(cubeRTT.texture);
+                envNodeCache.set(envNode.value, cacheEnvNode);
+            }
+            envNode = cacheEnvNode;
+        }
+        //
+        const intensity = (0, _referenceNodeJs.reference)("envMapIntensity", "float", builder.material); // @TODO: Add materialEnvIntensity in MaterialNode
+        const radiance = (0, _contextNodeJs.context)(envNode, createRadianceContext((0, _propertyNodeJs.roughness), (0, _normalNodeJs.transformedNormalView))).mul(intensity);
+        const irradiance = (0, _contextNodeJs.context)(envNode, createIrradianceContext((0, _normalNodeJs.transformedNormalWorld))).mul(Math.PI).mul(intensity);
+        const isolateRadiance = (0, _cacheNodeJs.cache)(radiance);
+        //
+        builder.context.radiance.addAssign(isolateRadiance);
+        builder.context.iblIrradiance.addAssign(irradiance);
+        //
+        const clearcoatRadiance = builder.context.lightingModel.clearcoatRadiance;
+        if (clearcoatRadiance) {
+            const clearcoatRadianceContext = (0, _contextNodeJs.context)(envNode, createRadianceContext((0, _propertyNodeJs.clearcoatRoughness), (0, _normalNodeJs.transformedClearcoatNormalView))).mul(intensity);
+            const isolateClearcoatRadiance = (0, _cacheNodeJs.cache)(clearcoatRadianceContext);
+            clearcoatRadiance.addAssign(isolateClearcoatRadiance);
+        }
+    }
+}
+const createRadianceContext = (roughnessNode, normalViewNode)=>{
+    let reflectVec = null;
+    let textureUVNode = null;
+    return {
+        getUV: (textureNode)=>{
+            let node = null;
+            if (reflectVec === null) {
+                reflectVec = (0, _positionNodeJs.positionViewDirection).negate().reflect(normalViewNode);
+                reflectVec = roughnessNode.mul(roughnessNode).mix(reflectVec, normalViewNode).normalize();
+                reflectVec = reflectVec.transformDirection((0, _cameraNodeJs.cameraViewMatrix));
+            }
+            if (textureNode.isCubeTextureNode) node = reflectVec;
+            else if (textureNode.isTextureNode) {
+                if (textureUVNode === null) // @TODO: Needed PMREM
+                textureUVNode = (0, _equirectUVNodeJs.equirectUV)(reflectVec);
+                node = textureUVNode;
+            }
+            return node;
+        },
+        getTextureLevel: ()=>{
+            return roughnessNode;
+        },
+        getTextureLevelAlgorithm: (textureNode, levelNode)=>{
+            return (0, _specularMIPLevelNodeJs.specularMIPLevel)(textureNode, levelNode);
+        }
+    };
+};
+const createIrradianceContext = (normalWorldNode)=>{
+    let textureUVNode = null;
+    return {
+        getUV: (textureNode)=>{
+            let node = null;
+            if (textureNode.isCubeTextureNode) node = normalWorldNode;
+            else if (textureNode.isTextureNode) {
+                if (textureUVNode === null) {
+                    // @TODO: Needed PMREM
+                    textureUVNode = (0, _equirectUVNodeJs.equirectUV)(normalWorldNode);
+                    textureUVNode = (0, _shaderNodeJs.vec2)(textureUVNode.x, textureUVNode.y.oneMinus());
+                }
+                node = textureUVNode;
+            }
+            return node;
+        },
+        getTextureLevel: (textureNode)=>{
+            return (0, _maxMipLevelNodeJs.maxMipLevel)(textureNode);
+        }
+    };
+};
+exports.default = EnvironmentNode;
+(0, _nodeJs.addNodeClass)("EnvironmentNode", EnvironmentNode);
+
+},{"./LightingNode.js":"2j6fa","../core/CacheNode.js":"iHe0r","../core/ContextNode.js":"b5ZKP","../utils/MaxMipLevelNode.js":"cMslS","../core/PropertyNode.js":"9JOy4","../utils/EquirectUVNode.js":"8k6eO","../utils/SpecularMIPLevelNode.js":"9jNMs","../accessors/CameraNode.js":"kZ1gx","../accessors/NormalNode.js":"4n1Pc","../accessors/PositionNode.js":"1WXKm","../core/Node.js":"cld0p","../shadernode/ShaderNode.js":"8Xgcj","../accessors/CubeTextureNode.js":"6SJcw","../accessors/ReferenceNode.js":"6ceuI","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"8k6eO":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "equirectUV", ()=>equirectUV);
+var _tempNodeJs = require("../core/TempNode.js");
+var _tempNodeJsDefault = parcelHelpers.interopDefault(_tempNodeJs);
+var _positionNodeJs = require("../accessors/PositionNode.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+var _nodeJs = require("../core/Node.js");
+class EquirectUVNode extends (0, _tempNodeJsDefault.default) {
+    constructor(dirNode = (0, _positionNodeJs.positionWorldDirection)){
+        super("vec2");
+        this.dirNode = dirNode;
+    }
+    setup() {
+        const dir = this.dirNode;
+        const u = dir.z.atan2(dir.x).mul(1 / (Math.PI * 2)).add(0.5);
+        const v = dir.y.negate().clamp(-1, 1.0).asin().mul(1 / Math.PI).add(0.5); // @TODO: The use of negate() here could be an NDC issue.
+        return (0, _shaderNodeJs.vec2)(u, v);
+    }
+}
+exports.default = EquirectUVNode;
+const equirectUV = (0, _shaderNodeJs.nodeProxy)(EquirectUVNode);
+(0, _nodeJs.addNodeClass)("EquirectUVNode", EquirectUVNode);
+
+},{"../core/TempNode.js":"l0t0Y","../accessors/PositionNode.js":"1WXKm","../shadernode/ShaderNode.js":"8Xgcj","../core/Node.js":"cld0p","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"9jNMs":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "specularMIPLevel", ()=>specularMIPLevel);
+var _nodeJs = require("../core/Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+var _maxMipLevelNodeJs = require("./MaxMipLevelNode.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class SpecularMIPLevelNode extends (0, _nodeJsDefault.default) {
+    constructor(textureNode, roughnessNode = null){
+        super("float");
+        this.textureNode = textureNode;
+        this.roughnessNode = roughnessNode;
+    }
+    setup() {
+        const { textureNode, roughnessNode } = this;
+        // taken from here: http://casual-effects.blogspot.ca/2011/08/plausible-environment-lighting-in-two.html
+        const maxMIPLevelScalar = (0, _maxMipLevelNodeJs.maxMipLevel)(textureNode);
+        const sigma = roughnessNode.mul(roughnessNode).mul(Math.PI).div(roughnessNode.add(1.0));
+        const desiredMIPLevel = maxMIPLevelScalar.add(sigma.log2());
+        return desiredMIPLevel.clamp(0.0, maxMIPLevelScalar);
+    }
+}
+exports.default = SpecularMIPLevelNode;
+const specularMIPLevel = (0, _shaderNodeJs.nodeProxy)(SpecularMIPLevelNode);
+(0, _nodeJs.addNodeClass)("SpecularMIPLevelNode", SpecularMIPLevelNode);
+
+},{"../core/Node.js":"cld0p","./MaxMipLevelNode.js":"cMslS","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"eqnm6":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "viewZToOrthographicDepth", ()=>viewZToOrthographicDepth);
+parcelHelpers.export(exports, "orthographicDepthToViewZ", ()=>orthographicDepthToViewZ);
+parcelHelpers.export(exports, "viewZToPerspectiveDepth", ()=>viewZToPerspectiveDepth);
+parcelHelpers.export(exports, "perspectiveDepthToViewZ", ()=>perspectiveDepthToViewZ);
+parcelHelpers.export(exports, "depth", ()=>depth);
+parcelHelpers.export(exports, "depthTexture", ()=>depthTexture);
+parcelHelpers.export(exports, "depthPixel", ()=>depthPixel);
+var _nodeJs = require("../core/Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+var _cameraNodeJs = require("../accessors/CameraNode.js");
+var _positionNodeJs = require("../accessors/PositionNode.js");
+var _viewportDepthTextureNodeJs = require("./ViewportDepthTextureNode.js");
+class ViewportDepthNode extends (0, _nodeJsDefault.default) {
+    constructor(scope, valueNode = null){
+        super("float");
+        this.scope = scope;
+        this.valueNode = valueNode;
+        this.isViewportDepthNode = true;
+    }
+    generate(builder) {
+        const { scope } = this;
+        if (scope === ViewportDepthNode.DEPTH_PIXEL) return builder.getFragDepth();
+        return super.generate(builder);
+    }
+    setup() {
+        const { scope } = this;
+        let node = null;
+        if (scope === ViewportDepthNode.DEPTH) node = viewZToOrthographicDepth((0, _positionNodeJs.positionView).z, (0, _cameraNodeJs.cameraNear), (0, _cameraNodeJs.cameraFar));
+        else if (scope === ViewportDepthNode.DEPTH_TEXTURE) {
+            const texture = this.valueNode || (0, _viewportDepthTextureNodeJs.viewportDepthTexture)();
+            const viewZ = perspectiveDepthToViewZ(texture, (0, _cameraNodeJs.cameraNear), (0, _cameraNodeJs.cameraFar));
+            node = viewZToOrthographicDepth(viewZ, (0, _cameraNodeJs.cameraNear), (0, _cameraNodeJs.cameraFar));
+        } else if (scope === ViewportDepthNode.DEPTH_PIXEL) {
+            if (this.valueNode !== null) node = depthPixelBase().assign(this.valueNode);
+        }
+        return node;
+    }
+}
+const viewZToOrthographicDepth = (viewZ, near, far)=>viewZ.add(near).div(near.sub(far));
+const orthographicDepthToViewZ = (depth, near, far)=>near.sub(far).mul(depth).sub(near);
+const viewZToPerspectiveDepth = (viewZ, near, far)=>near.add(viewZ).mul(far).div(near.sub(far).mul(viewZ));
+const perspectiveDepthToViewZ = (depth, near, far)=>near.mul(far).div(far.sub(near).mul(depth).sub(far));
+ViewportDepthNode.DEPTH = "depth";
+ViewportDepthNode.DEPTH_TEXTURE = "depthTexture";
+ViewportDepthNode.DEPTH_PIXEL = "depthPixel";
+exports.default = ViewportDepthNode;
+const depthPixelBase = (0, _shaderNodeJs.nodeProxy)(ViewportDepthNode, ViewportDepthNode.DEPTH_PIXEL);
+const depth = (0, _shaderNodeJs.nodeImmutable)(ViewportDepthNode, ViewportDepthNode.DEPTH);
+const depthTexture = (0, _shaderNodeJs.nodeProxy)(ViewportDepthNode, ViewportDepthNode.DEPTH_TEXTURE);
+const depthPixel = (0, _shaderNodeJs.nodeImmutable)(ViewportDepthNode, ViewportDepthNode.DEPTH_PIXEL);
+depthPixel.assign = (value)=>depthPixelBase(value);
+(0, _nodeJs.addNodeClass)("ViewportDepthNode", ViewportDepthNode);
+
+},{"../core/Node.js":"cld0p","../shadernode/ShaderNode.js":"8Xgcj","../accessors/CameraNode.js":"kZ1gx","../accessors/PositionNode.js":"1WXKm","./ViewportDepthTextureNode.js":"kbkaF","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"kbkaF":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "viewportDepthTexture", ()=>viewportDepthTexture);
+var _viewportTextureNodeJs = require("./ViewportTextureNode.js");
+var _viewportTextureNodeJsDefault = parcelHelpers.interopDefault(_viewportTextureNodeJs);
+var _nodeJs = require("../core/Node.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+var _viewportNodeJs = require("./ViewportNode.js");
+var _three = require("three");
+let sharedDepthbuffer = null;
+class ViewportDepthTextureNode extends (0, _viewportTextureNodeJsDefault.default) {
+    constructor(uvNode = (0, _viewportNodeJs.viewportTopLeft), levelNode = null){
+        if (sharedDepthbuffer === null) sharedDepthbuffer = new (0, _three.DepthTexture)();
+        super(uvNode, levelNode, sharedDepthbuffer);
+    }
+}
+exports.default = ViewportDepthTextureNode;
+const viewportDepthTexture = (0, _shaderNodeJs.nodeProxy)(ViewportDepthTextureNode);
+(0, _shaderNodeJs.addNodeElement)("viewportDepthTexture", viewportDepthTexture);
+(0, _nodeJs.addNodeClass)("ViewportDepthTextureNode", ViewportDepthTextureNode);
+
+},{"./ViewportTextureNode.js":"7krR3","../core/Node.js":"cld0p","../shadernode/ShaderNode.js":"8Xgcj","./ViewportNode.js":"6pmzu","three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"7krR3":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "viewportTexture", ()=>viewportTexture);
+parcelHelpers.export(exports, "viewportMipTexture", ()=>viewportMipTexture);
+var _textureNodeJs = require("../accessors/TextureNode.js");
+var _textureNodeJsDefault = parcelHelpers.interopDefault(_textureNodeJs);
+var _constantsJs = require("../core/constants.js");
+var _nodeJs = require("../core/Node.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+var _viewportNodeJs = require("./ViewportNode.js");
+var _three = require("three");
+const _size = new (0, _three.Vector2)();
+class ViewportTextureNode extends (0, _textureNodeJsDefault.default) {
+    constructor(uvNode = (0, _viewportNodeJs.viewportTopLeft), levelNode = null, framebufferTexture = null){
+        if (framebufferTexture === null) {
+            framebufferTexture = new (0, _three.FramebufferTexture)();
+            framebufferTexture.minFilter = (0, _three.LinearMipmapLinearFilter);
+        }
+        super(framebufferTexture, uvNode, levelNode);
+        this.generateMipmaps = false;
+        this.isOutputTextureNode = true;
+        this.updateBeforeType = (0, _constantsJs.NodeUpdateType).FRAME;
+    }
+    updateBefore(frame) {
+        const renderer = frame.renderer;
+        renderer.getDrawingBufferSize(_size);
+        //
+        const framebufferTexture = this.value;
+        if (framebufferTexture.image.width !== _size.width || framebufferTexture.image.height !== _size.height) {
+            framebufferTexture.image.width = _size.width;
+            framebufferTexture.image.height = _size.height;
+            framebufferTexture.needsUpdate = true;
+        }
+        //
+        const currentGenerateMipmaps = framebufferTexture.generateMipmaps;
+        framebufferTexture.generateMipmaps = this.generateMipmaps;
+        renderer.copyFramebufferToTexture(framebufferTexture);
+        framebufferTexture.generateMipmaps = currentGenerateMipmaps;
+    }
+    clone() {
+        return new this.constructor(this.uvNode, this.levelNode, this.value);
+    }
+}
+exports.default = ViewportTextureNode;
+const viewportTexture = (0, _shaderNodeJs.nodeProxy)(ViewportTextureNode);
+const viewportMipTexture = (0, _shaderNodeJs.nodeProxy)(ViewportTextureNode, null, null, {
+    generateMipmaps: true
+});
+(0, _shaderNodeJs.addNodeElement)("viewportTexture", viewportTexture);
+(0, _shaderNodeJs.addNodeElement)("viewportMipTexture", viewportMipTexture);
+(0, _nodeJs.addNodeClass)("ViewportTextureNode", ViewportTextureNode);
+
+},{"../accessors/TextureNode.js":"4V1bd","../core/constants.js":"6tdkL","../core/Node.js":"cld0p","../shadernode/ShaderNode.js":"8Xgcj","./ViewportNode.js":"6pmzu","three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"6pmzu":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "viewportCoordinate", ()=>viewportCoordinate);
+parcelHelpers.export(exports, "viewportResolution", ()=>viewportResolution);
+parcelHelpers.export(exports, "viewport", ()=>viewport);
+parcelHelpers.export(exports, "viewportTopLeft", ()=>viewportTopLeft);
+parcelHelpers.export(exports, "viewportBottomLeft", ()=>viewportBottomLeft);
+parcelHelpers.export(exports, "viewportTopRight", ()=>viewportTopRight);
+parcelHelpers.export(exports, "viewportBottomRight", ()=>viewportBottomRight);
+var _nodeJs = require("../core/Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+var _constantsJs = require("../core/constants.js");
+var _uniformNodeJs = require("../core/UniformNode.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+var _three = require("three");
+let resolution, viewportResult;
+class ViewportNode extends (0, _nodeJsDefault.default) {
+    constructor(scope){
+        super();
+        this.scope = scope;
+        this.isViewportNode = true;
+    }
+    getNodeType() {
+        return this.scope === ViewportNode.VIEWPORT ? "vec4" : "vec2";
+    }
+    getUpdateType() {
+        let updateType = (0, _constantsJs.NodeUpdateType).NONE;
+        if (this.scope === ViewportNode.RESOLUTION || this.scope === ViewportNode.VIEWPORT) updateType = (0, _constantsJs.NodeUpdateType).FRAME;
+        this.updateType = updateType;
+        return updateType;
+    }
+    update({ renderer }) {
+        if (this.scope === ViewportNode.VIEWPORT) renderer.getViewport(viewportResult);
+        else renderer.getDrawingBufferSize(resolution);
+    }
+    setup() {
+        const scope = this.scope;
+        let output = null;
+        if (scope === ViewportNode.RESOLUTION) output = (0, _uniformNodeJs.uniform)(resolution || (resolution = new (0, _three.Vector2)()));
+        else if (scope === ViewportNode.VIEWPORT) output = (0, _uniformNodeJs.uniform)(viewportResult || (viewportResult = new (0, _three.Vector4)()));
+        else {
+            output = viewportCoordinate.div(viewportResolution);
+            let outX = output.x;
+            let outY = output.y;
+            if (/bottom/i.test(scope)) outY = outY.oneMinus();
+            if (/right/i.test(scope)) outX = outX.oneMinus();
+            output = (0, _shaderNodeJs.vec2)(outX, outY);
+        }
+        return output;
+    }
+    generate(builder) {
+        if (this.scope === ViewportNode.COORDINATE) {
+            let coord = builder.getFragCoord();
+            if (builder.isFlipY()) {
+                // follow webgpu standards
+                const resolution = builder.getNodeProperties(viewportResolution).outputNode.build(builder);
+                coord = `${builder.getType("vec2")}( ${coord}.x, ${resolution}.y - ${coord}.y )`;
+            }
+            return coord;
+        }
+        return super.generate(builder);
+    }
+}
+ViewportNode.COORDINATE = "coordinate";
+ViewportNode.RESOLUTION = "resolution";
+ViewportNode.VIEWPORT = "viewport";
+ViewportNode.TOP_LEFT = "topLeft";
+ViewportNode.BOTTOM_LEFT = "bottomLeft";
+ViewportNode.TOP_RIGHT = "topRight";
+ViewportNode.BOTTOM_RIGHT = "bottomRight";
+exports.default = ViewportNode;
+const viewportCoordinate = (0, _shaderNodeJs.nodeImmutable)(ViewportNode, ViewportNode.COORDINATE);
+const viewportResolution = (0, _shaderNodeJs.nodeImmutable)(ViewportNode, ViewportNode.RESOLUTION);
+const viewport = (0, _shaderNodeJs.nodeImmutable)(ViewportNode, ViewportNode.VIEWPORT);
+const viewportTopLeft = (0, _shaderNodeJs.nodeImmutable)(ViewportNode, ViewportNode.TOP_LEFT);
+const viewportBottomLeft = (0, _shaderNodeJs.nodeImmutable)(ViewportNode, ViewportNode.BOTTOM_LEFT);
+const viewportTopRight = (0, _shaderNodeJs.nodeImmutable)(ViewportNode, ViewportNode.TOP_RIGHT);
+const viewportBottomRight = (0, _shaderNodeJs.nodeImmutable)(ViewportNode, ViewportNode.BOTTOM_RIGHT);
+(0, _nodeJs.addNodeClass)("ViewportNode", ViewportNode);
+
+},{"../core/Node.js":"cld0p","../core/constants.js":"6tdkL","../core/UniformNode.js":"cfhYS","../shadernode/ShaderNode.js":"8Xgcj","three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"6FYQ8":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "FloatNodeUniform", ()=>FloatNodeUniform);
+parcelHelpers.export(exports, "Vector2NodeUniform", ()=>Vector2NodeUniform);
+parcelHelpers.export(exports, "Vector3NodeUniform", ()=>Vector3NodeUniform);
+parcelHelpers.export(exports, "Vector4NodeUniform", ()=>Vector4NodeUniform);
+parcelHelpers.export(exports, "ColorNodeUniform", ()=>ColorNodeUniform);
+parcelHelpers.export(exports, "Matrix3NodeUniform", ()=>Matrix3NodeUniform);
+parcelHelpers.export(exports, "Matrix4NodeUniform", ()=>Matrix4NodeUniform);
+var _uniformJs = require("../Uniform.js");
+class FloatNodeUniform extends (0, _uniformJs.FloatUniform) {
+    constructor(nodeUniform){
+        super(nodeUniform.name, nodeUniform.value);
+        this.nodeUniform = nodeUniform;
+    }
+    getValue() {
+        return this.nodeUniform.value;
+    }
+}
+class Vector2NodeUniform extends (0, _uniformJs.Vector2Uniform) {
+    constructor(nodeUniform){
+        super(nodeUniform.name, nodeUniform.value);
+        this.nodeUniform = nodeUniform;
+    }
+    getValue() {
+        return this.nodeUniform.value;
+    }
+}
+class Vector3NodeUniform extends (0, _uniformJs.Vector3Uniform) {
+    constructor(nodeUniform){
+        super(nodeUniform.name, nodeUniform.value);
+        this.nodeUniform = nodeUniform;
+    }
+    getValue() {
+        return this.nodeUniform.value;
+    }
+}
+class Vector4NodeUniform extends (0, _uniformJs.Vector4Uniform) {
+    constructor(nodeUniform){
+        super(nodeUniform.name, nodeUniform.value);
+        this.nodeUniform = nodeUniform;
+    }
+    getValue() {
+        return this.nodeUniform.value;
+    }
+}
+class ColorNodeUniform extends (0, _uniformJs.ColorUniform) {
+    constructor(nodeUniform){
+        super(nodeUniform.name, nodeUniform.value);
+        this.nodeUniform = nodeUniform;
+    }
+    getValue() {
+        return this.nodeUniform.value;
+    }
+}
+class Matrix3NodeUniform extends (0, _uniformJs.Matrix3Uniform) {
+    constructor(nodeUniform){
+        super(nodeUniform.name, nodeUniform.value);
+        this.nodeUniform = nodeUniform;
+    }
+    getValue() {
+        return this.nodeUniform.value;
+    }
+}
+class Matrix4NodeUniform extends (0, _uniformJs.Matrix4Uniform) {
+    constructor(nodeUniform){
+        super(nodeUniform.name, nodeUniform.value);
+        this.nodeUniform = nodeUniform;
+    }
+    getValue() {
+        return this.nodeUniform.value;
+    }
+}
+
+},{"../Uniform.js":"7OLjl","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"7OLjl":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "FloatUniform", ()=>FloatUniform);
+parcelHelpers.export(exports, "Vector2Uniform", ()=>Vector2Uniform);
+parcelHelpers.export(exports, "Vector3Uniform", ()=>Vector3Uniform);
+parcelHelpers.export(exports, "Vector4Uniform", ()=>Vector4Uniform);
+parcelHelpers.export(exports, "ColorUniform", ()=>ColorUniform);
+parcelHelpers.export(exports, "Matrix3Uniform", ()=>Matrix3Uniform);
+parcelHelpers.export(exports, "Matrix4Uniform", ()=>Matrix4Uniform);
+var _three = require("three");
+class Uniform {
+    constructor(name, value = null){
+        this.name = name;
+        this.value = value;
+        this.boundary = 0; // used to build the uniform buffer according to the STD140 layout
+        this.itemSize = 0;
+        this.offset = 0; // this property is set by WebGPUUniformsGroup and marks the start position in the uniform buffer
+    }
+    setValue(value) {
+        this.value = value;
+    }
+    getValue() {
+        return this.value;
+    }
+}
+class FloatUniform extends Uniform {
+    constructor(name, value = 0){
+        super(name, value);
+        this.isFloatUniform = true;
+        this.boundary = 4;
+        this.itemSize = 1;
+    }
+}
+class Vector2Uniform extends Uniform {
+    constructor(name, value = new (0, _three.Vector2)()){
+        super(name, value);
+        this.isVector2Uniform = true;
+        this.boundary = 8;
+        this.itemSize = 2;
+    }
+}
+class Vector3Uniform extends Uniform {
+    constructor(name, value = new (0, _three.Vector3)()){
+        super(name, value);
+        this.isVector3Uniform = true;
+        this.boundary = 16;
+        this.itemSize = 3;
+    }
+}
+class Vector4Uniform extends Uniform {
+    constructor(name, value = new (0, _three.Vector4)()){
+        super(name, value);
+        this.isVector4Uniform = true;
+        this.boundary = 16;
+        this.itemSize = 4;
+    }
+}
+class ColorUniform extends Uniform {
+    constructor(name, value = new (0, _three.Color)()){
+        super(name, value);
+        this.isColorUniform = true;
+        this.boundary = 16;
+        this.itemSize = 3;
+    }
+}
+class Matrix3Uniform extends Uniform {
+    constructor(name, value = new (0, _three.Matrix3)()){
+        super(name, value);
+        this.isMatrix3Uniform = true;
+        this.boundary = 48;
+        this.itemSize = 12;
+    }
+}
+class Matrix4Uniform extends Uniform {
+    constructor(name, value = new (0, _three.Matrix4)()){
+        super(name, value);
+        this.isMatrix4Uniform = true;
+        this.boundary = 64;
+        this.itemSize = 16;
+    }
+}
+
+},{"three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"bxtaz":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "stack", ()=>stack);
+var _nodeJs = require("./Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+var _condNodeJs = require("../math/CondNode.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class StackNode extends (0, _nodeJsDefault.default) {
+    constructor(parent = null){
+        super();
+        this.nodes = [];
+        this.outputNode = null;
+        this.parent = parent;
+        this._currentCond = null;
+        this.isStackNode = true;
+    }
+    getNodeType(builder) {
+        return this.outputNode ? this.outputNode.getNodeType(builder) : "void";
+    }
+    add(node) {
+        this.nodes.push(node);
+        return this;
+    }
+    if(boolNode, method) {
+        const methodNode = new (0, _shaderNodeJs.ShaderNode)(method);
+        this._currentCond = (0, _condNodeJs.cond)(boolNode, methodNode);
+        return this.add(this._currentCond);
+    }
+    elseif(boolNode, method) {
+        const methodNode = new (0, _shaderNodeJs.ShaderNode)(method);
+        const ifNode = (0, _condNodeJs.cond)(boolNode, methodNode);
+        this._currentCond.elseNode = ifNode;
+        this._currentCond = ifNode;
+        return this;
+    }
+    else(method) {
+        this._currentCond.elseNode = new (0, _shaderNodeJs.ShaderNode)(method);
+        return this;
+    }
+    build(builder, ...params) {
+        const previousStack = (0, _shaderNodeJs.getCurrentStack)();
+        (0, _shaderNodeJs.setCurrentStack)(this);
+        for (const node of this.nodes)node.build(builder, "void");
+        (0, _shaderNodeJs.setCurrentStack)(previousStack);
+        return this.outputNode ? this.outputNode.build(builder, ...params) : super.build(builder, ...params);
+    }
+}
+exports.default = StackNode;
+const stack = (0, _shaderNodeJs.nodeProxy)(StackNode);
+(0, _nodeJs.addNodeClass)("StackNode", StackNode);
+
+},{"./Node.js":"cld0p","../math/CondNode.js":"k5xIS","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"k5xIS":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "cond", ()=>cond);
+var _nodeJs = require("../core/Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+var _propertyNodeJs = require("../core/PropertyNode.js");
+var _contextNodeJs = require("../core/ContextNode.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class CondNode extends (0, _nodeJsDefault.default) {
+    constructor(condNode, ifNode, elseNode = null){
+        super();
+        this.condNode = condNode;
+        this.ifNode = ifNode;
+        this.elseNode = elseNode;
+    }
+    getNodeType(builder) {
+        const ifType = this.ifNode.getNodeType(builder);
+        if (this.elseNode !== null) {
+            const elseType = this.elseNode.getNodeType(builder);
+            if (builder.getTypeLength(elseType) > builder.getTypeLength(ifType)) return elseType;
+        }
+        return ifType;
+    }
+    generate(builder) {
+        const type = this.getNodeType(builder);
+        const context = {
+            tempWrite: false
+        };
+        const { ifNode, elseNode } = this;
+        const needsProperty = ifNode.getNodeType(builder) !== "void" || elseNode && elseNode.getNodeType(builder) !== "void";
+        const nodeProperty = needsProperty ? (0, _propertyNodeJs.property)(type).build(builder) : "";
+        const nodeSnippet = (0, _contextNodeJs.context)(this.condNode /*, context*/ ).build(builder, "bool");
+        builder.addFlowCode(`\n${builder.tab}if ( ${nodeSnippet} ) {\n\n`).addFlowTab();
+        let ifSnippet = (0, _contextNodeJs.context)(this.ifNode, context).build(builder, type);
+        ifSnippet = needsProperty ? nodeProperty + " = " + ifSnippet + ";" : ifSnippet;
+        builder.removeFlowTab().addFlowCode(builder.tab + "	" + ifSnippet + "\n\n" + builder.tab + "}");
+        if (elseNode !== null) {
+            builder.addFlowCode(" else {\n\n").addFlowTab();
+            let elseSnippet = (0, _contextNodeJs.context)(elseNode, context).build(builder, type);
+            elseSnippet = nodeProperty ? nodeProperty + " = " + elseSnippet + ";" : elseSnippet;
+            builder.removeFlowTab().addFlowCode(builder.tab + "	" + elseSnippet + "\n\n" + builder.tab + "}\n\n");
+        } else builder.addFlowCode("\n\n");
+        return nodeProperty;
+    }
+}
+exports.default = CondNode;
+const cond = (0, _shaderNodeJs.nodeProxy)(CondNode);
+(0, _shaderNodeJs.addNodeElement)("cond", cond);
+(0, _nodeJs.addNodeClass)("CondNode", CondNode);
+
+},{"../core/Node.js":"cld0p","../core/PropertyNode.js":"9JOy4","../core/ContextNode.js":"b5ZKP","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"4AWXY":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _three = require("three");
+var _equirectUVNodeJs = require("../../nodes/utils/EquirectUVNode.js");
+var _textureNodeJs = require("../../nodes/accessors/TextureNode.js");
+var _positionNodeJs = require("../../nodes/accessors/PositionNode.js");
+var _nodeMaterialJs = require("../../nodes/materials/NodeMaterial.js");
+// @TODO: Consider rename WebGLCubeRenderTarget to just CubeRenderTarget
+class CubeRenderTarget extends (0, _three.WebGLCubeRenderTarget) {
+    constructor(size = 1, options = {}){
+        super(size, options);
+        this.isCubeRenderTarget = true;
+    }
+    fromEquirectangularTexture(renderer, texture) {
+        const currentMinFilter = texture.minFilter;
+        const currentGenerateMipmaps = texture.generateMipmaps;
+        texture.generateMipmaps = true;
+        this.texture.type = texture.type;
+        this.texture.colorSpace = texture.colorSpace;
+        this.texture.generateMipmaps = texture.generateMipmaps;
+        this.texture.minFilter = texture.minFilter;
+        this.texture.magFilter = texture.magFilter;
+        const geometry = new (0, _three.BoxGeometry)(5, 5, 5);
+        const uvNode = (0, _equirectUVNodeJs.equirectUV)((0, _positionNodeJs.positionWorldDirection));
+        const material = (0, _nodeMaterialJs.createNodeMaterialFromType)("MeshBasicNodeMaterial");
+        material.colorNode = (0, _textureNodeJs.texture)(texture, uvNode, 0);
+        material.side = (0, _three.BackSide);
+        material.blending = (0, _three.NoBlending);
+        const mesh = new (0, _three.Mesh)(geometry, material);
+        const scene = new (0, _three.Scene)();
+        scene.add(mesh);
+        // Avoid blurred poles
+        if (texture.minFilter === (0, _three.LinearMipmapLinearFilter)) texture.minFilter = (0, _three.LinearFilter);
+        const camera = new (0, _three.CubeCamera)(1, 10, this);
+        camera.update(renderer, scene);
+        texture.minFilter = currentMinFilter;
+        texture.currentGenerateMipmaps = currentGenerateMipmaps;
+        mesh.geometry.dispose();
+        mesh.material.dispose();
+        return this;
+    }
+}
+exports.default = CubeRenderTarget;
+
+},{"three":"ktPTu","../../nodes/utils/EquirectUVNode.js":"8k6eO","../../nodes/accessors/TextureNode.js":"4V1bd","../../nodes/accessors/PositionNode.js":"1WXKm","../../nodes/materials/NodeMaterial.js":"aQCWQ","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"8uMsD":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+class ChainMap {
+    constructor(){
+        this.weakMap = new WeakMap();
+    }
+    get(keys) {
+        if (Array.isArray(keys)) {
+            let map = this.weakMap;
+            for(let i = 0; i < keys.length; i++){
+                map = map.get(keys[i]);
+                if (map === undefined) return undefined;
+            }
+            return map.get(keys[keys.length - 1]);
+        } else return super.get(keys);
+    }
+    set(keys, value) {
+        if (Array.isArray(keys)) {
+            let map = this.weakMap;
+            for(let i = 0; i < keys.length; i++){
+                const key = keys[i];
+                if (map.has(key) === false) map.set(key, new WeakMap());
+                map = map.get(key);
+            }
+            return map.set(keys[keys.length - 1], value);
+        } else return super.set(keys, value);
+    }
+    delete(keys) {
+        if (Array.isArray(keys)) {
+            let map = this.weakMap;
+            for(let i = 0; i < keys.length; i++){
+                map = map.get(keys[i]);
+                if (map === undefined) return false;
+            }
+            return map.delete(keys[keys.length - 1]);
+        } else return super.delete(keys);
+    }
+    dispose() {
+        this.weakMap.clear();
+    }
+}
+exports.default = ChainMap;
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"2Ddza":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _constantsJs = require("./constants.js");
+class NodeFrame {
+    constructor(){
+        this.time = 0;
+        this.deltaTime = 0;
+        this.frameId = 0;
+        this.renderId = 0;
+        this.startTime = null;
+        this.updateMap = new WeakMap();
+        this.updateBeforeMap = new WeakMap();
+        this.renderer = null;
+        this.material = null;
+        this.camera = null;
+        this.object = null;
+        this.scene = null;
+    }
+    _getMaps(referenceMap, nodeRef) {
+        let maps = referenceMap.get(nodeRef);
+        if (maps === undefined) {
+            maps = {
+                renderMap: new WeakMap(),
+                frameMap: new WeakMap()
+            };
+            referenceMap.set(nodeRef, maps);
+        }
+        return maps;
+    }
+    updateBeforeNode(node) {
+        const updateType = node.getUpdateBeforeType();
+        const reference = node.updateReference(this);
+        if (updateType === (0, _constantsJs.NodeUpdateType).FRAME) {
+            const { frameMap } = this._getMaps(this.updateBeforeMap, reference);
+            if (frameMap.get(node) !== this.frameId) {
+                if (node.updateBefore(this) !== false) frameMap.set(node, this.frameId);
+            }
+        } else if (updateType === (0, _constantsJs.NodeUpdateType).RENDER) {
+            const { renderMap } = this._getMaps(this.updateBeforeMap, reference);
+            if (renderMap.get(node) !== this.renderId) {
+                if (node.updateBefore(this) !== false) renderMap.set(node, this.renderId);
+            }
+        } else if (updateType === (0, _constantsJs.NodeUpdateType).OBJECT) node.updateBefore(this);
+    }
+    updateNode(node) {
+        const updateType = node.getUpdateType();
+        const reference = node.updateReference(this);
+        if (updateType === (0, _constantsJs.NodeUpdateType).FRAME) {
+            const { frameMap } = this._getMaps(this.updateMap, reference);
+            if (frameMap.get(node) !== this.frameId) {
+                if (node.update(this) !== false) frameMap.set(node, this.frameId);
+            }
+        } else if (updateType === (0, _constantsJs.NodeUpdateType).RENDER) {
+            const { renderMap } = this._getMaps(this.updateMap, reference);
+            if (renderMap.get(node) !== this.renderId) {
+                if (node.update(this) !== false) renderMap.set(node, this.renderId);
+            }
+        } else if (updateType === (0, _constantsJs.NodeUpdateType).OBJECT) node.update(this);
+    }
+    update() {
+        this.frameId++;
+        if (this.lastTime === undefined) this.lastTime = performance.now();
+        this.deltaTime = (performance.now() - this.lastTime) / 1000;
+        this.lastTime = performance.now();
+        this.time += this.deltaTime;
+    }
+}
+exports.default = NodeFrame;
+
+},{"./constants.js":"6tdkL","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"zfOUU":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+class NodeFunctionInput {
+    constructor(type, name, count = null, qualifier = "", isConst = false){
+        this.type = type;
+        this.name = name;
+        this.count = count;
+        this.qualifier = qualifier;
+        this.isConst = isConst;
+    }
+}
+NodeFunctionInput.isNodeFunctionInput = true;
+exports.default = NodeFunctionInput;
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"dUnZ7":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "outputStruct", ()=>outputStruct);
+var _nodeJs = require("./Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+var _structTypeNodeJs = require("./StructTypeNode.js");
+var _structTypeNodeJsDefault = parcelHelpers.interopDefault(_structTypeNodeJs);
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class OutputStructNode extends (0, _nodeJsDefault.default) {
+    constructor(...members){
+        super();
+        this.isOutputStructNode = true;
+        this.members = members;
+    }
+    setup(builder) {
+        super.setup(builder);
+        const members = this.members;
+        const types = [];
+        for(let i = 0; i < members.length; i++)types.push(members[i].getNodeType(builder));
+        this.nodeType = builder.getStructTypeFromNode(new (0, _structTypeNodeJsDefault.default)(types)).name;
+    }
+    generate(builder, output) {
+        const nodeVar = builder.getVarFromNode(this);
+        nodeVar.isOutputStructVar = true;
+        const propertyName = builder.getPropertyName(nodeVar);
+        const members = this.members;
+        const structPrefix = propertyName !== "" ? propertyName + "." : "";
+        for(let i = 0; i < members.length; i++){
+            const snippet = members[i].build(builder, output);
+            builder.addLineFlowCode(`${structPrefix}m${i} = ${snippet}`);
+        }
+        return propertyName;
+    }
+}
+exports.default = OutputStructNode;
+const outputStruct = (0, _shaderNodeJs.nodeProxy)(OutputStructNode);
+(0, _nodeJs.addNodeClass)("OutputStructNode", OutputStructNode);
+
+},{"./Node.js":"cld0p","./StructTypeNode.js":"fUb5I","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"fUb5I":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _nodeJs = require("./Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+class StructTypeNode extends (0, _nodeJsDefault.default) {
+    constructor(types){
+        super();
+        this.types = types;
+        this.isStructTypeNode = true;
+    }
+    getMemberTypes() {
+        return this.types;
+    }
+}
+exports.default = StructTypeNode;
+(0, _nodeJs.addNodeClass)("StructTypeNode", StructTypeNode);
+
+},{"./Node.js":"cld0p","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"i48rY":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "hash", ()=>hash);
+var _nodeJs = require("../core/Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class HashNode extends (0, _nodeJsDefault.default) {
+    constructor(seedNode){
+        super();
+        this.seedNode = seedNode;
+    }
+    setup() {
+        // Taken from https://www.shadertoy.com/view/XlGcRh, originally from pcg-random.org
+        const state = this.seedNode.uint().mul(747796405).add(2891336453);
+        const word = state.shiftRight(state.shiftRight(28).add(4)).bitXor(state).mul(277803737);
+        const result = word.shiftRight(22).bitXor(word);
+        return result.float().mul(1 / 2 ** 32); // Convert to range [0, 1)
+    }
+}
+exports.default = HashNode;
+const hash = (0, _shaderNodeJs.nodeProxy)(HashNode);
+(0, _shaderNodeJs.addNodeElement)("hash", hash);
+(0, _nodeJs.addNodeClass)("HashNode", HashNode);
+
+},{"../core/Node.js":"cld0p","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"1g1mm":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "parabola", ()=>parabola);
+parcelHelpers.export(exports, "gain", ()=>gain);
+parcelHelpers.export(exports, "pcurve", ()=>pcurve);
+parcelHelpers.export(exports, "sinc", ()=>sinc);
+var _operatorNodeJs = require("./OperatorNode.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+var _mathNodeJs = require("./MathNode.js");
+const parabola = (x, k)=>(0, _mathNodeJs.pow)((0, _operatorNodeJs.mul)(4.0, x.mul((0, _operatorNodeJs.sub)(1.0, x))), k);
+const gain = (x, k)=>x.lessThan(0.5) ? parabola(x.mul(2.0), k).div(2.0) : (0, _operatorNodeJs.sub)(1.0, parabola((0, _operatorNodeJs.mul)((0, _operatorNodeJs.sub)(1.0, x), 2.0), k).div(2.0));
+const pcurve = (x, a, b)=>(0, _mathNodeJs.pow)((0, _operatorNodeJs.div)((0, _mathNodeJs.pow)(x, a), (0, _operatorNodeJs.add)((0, _mathNodeJs.pow)(x, a), (0, _mathNodeJs.pow)((0, _operatorNodeJs.sub)(1.0, x), b))), 1.0 / a);
+const sinc = (x, k)=>(0, _mathNodeJs.sin)((0, _mathNodeJs.PI).mul(k.mul(x).sub(1.0))).div((0, _mathNodeJs.PI).mul(k.mul(x).sub(1.0)));
+(0, _shaderNodeJs.addNodeElement)("parabola", parabola);
+(0, _shaderNodeJs.addNodeElement)("gain", gain);
+(0, _shaderNodeJs.addNodeElement)("pcurve", pcurve);
+(0, _shaderNodeJs.addNodeElement)("sinc", sinc);
+
+},{"./OperatorNode.js":"hCYI5","../shadernode/ShaderNode.js":"8Xgcj","./MathNode.js":"84OFe","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"3fMOm":[function(require,module,exports) {
+// https://github.com/cabbibo/glsl-tri-noise-3d
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "tri", ()=>tri);
+parcelHelpers.export(exports, "tri3", ()=>tri3);
+parcelHelpers.export(exports, "triNoise3D", ()=>triNoise3D);
+var _loopNodeJs = require("../utils/LoopNode.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+const tri = (0, _shaderNodeJs.tslFn)(([x])=>{
+    return x.fract().sub(.5).abs();
+});
+const tri3 = (0, _shaderNodeJs.tslFn)(([p])=>{
+    return (0, _shaderNodeJs.vec3)(tri(p.z.add(tri(p.y.mul(1.)))), tri(p.z.add(tri(p.x.mul(1.)))), tri(p.y.add(tri(p.x.mul(1.)))));
+});
+const triNoise3D = (0, _shaderNodeJs.tslFn)(([p_immutable, spd, time])=>{
+    const p = (0, _shaderNodeJs.vec3)(p_immutable).toVar();
+    const z = (0, _shaderNodeJs.float)(1.4).toVar();
+    const rz = (0, _shaderNodeJs.float)(0.0).toVar();
+    const bp = (0, _shaderNodeJs.vec3)(p).toVar();
+    (0, _loopNodeJs.loop)({
+        start: (0, _shaderNodeJs.float)(0.0),
+        end: (0, _shaderNodeJs.float)(3.0),
+        type: "float",
+        condition: "<="
+    }, ()=>{
+        const dg = (0, _shaderNodeJs.vec3)(tri3(bp.mul(2.0))).toVar();
+        p.addAssign(dg.add(time.mul((0, _shaderNodeJs.float)(0.1).mul(spd))));
+        bp.mulAssign(1.8);
+        z.mulAssign(1.5);
+        p.mulAssign(1.2);
+        const t = (0, _shaderNodeJs.float)(tri(p.z.add(tri(p.x.add(tri(p.y)))))).toVar();
+        rz.addAssign(t.div(z));
+        bp.addAssign(0.14);
+    });
+    return rz;
+});
+// layouts
+tri.setLayout({
+    name: "tri",
+    type: "float",
+    inputs: [
+        {
+            name: "x",
+            type: "float"
+        }
+    ]
+});
+tri3.setLayout({
+    name: "tri3",
+    type: "vec3",
+    inputs: [
+        {
+            name: "p",
+            type: "vec3"
+        }
+    ]
+});
+triNoise3D.setLayout({
+    name: "triNoise3D",
+    type: "float",
+    inputs: [
+        {
+            name: "p",
+            type: "vec3"
+        },
+        {
+            name: "spd",
+            type: "float"
+        },
+        {
+            name: "time",
+            type: "float"
+        }
+    ]
+});
+
+},{"../utils/LoopNode.js":"g3yUg","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"g3yUg":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "loop", ()=>loop);
+var _nodeJs = require("../core/Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+var _expressionNodeJs = require("../code/ExpressionNode.js");
+var _bypassNodeJs = require("../core/BypassNode.js");
+var _contextNodeJs = require("../core/ContextNode.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class LoopNode extends (0, _nodeJsDefault.default) {
+    constructor(params = []){
+        super();
+        this.params = params;
+    }
+    getVarName(index) {
+        return String.fromCharCode("i".charCodeAt() + index);
+    }
+    getProperties(builder) {
+        const properties = builder.getNodeProperties(this);
+        if (properties.stackNode !== undefined) return properties;
+        //
+        const inputs = {};
+        for(let i = 0, l = this.params.length - 1; i < l; i++){
+            const param = this.params[i];
+            const name = param.isNode !== true && param.name || this.getVarName(i);
+            const type = param.isNode !== true && param.type || "int";
+            inputs[name] = (0, _expressionNodeJs.expression)(name, type);
+        }
+        properties.returnsNode = this.params[this.params.length - 1](inputs, builder.addStack(), builder);
+        properties.stackNode = builder.removeStack();
+        return properties;
+    }
+    getNodeType(builder) {
+        const { returnsNode } = this.getProperties(builder);
+        return returnsNode ? returnsNode.getNodeType(builder) : "void";
+    }
+    setup(builder) {
+        // setup properties
+        this.getProperties(builder);
+    }
+    generate(builder) {
+        const properties = this.getProperties(builder);
+        const contextData = {
+            tempWrite: false
+        };
+        const params = this.params;
+        const stackNode = properties.stackNode;
+        for(let i = 0, l = params.length - 1; i < l; i++){
+            const param = params[i];
+            let start = null, end = null, name = null, type = null, condition = null, update = null;
+            if (param.isNode) {
+                type = "int";
+                name = this.getVarName(i);
+                start = "0";
+                end = param.build(builder, type);
+                condition = "<";
+            } else {
+                type = param.type || "int";
+                name = param.name || this.getVarName(i);
+                start = param.start;
+                end = param.end;
+                condition = param.condition;
+                update = param.update;
+                if (typeof start === "number") start = start.toString();
+                else if (start && start.isNode) start = start.build(builder, type);
+                if (typeof end === "number") end = end.toString();
+                else if (end && end.isNode) end = end.build(builder, type);
+                if (start !== undefined && end === undefined) {
+                    start = start + " - 1";
+                    end = "0";
+                    condition = ">=";
+                } else if (end !== undefined && start === undefined) {
+                    start = "0";
+                    condition = "<";
+                }
+                if (condition === undefined) {
+                    if (Number(start) > Number(end)) condition = ">=";
+                    else condition = "<";
+                }
+            }
+            const internalParam = {
+                start,
+                end,
+                condition
+            };
+            //
+            const startSnippet = internalParam.start;
+            const endSnippet = internalParam.end;
+            let declarationSnippet = "";
+            let conditionalSnippet = "";
+            let updateSnippet = "";
+            if (!update) {
+                if (type === "int" || type === "uint") {
+                    if (condition.includes("<")) update = "++";
+                    else update = "--";
+                } else if (condition.includes("<")) update = "+= 1.";
+                else update = "-= 1.";
+            }
+            declarationSnippet += builder.getVar(type, name) + " = " + startSnippet;
+            conditionalSnippet += name + " " + condition + " " + endSnippet;
+            updateSnippet += name + " " + update;
+            const forSnippet = `for ( ${declarationSnippet}; ${conditionalSnippet}; ${updateSnippet} )`;
+            builder.addFlowCode((i === 0 ? "\n" : "") + builder.tab + forSnippet + " {\n\n").addFlowTab();
+        }
+        const stackSnippet = (0, _contextNodeJs.context)(stackNode, contextData).build(builder, "void");
+        const returnsSnippet = properties.returnsNode ? properties.returnsNode.build(builder) : "";
+        builder.removeFlowTab().addFlowCode("\n" + builder.tab + stackSnippet);
+        for(let i = 0, l = this.params.length - 1; i < l; i++)builder.addFlowCode((i === 0 ? "" : builder.tab) + "}\n\n").removeFlowTab();
+        builder.addFlowTab();
+        return returnsSnippet;
+    }
+}
+exports.default = LoopNode;
+const loop = (...params)=>(0, _shaderNodeJs.nodeObject)(new LoopNode((0, _shaderNodeJs.nodeArray)(params, "int"))).append();
+(0, _shaderNodeJs.addNodeElement)("loop", (returns, ...params)=>(0, _bypassNodeJs.bypass)(returns, loop(...params)));
+(0, _nodeJs.addNodeClass)("LoopNode", LoopNode);
+
+},{"../core/Node.js":"cld0p","../code/ExpressionNode.js":"15ome","../core/BypassNode.js":"eOats","../core/ContextNode.js":"b5ZKP","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"31iIs":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "inlineDiscard", ()=>inlineDiscard);
+parcelHelpers.export(exports, "discard", ()=>discard);
+var _condNodeJs = require("../math/CondNode.js");
+var _condNodeJsDefault = parcelHelpers.interopDefault(_condNodeJs);
+var _expressionNodeJs = require("../code/ExpressionNode.js");
+var _nodeJs = require("../core/Node.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+let discardExpression;
+class DiscardNode extends (0, _condNodeJsDefault.default) {
+    constructor(condNode){
+        discardExpression = discardExpression || (0, _expressionNodeJs.expression)("discard");
+        super(condNode, discardExpression);
+    }
+}
+exports.default = DiscardNode;
+const inlineDiscard = (0, _shaderNodeJs.nodeProxy)(DiscardNode);
+const discard = (condNode)=>inlineDiscard(condNode).append();
+(0, _shaderNodeJs.addNodeElement)("discard", discard); // @TODO: Check... this cause a little confusing using in chaining
+(0, _nodeJs.addNodeClass)("DiscardNode", DiscardNode);
+
+},{"../math/CondNode.js":"k5xIS","../code/ExpressionNode.js":"15ome","../core/Node.js":"cld0p","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"kmU0b":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "overloadingFn", ()=>overloadingFn);
+var _nodeJs = require("../core/Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class FunctionOverloadingNode extends (0, _nodeJsDefault.default) {
+    constructor(functionNodes = [], ...parametersNodes){
+        super();
+        this.functionNodes = functionNodes;
+        this.parametersNodes = parametersNodes;
+        this._candidateFnCall = null;
+    }
+    getNodeType() {
+        return this.functionNodes[0].shaderNode.layout.type;
+    }
+    setup(builder) {
+        const params = this.parametersNodes;
+        let candidateFnCall = this._candidateFnCall;
+        if (candidateFnCall === null) {
+            let candidateFn = null;
+            let candidateScore = -1;
+            for (const functionNode of this.functionNodes){
+                const shaderNode = functionNode.shaderNode;
+                const layout = shaderNode.layout;
+                if (layout === null) throw new Error("FunctionOverloadingNode: FunctionNode must be a layout.");
+                const inputs = layout.inputs;
+                if (params.length === inputs.length) {
+                    let score = 0;
+                    for(let i = 0; i < params.length; i++){
+                        const param = params[i];
+                        const input = inputs[i];
+                        if (param.getNodeType(builder) === input.type) score++;
+                        else score = 0;
+                    }
+                    if (score > candidateScore) {
+                        candidateFn = functionNode;
+                        candidateScore = score;
+                    }
+                }
+            }
+            this._candidateFnCall = candidateFnCall = candidateFn(...params);
+        }
+        return candidateFnCall;
+    }
+}
+exports.default = FunctionOverloadingNode;
+const overloadingBaseFn = (0, _shaderNodeJs.nodeProxy)(FunctionOverloadingNode);
+const overloadingFn = (functionNodes)=>(...params)=>overloadingBaseFn(functionNodes, ...params);
+(0, _nodeJs.addNodeClass)("FunctionOverloadingNode", FunctionOverloadingNode);
+
+},{"../core/Node.js":"cld0p","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"jBRpN":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "matcapUV", ()=>matcapUV);
+var _tempNodeJs = require("../core/TempNode.js");
+var _tempNodeJsDefault = parcelHelpers.interopDefault(_tempNodeJs);
+var _normalNodeJs = require("../accessors/NormalNode.js");
+var _positionNodeJs = require("../accessors/PositionNode.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+var _nodeJs = require("../core/Node.js");
+class MatcapUVNode extends (0, _tempNodeJsDefault.default) {
+    constructor(){
+        super("vec2");
+    }
+    setup() {
+        const x = (0, _shaderNodeJs.vec3)((0, _positionNodeJs.positionViewDirection).z, 0, (0, _positionNodeJs.positionViewDirection).x.negate()).normalize();
+        const y = (0, _positionNodeJs.positionViewDirection).cross(x);
+        return (0, _shaderNodeJs.vec2)(x.dot((0, _normalNodeJs.transformedNormalView)), y.dot((0, _normalNodeJs.transformedNormalView))).mul(0.495).add(0.5);
+    }
+}
+exports.default = MatcapUVNode;
+const matcapUV = (0, _shaderNodeJs.nodeImmutable)(MatcapUVNode);
+(0, _nodeJs.addNodeClass)("MatcapUVNode", MatcapUVNode);
+
+},{"../core/TempNode.js":"l0t0Y","../accessors/NormalNode.js":"4n1Pc","../accessors/PositionNode.js":"1WXKm","../shadernode/ShaderNode.js":"8Xgcj","../core/Node.js":"cld0p","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"8d6KP":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "oscSine", ()=>oscSine);
+parcelHelpers.export(exports, "oscSquare", ()=>oscSquare);
+parcelHelpers.export(exports, "oscTriangle", ()=>oscTriangle);
+parcelHelpers.export(exports, "oscSawtooth", ()=>oscSawtooth);
+var _nodeJs = require("../core/Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+var _timerNodeJs = require("./TimerNode.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class OscNode extends (0, _nodeJsDefault.default) {
+    constructor(method = OscNode.SINE, timeNode = (0, _timerNodeJs.timerLocal)()){
+        super();
+        this.method = method;
+        this.timeNode = timeNode;
+    }
+    getNodeType(builder) {
+        return this.timeNode.getNodeType(builder);
+    }
+    setup() {
+        const method = this.method;
+        const timeNode = (0, _shaderNodeJs.nodeObject)(this.timeNode);
+        let outputNode = null;
+        if (method === OscNode.SINE) outputNode = timeNode.add(0.75).mul(Math.PI * 2).sin().mul(0.5).add(0.5);
+        else if (method === OscNode.SQUARE) outputNode = timeNode.fract().round();
+        else if (method === OscNode.TRIANGLE) outputNode = timeNode.add(0.5).fract().mul(2).sub(1).abs();
+        else if (method === OscNode.SAWTOOTH) outputNode = timeNode.fract();
+        return outputNode;
+    }
+    serialize(data) {
+        super.serialize(data);
+        data.method = this.method;
+    }
+    deserialize(data) {
+        super.deserialize(data);
+        this.method = data.method;
+    }
+}
+OscNode.SINE = "sine";
+OscNode.SQUARE = "square";
+OscNode.TRIANGLE = "triangle";
+OscNode.SAWTOOTH = "sawtooth";
+exports.default = OscNode;
+const oscSine = (0, _shaderNodeJs.nodeProxy)(OscNode, OscNode.SINE);
+const oscSquare = (0, _shaderNodeJs.nodeProxy)(OscNode, OscNode.SQUARE);
+const oscTriangle = (0, _shaderNodeJs.nodeProxy)(OscNode, OscNode.TRIANGLE);
+const oscSawtooth = (0, _shaderNodeJs.nodeProxy)(OscNode, OscNode.SAWTOOTH);
+(0, _nodeJs.addNodeClass)("OscNode", OscNode);
+
+},{"../core/Node.js":"cld0p","./TimerNode.js":"cMdE7","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"cMdE7":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "timerLocal", ()=>timerLocal);
+parcelHelpers.export(exports, "timerGlobal", ()=>timerGlobal);
+parcelHelpers.export(exports, "timerDelta", ()=>timerDelta);
+parcelHelpers.export(exports, "frameId", ()=>frameId);
+var _uniformNodeJs = require("../core/UniformNode.js");
+var _uniformNodeJsDefault = parcelHelpers.interopDefault(_uniformNodeJs);
+var _constantsJs = require("../core/constants.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+var _nodeJs = require("../core/Node.js");
+class TimerNode extends (0, _uniformNodeJsDefault.default) {
+    constructor(scope = TimerNode.LOCAL, scale = 1, value = 0){
+        super(value);
+        this.scope = scope;
+        this.scale = scale;
+        this.updateType = (0, _constantsJs.NodeUpdateType).FRAME;
+    }
+    /*
+	@TODO:
+	getNodeType( builder ) {
+
+		const scope = this.scope;
+
+		if ( scope === TimerNode.FRAME ) {
+
+			return 'uint';
+
+		}
+
+		return 'float';
+
+	}
+*/ update(frame) {
+        const scope = this.scope;
+        const scale = this.scale;
+        if (scope === TimerNode.LOCAL) this.value += frame.deltaTime * scale;
+        else if (scope === TimerNode.DELTA) this.value = frame.deltaTime * scale;
+        else if (scope === TimerNode.FRAME) this.value = frame.frameId;
+        else // global
+        this.value = frame.time * scale;
+    }
+    serialize(data) {
+        super.serialize(data);
+        data.scope = this.scope;
+        data.scale = this.scale;
+    }
+    deserialize(data) {
+        super.deserialize(data);
+        this.scope = data.scope;
+        this.scale = data.scale;
+    }
+}
+TimerNode.LOCAL = "local";
+TimerNode.GLOBAL = "global";
+TimerNode.DELTA = "delta";
+TimerNode.FRAME = "frame";
+exports.default = TimerNode;
+const timerLocal = (timeScale, value = 0)=>(0, _shaderNodeJs.nodeObject)(new TimerNode(TimerNode.LOCAL, timeScale, value));
+const timerGlobal = (timeScale, value = 0)=>(0, _shaderNodeJs.nodeObject)(new TimerNode(TimerNode.GLOBAL, timeScale, value));
+const timerDelta = (timeScale, value = 0)=>(0, _shaderNodeJs.nodeObject)(new TimerNode(TimerNode.DELTA, timeScale, value));
+const frameId = (0, _shaderNodeJs.nodeImmutable)(TimerNode, TimerNode.FRAME).uint();
+(0, _nodeJs.addNodeClass)("TimerNode", TimerNode);
+
+},{"../core/UniformNode.js":"cfhYS","../core/constants.js":"6tdkL","../shadernode/ShaderNode.js":"8Xgcj","../core/Node.js":"cld0p","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"c5f7w":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "directionToColor", ()=>directionToColor);
+parcelHelpers.export(exports, "colorToDirection", ()=>colorToDirection);
+var _tempNodeJs = require("../core/TempNode.js");
+var _tempNodeJsDefault = parcelHelpers.interopDefault(_tempNodeJs);
+var _nodeJs = require("../core/Node.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class PackingNode extends (0, _tempNodeJsDefault.default) {
+    constructor(scope, node){
+        super();
+        this.scope = scope;
+        this.node = node;
+    }
+    getNodeType(builder) {
+        return this.node.getNodeType(builder);
+    }
+    setup() {
+        const { scope, node } = this;
+        let result = null;
+        if (scope === PackingNode.DIRECTION_TO_COLOR) result = node.mul(0.5).add(0.5);
+        else if (scope === PackingNode.COLOR_TO_DIRECTION) result = node.mul(2.0).sub(1);
+        return result;
+    }
+}
+PackingNode.DIRECTION_TO_COLOR = "directionToColor";
+PackingNode.COLOR_TO_DIRECTION = "colorToDirection";
+exports.default = PackingNode;
+const directionToColor = (0, _shaderNodeJs.nodeProxy)(PackingNode, PackingNode.DIRECTION_TO_COLOR);
+const colorToDirection = (0, _shaderNodeJs.nodeProxy)(PackingNode, PackingNode.COLOR_TO_DIRECTION);
+(0, _shaderNodeJs.addNodeElement)("directionToColor", directionToColor);
+(0, _shaderNodeJs.addNodeElement)("colorToDirection", colorToDirection);
+(0, _nodeJs.addNodeClass)("PackingNode", PackingNode);
+
+},{"../core/TempNode.js":"l0t0Y","../core/Node.js":"cld0p","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"d19LM":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "remap", ()=>remap);
+parcelHelpers.export(exports, "remapClamp", ()=>remapClamp);
+var _nodeJs = require("../core/Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class RemapNode extends (0, _nodeJsDefault.default) {
+    constructor(node, inLowNode, inHighNode, outLowNode = (0, _shaderNodeJs.float)(0), outHighNode = (0, _shaderNodeJs.float)(1)){
+        super();
+        this.node = node;
+        this.inLowNode = inLowNode;
+        this.inHighNode = inHighNode;
+        this.outLowNode = outLowNode;
+        this.outHighNode = outHighNode;
+        this.doClamp = true;
+    }
+    setup() {
+        const { node, inLowNode, inHighNode, outLowNode, outHighNode, doClamp } = this;
+        let t = node.sub(inLowNode).div(inHighNode.sub(inLowNode));
+        if (doClamp === true) t = t.clamp();
+        return t.mul(outHighNode.sub(outLowNode)).add(outLowNode);
+    }
+}
+exports.default = RemapNode;
+const remap = (0, _shaderNodeJs.nodeProxy)(RemapNode, null, null, {
+    doClamp: false
+});
+const remapClamp = (0, _shaderNodeJs.nodeProxy)(RemapNode);
+(0, _shaderNodeJs.addNodeElement)("remap", remap);
+(0, _shaderNodeJs.addNodeElement)("remapClamp", remapClamp);
+(0, _nodeJs.addNodeClass)("RemapNode", RemapNode);
+
+},{"../core/Node.js":"cld0p","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"h3bXr":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "rotateUV", ()=>rotateUV);
+var _tempNodeJs = require("../core/TempNode.js");
+var _tempNodeJsDefault = parcelHelpers.interopDefault(_tempNodeJs);
+var _nodeJs = require("../core/Node.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class RotateUVNode extends (0, _tempNodeJsDefault.default) {
+    constructor(uvNode, rotationNode, centerNode = (0, _shaderNodeJs.vec2)(0.5)){
+        super("vec2");
+        this.uvNode = uvNode;
+        this.rotationNode = rotationNode;
+        this.centerNode = centerNode;
+    }
+    setup() {
+        const { uvNode, rotationNode, centerNode } = this;
+        const vector = uvNode.sub(centerNode);
+        return vector.rotate(rotationNode).add(centerNode);
+    }
+}
+exports.default = RotateUVNode;
+const rotateUV = (0, _shaderNodeJs.nodeProxy)(RotateUVNode);
+(0, _shaderNodeJs.addNodeElement)("rotateUV", rotateUV);
+(0, _nodeJs.addNodeClass)("RotateUVNode", RotateUVNode);
+
+},{"../core/TempNode.js":"l0t0Y","../core/Node.js":"cld0p","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"hHFa3":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "rotate", ()=>rotate);
+var _tempNodeJs = require("../core/TempNode.js");
+var _tempNodeJsDefault = parcelHelpers.interopDefault(_tempNodeJs);
+var _nodeJs = require("../core/Node.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+var _mathNodeJs = require("../math/MathNode.js");
+class RotateNode extends (0, _tempNodeJsDefault.default) {
+    constructor(positionNode, rotationNode){
+        super();
+        this.positionNode = positionNode;
+        this.rotationNode = rotationNode;
+    }
+    getNodeType(builder) {
+        return this.positionNode.getNodeType(builder);
+    }
+    setup(builder) {
+        const { rotationNode, positionNode } = this;
+        const nodeType = this.getNodeType(builder);
+        if (nodeType === "vec2") {
+            const cosAngle = rotationNode.cos();
+            const sinAngle = rotationNode.sin();
+            const rotationMatrix = (0, _shaderNodeJs.mat2)(cosAngle, sinAngle, sinAngle.negate(), cosAngle);
+            return rotationMatrix.mul(positionNode);
+        } else {
+            const rotation = rotationNode;
+            const rotationXMatrix = (0, _shaderNodeJs.mat4)((0, _shaderNodeJs.vec4)(1.0, 0.0, 0.0, 0.0), (0, _shaderNodeJs.vec4)(0.0, (0, _mathNodeJs.cos)(rotation.x), (0, _mathNodeJs.sin)(rotation.x).negate(), 0.0), (0, _shaderNodeJs.vec4)(0.0, (0, _mathNodeJs.sin)(rotation.x), (0, _mathNodeJs.cos)(rotation.x), 0.0), (0, _shaderNodeJs.vec4)(0.0, 0.0, 0.0, 1.0));
+            const rotationYMatrix = (0, _shaderNodeJs.mat4)((0, _shaderNodeJs.vec4)((0, _mathNodeJs.cos)(rotation.y), 0.0, (0, _mathNodeJs.sin)(rotation.y), 0.0), (0, _shaderNodeJs.vec4)(0.0, 1.0, 0.0, 0.0), (0, _shaderNodeJs.vec4)((0, _mathNodeJs.sin)(rotation.y).negate(), 0.0, (0, _mathNodeJs.cos)(rotation.y), 0.0), (0, _shaderNodeJs.vec4)(0.0, 0.0, 0.0, 1.0));
+            const rotationZMatrix = (0, _shaderNodeJs.mat4)((0, _shaderNodeJs.vec4)((0, _mathNodeJs.cos)(rotation.z), (0, _mathNodeJs.sin)(rotation.z).negate(), 0.0, 0.0), (0, _shaderNodeJs.vec4)((0, _mathNodeJs.sin)(rotation.z), (0, _mathNodeJs.cos)(rotation.z), 0.0, 0.0), (0, _shaderNodeJs.vec4)(0.0, 0.0, 1.0, 0.0), (0, _shaderNodeJs.vec4)(0.0, 0.0, 0.0, 1.0));
+            return rotationXMatrix.mul(rotationYMatrix).mul(rotationZMatrix).mul((0, _shaderNodeJs.vec4)(positionNode, 1.0)).xyz;
+        }
+    }
+}
+exports.default = RotateNode;
+const rotate = (0, _shaderNodeJs.nodeProxy)(RotateNode);
+(0, _shaderNodeJs.addNodeElement)("rotate", rotate);
+(0, _nodeJs.addNodeClass)("RotateNode", RotateNode);
+
+},{"../core/TempNode.js":"l0t0Y","../core/Node.js":"cld0p","../shadernode/ShaderNode.js":"8Xgcj","../math/MathNode.js":"84OFe","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"fZp85":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "spritesheetUV", ()=>spritesheetUV);
+var _nodeJs = require("../core/Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+var _uvnodeJs = require("../accessors/UVNode.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class SpriteSheetUVNode extends (0, _nodeJsDefault.default) {
+    constructor(countNode, uvNode = (0, _uvnodeJs.uv)(), frameNode = (0, _shaderNodeJs.float)(0)){
+        super("vec2");
+        this.countNode = countNode;
+        this.uvNode = uvNode;
+        this.frameNode = frameNode;
+    }
+    setup() {
+        const { frameNode, uvNode, countNode } = this;
+        const { width, height } = countNode;
+        const frameNum = frameNode.mod(width.mul(height)).floor();
+        const column = frameNum.mod(width);
+        const row = height.sub(frameNum.add(1).div(width).ceil());
+        const scale = countNode.reciprocal();
+        const uvFrameOffset = (0, _shaderNodeJs.vec2)(column, row);
+        return uvNode.add(uvFrameOffset).mul(scale);
+    }
+}
+exports.default = SpriteSheetUVNode;
+const spritesheetUV = (0, _shaderNodeJs.nodeProxy)(SpriteSheetUVNode);
+(0, _nodeJs.addNodeClass)("SpriteSheetUVNode", SpriteSheetUVNode);
+
+},{"../core/Node.js":"cld0p","../accessors/UVNode.js":"dj0CK","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"hv1Ov":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "triplanarTextures", ()=>triplanarTextures);
+parcelHelpers.export(exports, "triplanarTexture", ()=>triplanarTexture);
+var _nodeJs = require("../core/Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+var _operatorNodeJs = require("../math/OperatorNode.js");
+var _normalNodeJs = require("../accessors/NormalNode.js");
+var _positionNodeJs = require("../accessors/PositionNode.js");
+var _textureNodeJs = require("../accessors/TextureNode.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class TriplanarTexturesNode extends (0, _nodeJsDefault.default) {
+    constructor(textureXNode, textureYNode = null, textureZNode = null, scaleNode = (0, _shaderNodeJs.float)(1), positionNode = (0, _positionNodeJs.positionLocal), normalNode = (0, _normalNodeJs.normalLocal)){
+        super("vec4");
+        this.textureXNode = textureXNode;
+        this.textureYNode = textureYNode;
+        this.textureZNode = textureZNode;
+        this.scaleNode = scaleNode;
+        this.positionNode = positionNode;
+        this.normalNode = normalNode;
+    }
+    setup() {
+        const { textureXNode, textureYNode, textureZNode, scaleNode, positionNode, normalNode } = this;
+        // Ref: https://github.com/keijiro/StandardTriplanar
+        // Blending factor of triplanar mapping
+        let bf = normalNode.abs().normalize();
+        bf = bf.div(bf.dot((0, _shaderNodeJs.vec3)(1.0)));
+        // Triplanar mapping
+        const tx = positionNode.yz.mul(scaleNode);
+        const ty = positionNode.zx.mul(scaleNode);
+        const tz = positionNode.xy.mul(scaleNode);
+        // Base color
+        const textureX = textureXNode.value;
+        const textureY = textureYNode !== null ? textureYNode.value : textureX;
+        const textureZ = textureZNode !== null ? textureZNode.value : textureX;
+        const cx = (0, _textureNodeJs.texture)(textureX, tx).mul(bf.x);
+        const cy = (0, _textureNodeJs.texture)(textureY, ty).mul(bf.y);
+        const cz = (0, _textureNodeJs.texture)(textureZ, tz).mul(bf.z);
+        return (0, _operatorNodeJs.add)(cx, cy, cz);
+    }
+}
+exports.default = TriplanarTexturesNode;
+const triplanarTextures = (0, _shaderNodeJs.nodeProxy)(TriplanarTexturesNode);
+const triplanarTexture = (...params)=>triplanarTextures(...params);
+(0, _shaderNodeJs.addNodeElement)("triplanarTexture", triplanarTexture);
+(0, _nodeJs.addNodeClass)("TriplanarTexturesNode", TriplanarTexturesNode);
+
+},{"../core/Node.js":"cld0p","../math/OperatorNode.js":"hCYI5","../accessors/NormalNode.js":"4n1Pc","../accessors/PositionNode.js":"1WXKm","../accessors/TextureNode.js":"4V1bd","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"Jok2T":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "reflector", ()=>reflector);
+var _textureNodeJs = require("../accessors/TextureNode.js");
+var _textureNodeJsDefault = parcelHelpers.interopDefault(_textureNodeJs);
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+var _constantsJs = require("../core/constants.js");
+var _viewportNodeJs = require("../display/ViewportNode.js");
+var _three = require("three");
+const _reflectorPlane = new (0, _three.Plane)();
+const _normal = new (0, _three.Vector3)();
+const _reflectorWorldPosition = new (0, _three.Vector3)();
+const _cameraWorldPosition = new (0, _three.Vector3)();
+const _rotationMatrix = new (0, _three.Matrix4)();
+const _lookAtPosition = new (0, _three.Vector3)(0, 0, -1);
+const clipPlane = new (0, _three.Vector4)();
+const _view = new (0, _three.Vector3)();
+const _target = new (0, _three.Vector3)();
+const _q = new (0, _three.Vector4)();
+const _size = new (0, _three.Vector2)();
+const _defaultRT = new (0, _three.RenderTarget)();
+const _defaultUV = (0, _shaderNodeJs.vec2)((0, _viewportNodeJs.viewportTopLeft).x.oneMinus(), (0, _viewportNodeJs.viewportTopLeft).y);
+let _inReflector = false;
+class ReflectorNode extends (0, _textureNodeJsDefault.default) {
+    constructor(parameters = {}){
+        super(_defaultRT.texture, _defaultUV);
+        const { target = new (0, _three.Object3D)(), resolution = 1, generateMipmaps = false, bounces = true } = parameters;
+        //
+        this.target = target;
+        this.resolution = resolution;
+        this.generateMipmaps = generateMipmaps;
+        this.bounces = bounces;
+        this.updateBeforeType = bounces ? (0, _constantsJs.NodeUpdateType).RENDER : (0, _constantsJs.NodeUpdateType).FRAME;
+        this.virtualCameras = new WeakMap();
+        this.renderTargets = new WeakMap();
+    }
+    _updateResolution(renderTarget, renderer) {
+        const resolution = this.resolution;
+        renderer.getDrawingBufferSize(_size);
+        renderTarget.setSize(Math.round(_size.width * resolution), Math.round(_size.height * resolution));
+    }
+    setup(builder) {
+        this._updateResolution(_defaultRT, builder.renderer);
+        return super.setup(builder);
+    }
+    getTextureNode() {
+        return this.textureNode;
+    }
+    getVirtualCamera(camera) {
+        let virtualCamera = this.virtualCameras.get(camera);
+        if (virtualCamera === undefined) {
+            virtualCamera = camera.clone();
+            this.virtualCameras.set(camera, virtualCamera);
+        }
+        return virtualCamera;
+    }
+    getRenderTarget(camera) {
+        let renderTarget = this.renderTargets.get(camera);
+        if (renderTarget === undefined) {
+            renderTarget = new (0, _three.RenderTarget)(0, 0, {
+                type: (0, _three.HalfFloatType)
+            });
+            if (this.generateMipmaps === true) {
+                renderTarget.texture.minFilter = (0, _three.LinearMipMapLinearFilter);
+                renderTarget.texture.generateMipmaps = true;
+            }
+            this.renderTargets.set(camera, renderTarget);
+        }
+        return renderTarget;
+    }
+    updateBefore(frame) {
+        if (this.bounces === false && _inReflector) return false;
+        _inReflector = true;
+        const { scene, camera, renderer, material } = frame;
+        const { target } = this;
+        const virtualCamera = this.getVirtualCamera(camera);
+        const renderTarget = this.getRenderTarget(virtualCamera);
+        renderer.getDrawingBufferSize(_size);
+        this._updateResolution(renderTarget, renderer);
+        //
+        _reflectorWorldPosition.setFromMatrixPosition(target.matrixWorld);
+        _cameraWorldPosition.setFromMatrixPosition(camera.matrixWorld);
+        _rotationMatrix.extractRotation(target.matrixWorld);
+        _normal.set(0, 0, 1);
+        _normal.applyMatrix4(_rotationMatrix);
+        _view.subVectors(_reflectorWorldPosition, _cameraWorldPosition);
+        // Avoid rendering when reflector is facing away
+        if (_view.dot(_normal) > 0) return;
+        _view.reflect(_normal).negate();
+        _view.add(_reflectorWorldPosition);
+        _rotationMatrix.extractRotation(camera.matrixWorld);
+        _lookAtPosition.set(0, 0, -1);
+        _lookAtPosition.applyMatrix4(_rotationMatrix);
+        _lookAtPosition.add(_cameraWorldPosition);
+        _target.subVectors(_reflectorWorldPosition, _lookAtPosition);
+        _target.reflect(_normal).negate();
+        _target.add(_reflectorWorldPosition);
+        //
+        virtualCamera.coordinateSystem = camera.coordinateSystem;
+        virtualCamera.position.copy(_view);
+        virtualCamera.up.set(0, 1, 0);
+        virtualCamera.up.applyMatrix4(_rotationMatrix);
+        virtualCamera.up.reflect(_normal);
+        virtualCamera.lookAt(_target);
+        virtualCamera.near = camera.near;
+        virtualCamera.far = camera.far;
+        virtualCamera.updateMatrixWorld();
+        virtualCamera.projectionMatrix.copy(camera.projectionMatrix);
+        // Now update projection matrix with new clip plane, implementing code from: http://www.terathon.com/code/oblique.html
+        // Paper explaining this technique: http://www.terathon.com/lengyel/Lengyel-Oblique.pdf
+        _reflectorPlane.setFromNormalAndCoplanarPoint(_normal, _reflectorWorldPosition);
+        _reflectorPlane.applyMatrix4(virtualCamera.matrixWorldInverse);
+        clipPlane.set(_reflectorPlane.normal.x, _reflectorPlane.normal.y, _reflectorPlane.normal.z, _reflectorPlane.constant);
+        const projectionMatrix = virtualCamera.projectionMatrix;
+        _q.x = (Math.sign(clipPlane.x) + projectionMatrix.elements[8]) / projectionMatrix.elements[0];
+        _q.y = (Math.sign(clipPlane.y) + projectionMatrix.elements[9]) / projectionMatrix.elements[5];
+        _q.z = -1;
+        _q.w = (1.0 + projectionMatrix.elements[10]) / projectionMatrix.elements[14];
+        // Calculate the scaled plane vector
+        clipPlane.multiplyScalar(1.0 / clipPlane.dot(_q));
+        const clipBias = 0;
+        // Replacing the third row of the projection matrix
+        projectionMatrix.elements[2] = clipPlane.x;
+        projectionMatrix.elements[6] = clipPlane.y;
+        projectionMatrix.elements[10] = clipPlane.z - clipBias;
+        projectionMatrix.elements[14] = clipPlane.w;
+        //
+        this.value = renderTarget.texture;
+        material.visible = false;
+        const currentRenderTarget = renderer.getRenderTarget();
+        renderer.setRenderTarget(renderTarget);
+        renderer.render(scene, virtualCamera);
+        renderer.setRenderTarget(currentRenderTarget);
+        material.visible = true;
+        _inReflector = false;
+    }
+}
+const reflector = (parameters)=>(0, _shaderNodeJs.nodeObject)(new ReflectorNode(parameters));
+exports.default = ReflectorNode;
+
+},{"../accessors/TextureNode.js":"4V1bd","../shadernode/ShaderNode.js":"8Xgcj","../core/constants.js":"6tdkL","../display/ViewportNode.js":"6pmzu","three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"9uzm9":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "bitangentGeometry", ()=>bitangentGeometry);
+parcelHelpers.export(exports, "bitangentLocal", ()=>bitangentLocal);
+parcelHelpers.export(exports, "bitangentView", ()=>bitangentView);
+parcelHelpers.export(exports, "bitangentWorld", ()=>bitangentWorld);
+parcelHelpers.export(exports, "transformedBitangentView", ()=>transformedBitangentView);
+parcelHelpers.export(exports, "transformedBitangentWorld", ()=>transformedBitangentWorld);
+var _nodeJs = require("../core/Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+var _varyingNodeJs = require("../core/VaryingNode.js");
+var _mathNodeJs = require("../math/MathNode.js");
+var _cameraNodeJs = require("./CameraNode.js");
+var _normalNodeJs = require("./NormalNode.js");
+var _tangentNodeJs = require("./TangentNode.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class BitangentNode extends (0, _nodeJsDefault.default) {
+    constructor(scope = BitangentNode.LOCAL){
+        super("vec3");
+        this.scope = scope;
+    }
+    getHash() {
+        return `bitangent-${this.scope}`;
+    }
+    generate(builder) {
+        const scope = this.scope;
+        let crossNormalTangent;
+        if (scope === BitangentNode.GEOMETRY) crossNormalTangent = (0, _normalNodeJs.normalGeometry).cross((0, _tangentNodeJs.tangentGeometry));
+        else if (scope === BitangentNode.LOCAL) crossNormalTangent = (0, _normalNodeJs.normalLocal).cross((0, _tangentNodeJs.tangentLocal));
+        else if (scope === BitangentNode.VIEW) crossNormalTangent = (0, _normalNodeJs.normalView).cross((0, _tangentNodeJs.tangentView));
+        else if (scope === BitangentNode.WORLD) crossNormalTangent = (0, _normalNodeJs.normalWorld).cross((0, _tangentNodeJs.tangentWorld));
+        const vertexNode = crossNormalTangent.mul((0, _tangentNodeJs.tangentGeometry).w).xyz;
+        const outputNode = (0, _mathNodeJs.normalize)((0, _varyingNodeJs.varying)(vertexNode));
+        return outputNode.build(builder, this.getNodeType(builder));
+    }
+    serialize(data) {
+        super.serialize(data);
+        data.scope = this.scope;
+    }
+    deserialize(data) {
+        super.deserialize(data);
+        this.scope = data.scope;
+    }
+}
+BitangentNode.GEOMETRY = "geometry";
+BitangentNode.LOCAL = "local";
+BitangentNode.VIEW = "view";
+BitangentNode.WORLD = "world";
+exports.default = BitangentNode;
+const bitangentGeometry = (0, _shaderNodeJs.nodeImmutable)(BitangentNode, BitangentNode.GEOMETRY);
+const bitangentLocal = (0, _shaderNodeJs.nodeImmutable)(BitangentNode, BitangentNode.LOCAL);
+const bitangentView = (0, _shaderNodeJs.nodeImmutable)(BitangentNode, BitangentNode.VIEW);
+const bitangentWorld = (0, _shaderNodeJs.nodeImmutable)(BitangentNode, BitangentNode.WORLD);
+const transformedBitangentView = (0, _mathNodeJs.normalize)((0, _normalNodeJs.transformedNormalView).cross((0, _tangentNodeJs.transformedTangentView)).mul((0, _tangentNodeJs.tangentGeometry).w));
+const transformedBitangentWorld = (0, _mathNodeJs.normalize)(transformedBitangentView.transformDirection((0, _cameraNodeJs.cameraViewMatrix)));
+(0, _nodeJs.addNodeClass)("BitangentNode", BitangentNode);
+
+},{"../core/Node.js":"cld0p","../core/VaryingNode.js":"iEE7L","../math/MathNode.js":"84OFe","./CameraNode.js":"kZ1gx","./NormalNode.js":"4n1Pc","./TangentNode.js":"kLjM0","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"lLiG0":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "vertexColor", ()=>vertexColor);
+var _nodeJs = require("../core/Node.js");
+var _attributeNodeJs = require("../core/AttributeNode.js");
+var _attributeNodeJsDefault = parcelHelpers.interopDefault(_attributeNodeJs);
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+var _three = require("three");
+class VertexColorNode extends (0, _attributeNodeJsDefault.default) {
+    constructor(index = 0){
+        super(null, "vec4");
+        this.isVertexColorNode = true;
+        this.index = index;
+    }
+    getAttributeName() {
+        const index = this.index;
+        return "color" + (index > 0 ? index : "");
+    }
+    generate(builder) {
+        const attributeName = this.getAttributeName(builder);
+        const geometryAttribute = builder.hasGeometryAttribute(attributeName);
+        let result;
+        if (geometryAttribute === true) result = super.generate(builder);
+        else // Vertex color fallback should be white
+        result = builder.generateConst(this.nodeType, new (0, _three.Vector4)(1, 1, 1, 1));
+        return result;
+    }
+    serialize(data) {
+        super.serialize(data);
+        data.index = this.index;
+    }
+    deserialize(data) {
+        super.deserialize(data);
+        this.index = data.index;
+    }
+}
+exports.default = VertexColorNode;
+const vertexColor = (...params)=>(0, _shaderNodeJs.nodeObject)(new VertexColorNode(...params));
+(0, _nodeJs.addNodeClass)("VertexColorNode", VertexColorNode);
+
+},{"../core/Node.js":"cld0p","../core/AttributeNode.js":"8yUip","../shadernode/ShaderNode.js":"8Xgcj","three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"dQvzQ":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "textureBicubic", ()=>textureBicubic);
+var _tempNodeJs = require("../core/TempNode.js");
+var _tempNodeJsDefault = parcelHelpers.interopDefault(_tempNodeJs);
+var _nodeJs = require("../core/Node.js");
+var _operatorNodeJs = require("../math/OperatorNode.js");
+var _mathNodeJs = require("../math/MathNode.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+// Mipped Bicubic Texture Filtering by N8
+// https://www.shadertoy.com/view/Dl2SDW
+const bC = 1.0 / 6.0;
+const w0 = (a)=>(0, _operatorNodeJs.mul)(bC, (0, _operatorNodeJs.mul)(a, (0, _operatorNodeJs.mul)(a, a.negate().add(3.0)).sub(3.0)).add(1.0));
+const w1 = (a)=>(0, _operatorNodeJs.mul)(bC, (0, _operatorNodeJs.mul)(a, (0, _operatorNodeJs.mul)(a, (0, _operatorNodeJs.mul)(3.0, a).sub(6.0))).add(4.0));
+const w2 = (a)=>(0, _operatorNodeJs.mul)(bC, (0, _operatorNodeJs.mul)(a, (0, _operatorNodeJs.mul)(a, (0, _operatorNodeJs.mul)(-3, a).add(3.0)).add(3.0)).add(1.0));
+const w3 = (a)=>(0, _operatorNodeJs.mul)(bC, (0, _mathNodeJs.pow)(a, 3));
+const g0 = (a)=>w0(a).add(w1(a));
+const g1 = (a)=>w2(a).add(w3(a));
+// h0 and h1 are the two offset functions
+const h0 = (a)=>(0, _operatorNodeJs.add)(-1, w1(a).div(w0(a).add(w1(a))));
+const h1 = (a)=>(0, _operatorNodeJs.add)(1.0, w3(a).div(w2(a).add(w3(a))));
+const bicubic = (textureNode, texelSize, lod)=>{
+    const uv = textureNode.uvNode;
+    const uvScaled = (0, _operatorNodeJs.mul)(uv, texelSize.zw).add(0.5);
+    const iuv = (0, _mathNodeJs.floor)(uvScaled);
+    const fuv = (0, _mathNodeJs.fract)(uvScaled);
+    const g0x = g0(fuv.x);
+    const g1x = g1(fuv.x);
+    const h0x = h0(fuv.x);
+    const h1x = h1(fuv.x);
+    const h0y = h0(fuv.y);
+    const h1y = h1(fuv.y);
+    const p0 = (0, _shaderNodeJs.vec2)(iuv.x.add(h0x), iuv.y.add(h0y)).sub(0.5).mul(texelSize.xy);
+    const p1 = (0, _shaderNodeJs.vec2)(iuv.x.add(h1x), iuv.y.add(h0y)).sub(0.5).mul(texelSize.xy);
+    const p2 = (0, _shaderNodeJs.vec2)(iuv.x.add(h0x), iuv.y.add(h1y)).sub(0.5).mul(texelSize.xy);
+    const p3 = (0, _shaderNodeJs.vec2)(iuv.x.add(h1x), iuv.y.add(h1y)).sub(0.5).mul(texelSize.xy);
+    const a = g0(fuv.y).mul((0, _operatorNodeJs.add)(g0x.mul(textureNode.uv(p0).level(lod)), g1x.mul(textureNode.uv(p1).level(lod))));
+    const b = g1(fuv.y).mul((0, _operatorNodeJs.add)(g0x.mul(textureNode.uv(p2).level(lod)), g1x.mul(textureNode.uv(p3).level(lod))));
+    return a.add(b);
+};
+const textureBicubicMethod = (textureNode, lodNode)=>{
+    const fLodSize = (0, _shaderNodeJs.vec2)(textureNode.size((0, _shaderNodeJs.int)(lodNode)));
+    const cLodSize = (0, _shaderNodeJs.vec2)(textureNode.size((0, _shaderNodeJs.int)(lodNode.add(1.0))));
+    const fLodSizeInv = (0, _operatorNodeJs.div)(1.0, fLodSize);
+    const cLodSizeInv = (0, _operatorNodeJs.div)(1.0, cLodSize);
+    const fSample = bicubic(textureNode, (0, _shaderNodeJs.vec4)(fLodSizeInv, fLodSize), (0, _mathNodeJs.floor)(lodNode));
+    const cSample = bicubic(textureNode, (0, _shaderNodeJs.vec4)(cLodSizeInv, cLodSize), (0, _mathNodeJs.ceil)(lodNode));
+    return (0, _mathNodeJs.fract)(lodNode).mix(fSample, cSample);
+};
+class TextureBicubicNode extends (0, _tempNodeJsDefault.default) {
+    constructor(textureNode, blurNode = (0, _shaderNodeJs.float)(3)){
+        super("vec4");
+        this.textureNode = textureNode;
+        this.blurNode = blurNode;
+    }
+    setup() {
+        return textureBicubicMethod(this.textureNode, this.blurNode);
+    }
+}
+exports.default = TextureBicubicNode;
+const textureBicubic = (0, _shaderNodeJs.nodeProxy)(TextureBicubicNode);
+(0, _shaderNodeJs.addNodeElement)("bicubic", textureBicubic);
+(0, _nodeJs.addNodeClass)("TextureBicubicNode", TextureBicubicNode);
+
+},{"../core/TempNode.js":"l0t0Y","../core/Node.js":"cld0p","../math/OperatorNode.js":"hCYI5","../math/MathNode.js":"84OFe","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"7iDRx":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "pointUV", ()=>pointUV);
+var _nodeJs = require("../core/Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class PointUVNode extends (0, _nodeJsDefault.default) {
+    constructor(){
+        super("vec2");
+        this.isPointUVNode = true;
+    }
+    generate() {
+        return "vec2( gl_PointCoord.x, 1.0 - gl_PointCoord.y )";
+    }
+}
+exports.default = PointUVNode;
+const pointUV = (0, _shaderNodeJs.nodeImmutable)(PointUVNode);
+(0, _nodeJs.addNodeClass)("PointUVNode", PointUVNode);
+
+},{"../core/Node.js":"cld0p","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"hzawG":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "backgroundBlurriness", ()=>backgroundBlurriness);
+parcelHelpers.export(exports, "backgroundIntensity", ()=>backgroundIntensity);
+var _nodeJs = require("../core/Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+var _referenceNodeJs = require("./ReferenceNode.js");
+class SceneNode extends (0, _nodeJsDefault.default) {
+    constructor(scope = SceneNode.BACKGROUND_BLURRINESS, scene = null){
+        super();
+        this.scope = scope;
+        this.scene = scene;
+    }
+    setup(builder) {
+        const scope = this.scope;
+        const scene = this.scene !== null ? this.scene : builder.scene;
+        let output;
+        if (scope === SceneNode.BACKGROUND_BLURRINESS) output = (0, _referenceNodeJs.reference)("backgroundBlurriness", "float", scene);
+        else if (scope === SceneNode.BACKGROUND_INTENSITY) output = (0, _referenceNodeJs.reference)("backgroundIntensity", "float", scene);
+        else console.error("THREE.SceneNode: Unknown scope:", scope);
+        return output;
+    }
+}
+SceneNode.BACKGROUND_BLURRINESS = "backgroundBlurriness";
+SceneNode.BACKGROUND_INTENSITY = "backgroundIntensity";
+exports.default = SceneNode;
+const backgroundBlurriness = (0, _shaderNodeJs.nodeImmutable)(SceneNode, SceneNode.BACKGROUND_BLURRINESS);
+const backgroundIntensity = (0, _shaderNodeJs.nodeImmutable)(SceneNode, SceneNode.BACKGROUND_INTENSITY);
+(0, _nodeJs.addNodeClass)("SceneNode", SceneNode);
+
+},{"../core/Node.js":"cld0p","../shadernode/ShaderNode.js":"8Xgcj","./ReferenceNode.js":"6ceuI","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"4Bhza":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "storage", ()=>storage);
+var _bufferNodeJs = require("./BufferNode.js");
+var _bufferNodeJsDefault = parcelHelpers.interopDefault(_bufferNodeJs);
+var _bufferAttributeNodeJs = require("./BufferAttributeNode.js");
+var _nodeJs = require("../core/Node.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+var _varyingNodeJs = require("../core/VaryingNode.js");
+class StorageBufferNode extends (0, _bufferNodeJsDefault.default) {
+    constructor(value, bufferType, bufferCount = 0){
+        super(value, bufferType, bufferCount);
+        this.isStorageBufferNode = true;
+        this._attribute = null;
+        this._varying = null;
+    }
+    getInputType() {
+        return "storageBuffer";
+    }
+    generate(builder) {
+        if (builder.isAvailable("storageBuffer")) return super.generate(builder);
+        const nodeType = this.getNodeType(builder);
+        if (this._attribute === null) {
+            this._attribute = (0, _bufferAttributeNodeJs.bufferAttribute)(this.value);
+            this._varying = (0, _varyingNodeJs.varying)(this._attribute);
+        }
+        const output = this._varying.build(builder, nodeType);
+        builder.registerTransform(output, this._attribute);
+        return output;
+    }
+}
+exports.default = StorageBufferNode;
+const storage = (value, type, count)=>(0, _shaderNodeJs.nodeObject)(new StorageBufferNode(value, type, count));
+(0, _nodeJs.addNodeClass)("StorageBufferNode", StorageBufferNode);
+
+},{"./BufferNode.js":"5k9aZ","./BufferAttributeNode.js":"Zd84g","../core/Node.js":"cld0p","../shadernode/ShaderNode.js":"8Xgcj","../core/VaryingNode.js":"iEE7L","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"bj4X0":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "textureStore", ()=>textureStore);
+var _nodeJs = require("../core/Node.js");
+var _textureNodeJs = require("./TextureNode.js");
+var _textureNodeJsDefault = parcelHelpers.interopDefault(_textureNodeJs);
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class TextureStoreNode extends (0, _textureNodeJsDefault.default) {
+    constructor(value, uvNode, storeNode = null){
+        super(value, uvNode);
+        this.storeNode = storeNode;
+        this.isStoreTextureNode = true;
+    }
+    getInputType() {
+        return "storageTexture";
+    }
+    setup(builder) {
+        super.setup(builder);
+        const properties = builder.getNodeProperties(this);
+        properties.storeNode = this.storeNode;
+    }
+    generate(builder, output) {
+        let snippet;
+        if (this.storeNode !== null) snippet = this.generateStore(builder);
+        else snippet = super.generate(builder, output);
+        return snippet;
+    }
+    generateStore(builder) {
+        const properties = builder.getNodeProperties(this);
+        const { uvNode, storeNode } = properties;
+        const textureProperty = super.generate(builder, "property");
+        const uvSnippet = uvNode.build(builder, "uvec2");
+        const storeSnippet = storeNode.build(builder, "vec4");
+        const snippet = builder.generateTextureStore(builder, textureProperty, uvSnippet, storeSnippet);
+        builder.addLineFlowCode(snippet);
+    }
+}
+exports.default = TextureStoreNode;
+const textureStoreBase = (0, _shaderNodeJs.nodeProxy)(TextureStoreNode);
+const textureStore = (value, uvNode, storeNode)=>{
+    const node = textureStoreBase(value, uvNode, storeNode);
+    if (storeNode !== null) node.append();
+    return node;
+};
+(0, _nodeJs.addNodeClass)("TextureStoreNode", TextureStoreNode);
+
+},{"../core/Node.js":"cld0p","./TextureNode.js":"4V1bd","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"1yGGF":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "userData", ()=>userData);
+var _referenceNodeJs = require("./ReferenceNode.js");
+var _referenceNodeJsDefault = parcelHelpers.interopDefault(_referenceNodeJs);
+var _nodeJs = require("../core/Node.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class UserDataNode extends (0, _referenceNodeJsDefault.default) {
+    constructor(property, inputType, userData = null){
+        super(property, inputType, userData);
+        this.userData = userData;
+    }
+    update(frame) {
+        this.reference = this.userData !== null ? this.userData : frame.object.userData;
+        super.update(frame);
+    }
+}
+exports.default = UserDataNode;
+const userData = (name, inputType, userData)=>(0, _shaderNodeJs.nodeObject)(new UserDataNode(name, inputType, userData));
+(0, _nodeJs.addNodeClass)("UserDataNode", UserDataNode);
+
+},{"./ReferenceNode.js":"6ceuI","../core/Node.js":"cld0p","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"SNTF7":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "BurnNode", ()=>BurnNode);
+parcelHelpers.export(exports, "DodgeNode", ()=>DodgeNode);
+parcelHelpers.export(exports, "ScreenNode", ()=>ScreenNode);
+parcelHelpers.export(exports, "OverlayNode", ()=>OverlayNode);
+parcelHelpers.export(exports, "burn", ()=>burn);
+parcelHelpers.export(exports, "dodge", ()=>dodge);
+parcelHelpers.export(exports, "overlay", ()=>overlay);
+parcelHelpers.export(exports, "screen", ()=>screen);
+var _tempNodeJs = require("../core/TempNode.js");
+var _tempNodeJsDefault = parcelHelpers.interopDefault(_tempNodeJs);
+var _mathNodeJs = require("../math/MathNode.js");
+var _nodeJs = require("../core/Node.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+const BurnNode = (0, _shaderNodeJs.tslFn)(({ base, blend })=>{
+    const fn = (c)=>blend[c].lessThan((0, _mathNodeJs.EPSILON)).cond(blend[c], base[c].oneMinus().div(blend[c]).oneMinus().max(0));
+    return (0, _shaderNodeJs.vec3)(fn("x"), fn("y"), fn("z"));
+});
+const DodgeNode = (0, _shaderNodeJs.tslFn)(({ base, blend })=>{
+    const fn = (c)=>blend[c].equal(1.0).cond(blend[c], base[c].div(blend[c].oneMinus()).max(0));
+    return (0, _shaderNodeJs.vec3)(fn("x"), fn("y"), fn("z"));
+});
+const ScreenNode = (0, _shaderNodeJs.tslFn)(({ base, blend })=>{
+    const fn = (c)=>base[c].oneMinus().mul(blend[c].oneMinus()).oneMinus();
+    return (0, _shaderNodeJs.vec3)(fn("x"), fn("y"), fn("z"));
+});
+const OverlayNode = (0, _shaderNodeJs.tslFn)(({ base, blend })=>{
+    const fn = (c)=>base[c].lessThan(0.5).cond(base[c].mul(blend[c], 2.0), base[c].oneMinus().mul(blend[c].oneMinus()).oneMinus());
+    return (0, _shaderNodeJs.vec3)(fn("x"), fn("y"), fn("z"));
+});
+class BlendModeNode extends (0, _tempNodeJsDefault.default) {
+    constructor(blendMode, baseNode, blendNode){
+        super();
+        this.blendMode = blendMode;
+        this.baseNode = baseNode;
+        this.blendNode = blendNode;
+    }
+    setup() {
+        const { blendMode, baseNode, blendNode } = this;
+        const params = {
+            base: baseNode,
+            blend: blendNode
+        };
+        let outputNode = null;
+        if (blendMode === BlendModeNode.BURN) outputNode = BurnNode(params);
+        else if (blendMode === BlendModeNode.DODGE) outputNode = DodgeNode(params);
+        else if (blendMode === BlendModeNode.SCREEN) outputNode = ScreenNode(params);
+        else if (blendMode === BlendModeNode.OVERLAY) outputNode = OverlayNode(params);
+        return outputNode;
+    }
+}
+BlendModeNode.BURN = "burn";
+BlendModeNode.DODGE = "dodge";
+BlendModeNode.SCREEN = "screen";
+BlendModeNode.OVERLAY = "overlay";
+exports.default = BlendModeNode;
+const burn = (0, _shaderNodeJs.nodeProxy)(BlendModeNode, BlendModeNode.BURN);
+const dodge = (0, _shaderNodeJs.nodeProxy)(BlendModeNode, BlendModeNode.DODGE);
+const overlay = (0, _shaderNodeJs.nodeProxy)(BlendModeNode, BlendModeNode.OVERLAY);
+const screen = (0, _shaderNodeJs.nodeProxy)(BlendModeNode, BlendModeNode.SCREEN);
+(0, _shaderNodeJs.addNodeElement)("burn", burn);
+(0, _shaderNodeJs.addNodeElement)("dodge", dodge);
+(0, _shaderNodeJs.addNodeElement)("overlay", overlay);
+(0, _shaderNodeJs.addNodeElement)("screen", screen);
+(0, _nodeJs.addNodeClass)("BlendModeNode", BlendModeNode);
+
+},{"../core/TempNode.js":"l0t0Y","../math/MathNode.js":"84OFe","../core/Node.js":"cld0p","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"5Lrr1":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "bumpMap", ()=>bumpMap);
+var _tempNodeJs = require("../core/TempNode.js");
+var _tempNodeJsDefault = parcelHelpers.interopDefault(_tempNodeJs);
+var _nodeJs = require("../core/Node.js");
+var _uvnodeJs = require("../accessors/UVNode.js");
+var _normalNodeJs = require("../accessors/NormalNode.js");
+var _positionNodeJs = require("../accessors/PositionNode.js");
+var _frontFacingNodeJs = require("./FrontFacingNode.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+// Bump Mapping Unparametrized Surfaces on the GPU by Morten S. Mikkelsen
+// https://mmikk.github.io/papers3d/mm_sfgrad_bump.pdf
+// Evaluate the derivative of the height w.r.t. screen-space using forward differencing (listing 2)
+const dHdxy_fwd = (0, _shaderNodeJs.tslFn)(({ textureNode, bumpScale })=>{
+    let texNode = textureNode;
+    if (texNode.isTextureNode !== true) texNode.traverse((node)=>{
+        if (node.isTextureNode === true) texNode = node;
+    });
+    if (texNode.isTextureNode !== true) throw new Error("THREE.TSL: dHdxy_fwd() requires a TextureNode.");
+    const Hll = (0, _shaderNodeJs.float)(textureNode);
+    const uvNode = texNode.uvNode || (0, _uvnodeJs.uv)();
+    // It's used to preserve the same TextureNode instance
+    const sampleTexture = (uv)=>textureNode.cache().context({
+            getUV: ()=>uv,
+            forceUVContext: true
+        });
+    return (0, _shaderNodeJs.vec2)((0, _shaderNodeJs.float)(sampleTexture(uvNode.add(uvNode.dFdx()))).sub(Hll), (0, _shaderNodeJs.float)(sampleTexture(uvNode.add(uvNode.dFdy()))).sub(Hll)).mul(bumpScale);
+});
+const perturbNormalArb = (0, _shaderNodeJs.tslFn)((inputs)=>{
+    const { surf_pos, surf_norm, dHdxy } = inputs;
+    // normalize is done to ensure that the bump map looks the same regardless of the texture's scale
+    const vSigmaX = surf_pos.dFdx().normalize();
+    const vSigmaY = surf_pos.dFdy().normalize();
+    const vN = surf_norm; // normalized
+    const R1 = vSigmaY.cross(vN);
+    const R2 = vN.cross(vSigmaX);
+    const fDet = vSigmaX.dot(R1).mul((0, _frontFacingNodeJs.faceDirection));
+    const vGrad = fDet.sign().mul(dHdxy.x.mul(R1).add(dHdxy.y.mul(R2)));
+    return fDet.abs().mul(surf_norm).sub(vGrad).normalize();
+});
+class BumpMapNode extends (0, _tempNodeJsDefault.default) {
+    constructor(textureNode, scaleNode = null){
+        super("vec3");
+        this.textureNode = textureNode;
+        this.scaleNode = scaleNode;
+    }
+    setup() {
+        const bumpScale = this.scaleNode !== null ? this.scaleNode : 1;
+        const dHdxy = dHdxy_fwd({
+            textureNode: this.textureNode,
+            bumpScale
+        });
+        return perturbNormalArb({
+            surf_pos: (0, _positionNodeJs.positionView),
+            surf_norm: (0, _normalNodeJs.normalView),
+            dHdxy
+        });
+    }
+}
+exports.default = BumpMapNode;
+const bumpMap = (0, _shaderNodeJs.nodeProxy)(BumpMapNode);
+(0, _shaderNodeJs.addNodeElement)("bumpMap", bumpMap);
+(0, _nodeJs.addNodeClass)("BumpMapNode", BumpMapNode);
+
+},{"../core/TempNode.js":"l0t0Y","../core/Node.js":"cld0p","../accessors/UVNode.js":"dj0CK","../accessors/NormalNode.js":"4n1Pc","../accessors/PositionNode.js":"1WXKm","./FrontFacingNode.js":"aCeTG","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"aCeTG":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "frontFacing", ()=>frontFacing);
+parcelHelpers.export(exports, "faceDirection", ()=>faceDirection);
+var _nodeJs = require("../core/Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class FrontFacingNode extends (0, _nodeJsDefault.default) {
+    constructor(){
+        super("bool");
+        this.isFrontFacingNode = true;
+    }
+    generate(builder) {
+        return builder.getFrontFacing();
+    }
+}
+exports.default = FrontFacingNode;
+const frontFacing = (0, _shaderNodeJs.nodeImmutable)(FrontFacingNode);
+const faceDirection = (0, _shaderNodeJs.float)(frontFacing).mul(2.0).sub(1.0);
+(0, _nodeJs.addNodeClass)("FrontFacingNode", FrontFacingNode);
+
+},{"../core/Node.js":"cld0p","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"6fxXm":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "saturation", ()=>saturation);
+parcelHelpers.export(exports, "vibrance", ()=>vibrance);
+parcelHelpers.export(exports, "hue", ()=>hue);
+parcelHelpers.export(exports, "lumaCoeffs", ()=>lumaCoeffs);
+parcelHelpers.export(exports, "luminance", ()=>luminance);
+parcelHelpers.export(exports, "threshold", ()=>threshold);
+var _tempNodeJs = require("../core/TempNode.js");
+var _tempNodeJsDefault = parcelHelpers.interopDefault(_tempNodeJs);
+var _mathNodeJs = require("../math/MathNode.js");
+var _operatorNodeJs = require("../math/OperatorNode.js");
+var _nodeJs = require("../core/Node.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+const saturationNode = (0, _shaderNodeJs.tslFn)(({ color, adjustment })=>{
+    return adjustment.mix(luminance(color.rgb), color.rgb);
+});
+const vibranceNode = (0, _shaderNodeJs.tslFn)(({ color, adjustment })=>{
+    const average = (0, _operatorNodeJs.add)(color.r, color.g, color.b).div(3.0);
+    const mx = color.r.max(color.g.max(color.b));
+    const amt = mx.sub(average).mul(adjustment).mul(-3);
+    return (0, _mathNodeJs.mix)(color.rgb, mx, amt);
+});
+const hueNode = (0, _shaderNodeJs.tslFn)(({ color, adjustment })=>{
+    const k = (0, _shaderNodeJs.vec3)(0.57735, 0.57735, 0.57735);
+    const cosAngle = adjustment.cos();
+    return (0, _shaderNodeJs.vec3)(color.rgb.mul(cosAngle).add(k.cross(color.rgb).mul(adjustment.sin()).add(k.mul((0, _mathNodeJs.dot)(k, color.rgb).mul(cosAngle.oneMinus())))));
+});
+class ColorAdjustmentNode extends (0, _tempNodeJsDefault.default) {
+    constructor(method, colorNode, adjustmentNode = (0, _shaderNodeJs.float)(1)){
+        super("vec3");
+        this.method = method;
+        this.colorNode = colorNode;
+        this.adjustmentNode = adjustmentNode;
+    }
+    setup() {
+        const { method, colorNode, adjustmentNode } = this;
+        const callParams = {
+            color: colorNode,
+            adjustment: adjustmentNode
+        };
+        let outputNode = null;
+        if (method === ColorAdjustmentNode.SATURATION) outputNode = saturationNode(callParams);
+        else if (method === ColorAdjustmentNode.VIBRANCE) outputNode = vibranceNode(callParams);
+        else if (method === ColorAdjustmentNode.HUE) outputNode = hueNode(callParams);
+        else console.error(`${this.type}: Method "${this.method}" not supported!`);
+        return outputNode;
+    }
+}
+ColorAdjustmentNode.SATURATION = "saturation";
+ColorAdjustmentNode.VIBRANCE = "vibrance";
+ColorAdjustmentNode.HUE = "hue";
+exports.default = ColorAdjustmentNode;
+const saturation = (0, _shaderNodeJs.nodeProxy)(ColorAdjustmentNode, ColorAdjustmentNode.SATURATION);
+const vibrance = (0, _shaderNodeJs.nodeProxy)(ColorAdjustmentNode, ColorAdjustmentNode.VIBRANCE);
+const hue = (0, _shaderNodeJs.nodeProxy)(ColorAdjustmentNode, ColorAdjustmentNode.HUE);
+const lumaCoeffs = (0, _shaderNodeJs.vec3)(0.2125, 0.7154, 0.0721);
+const luminance = (color, luma = lumaCoeffs)=>(0, _mathNodeJs.dot)(color, luma);
+const threshold = (color, threshold)=>(0, _mathNodeJs.mix)((0, _shaderNodeJs.vec3)(0.0), color, luminance(color).sub(threshold).max(0));
+(0, _shaderNodeJs.addNodeElement)("saturation", saturation);
+(0, _shaderNodeJs.addNodeElement)("vibrance", vibrance);
+(0, _shaderNodeJs.addNodeElement)("hue", hue);
+(0, _shaderNodeJs.addNodeElement)("threshold", threshold);
+(0, _nodeJs.addNodeClass)("ColorAdjustmentNode", ColorAdjustmentNode);
+
+},{"../core/TempNode.js":"l0t0Y","../math/MathNode.js":"84OFe","../math/OperatorNode.js":"hCYI5","../core/Node.js":"cld0p","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"66BZP":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "normalMap", ()=>normalMap);
+parcelHelpers.export(exports, "TBNViewMatrix", ()=>TBNViewMatrix);
+var _tempNodeJs = require("../core/TempNode.js");
+var _tempNodeJsDefault = parcelHelpers.interopDefault(_tempNodeJs);
+var _operatorNodeJs = require("../math/OperatorNode.js");
+var _bitangentNodeJs = require("../accessors/BitangentNode.js");
+var _modelNodeJs = require("../accessors/ModelNode.js");
+var _normalNodeJs = require("../accessors/NormalNode.js");
+var _positionNodeJs = require("../accessors/PositionNode.js");
+var _tangentNodeJs = require("../accessors/TangentNode.js");
+var _uvnodeJs = require("../accessors/UVNode.js");
+var _frontFacingNodeJs = require("./FrontFacingNode.js");
+var _nodeJs = require("../core/Node.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+var _three = require("three");
+// Normal Mapping Without Precomputed Tangents
+// http://www.thetenthplanet.de/archives/1180
+const perturbNormal2Arb = (0, _shaderNodeJs.tslFn)((inputs)=>{
+    const { eye_pos, surf_norm, mapN, uv } = inputs;
+    const q0 = eye_pos.dFdx();
+    const q1 = eye_pos.dFdy();
+    const st0 = uv.dFdx();
+    const st1 = uv.dFdy();
+    const N = surf_norm; // normalized
+    const q1perp = q1.cross(N);
+    const q0perp = N.cross(q0);
+    const T = q1perp.mul(st0.x).add(q0perp.mul(st1.x));
+    const B = q1perp.mul(st0.y).add(q0perp.mul(st1.y));
+    const det = T.dot(T).max(B.dot(B));
+    const scale = (0, _frontFacingNodeJs.faceDirection).mul(det.inverseSqrt());
+    return (0, _operatorNodeJs.add)(T.mul(mapN.x, scale), B.mul(mapN.y, scale), N.mul(mapN.z)).normalize();
+});
+class NormalMapNode extends (0, _tempNodeJsDefault.default) {
+    constructor(node, scaleNode = null){
+        super("vec3");
+        this.node = node;
+        this.scaleNode = scaleNode;
+        this.normalMapType = (0, _three.TangentSpaceNormalMap);
+    }
+    setup(builder) {
+        const { normalMapType, scaleNode } = this;
+        let normalMap = this.node.mul(2.0).sub(1.0);
+        if (scaleNode !== null) normalMap = (0, _shaderNodeJs.vec3)(normalMap.xy.mul(scaleNode), normalMap.z);
+        let outputNode = null;
+        if (normalMapType === (0, _three.ObjectSpaceNormalMap)) outputNode = (0, _modelNodeJs.modelNormalMatrix).mul(normalMap).normalize();
+        else if (normalMapType === (0, _three.TangentSpaceNormalMap)) {
+            const tangent = builder.hasGeometryAttribute("tangent");
+            if (tangent === true) outputNode = TBNViewMatrix.mul(normalMap).normalize();
+            else outputNode = perturbNormal2Arb({
+                eye_pos: (0, _positionNodeJs.positionView),
+                surf_norm: (0, _normalNodeJs.normalView),
+                mapN: normalMap,
+                uv: (0, _uvnodeJs.uv)()
+            });
+        }
+        return outputNode;
+    }
+}
+exports.default = NormalMapNode;
+const normalMap = (0, _shaderNodeJs.nodeProxy)(NormalMapNode);
+const TBNViewMatrix = (0, _shaderNodeJs.mat3)((0, _tangentNodeJs.tangentView), (0, _bitangentNodeJs.bitangentView), (0, _normalNodeJs.normalView));
+(0, _shaderNodeJs.addNodeElement)("normalMap", normalMap);
+(0, _nodeJs.addNodeClass)("NormalMapNode", NormalMapNode);
+
+},{"../core/TempNode.js":"l0t0Y","../math/OperatorNode.js":"hCYI5","../accessors/BitangentNode.js":"9uzm9","../accessors/ModelNode.js":"ix99b","../accessors/NormalNode.js":"4n1Pc","../accessors/PositionNode.js":"1WXKm","../accessors/TangentNode.js":"kLjM0","../accessors/UVNode.js":"dj0CK","./FrontFacingNode.js":"aCeTG","../core/Node.js":"cld0p","../shadernode/ShaderNode.js":"8Xgcj","three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"8FESb":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "posterize", ()=>posterize);
+var _tempNodeJs = require("../core/TempNode.js");
+var _tempNodeJsDefault = parcelHelpers.interopDefault(_tempNodeJs);
+var _nodeJs = require("../core/Node.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class PosterizeNode extends (0, _tempNodeJsDefault.default) {
+    constructor(sourceNode, stepsNode){
+        super();
+        this.sourceNode = sourceNode;
+        this.stepsNode = stepsNode;
+    }
+    setup() {
+        const { sourceNode, stepsNode } = this;
+        return sourceNode.mul(stepsNode).floor().div(stepsNode);
+    }
+}
+exports.default = PosterizeNode;
+const posterize = (0, _shaderNodeJs.nodeProxy)(PosterizeNode);
+(0, _shaderNodeJs.addNodeElement)("posterize", posterize);
+(0, _nodeJs.addNodeClass)("PosterizeNode", PosterizeNode);
+
+},{"../core/TempNode.js":"l0t0Y","../core/Node.js":"cld0p","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"7W6Lu":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "toneMapping", ()=>toneMapping);
+var _tempNodeJs = require("../core/TempNode.js");
+var _tempNodeJsDefault = parcelHelpers.interopDefault(_tempNodeJs);
+var _nodeJs = require("../core/Node.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+var _three = require("three");
+var _mathNodeJs = require("../math/MathNode.js");
+var _operatorNodeJs = require("../math/OperatorNode.js");
+// exposure only
+const LinearToneMappingNode = (0, _shaderNodeJs.tslFn)(({ color, exposure })=>{
+    return color.mul(exposure).clamp();
+});
+// source: https://www.cs.utah.edu/docs/techreports/2002/pdf/UUCS-02-001.pdf
+const ReinhardToneMappingNode = (0, _shaderNodeJs.tslFn)(({ color, exposure })=>{
+    color = color.mul(exposure);
+    return color.div(color.add(1.0)).clamp();
+});
+// source: http://filmicworlds.com/blog/filmic-tonemapping-operators/
+const OptimizedCineonToneMappingNode = (0, _shaderNodeJs.tslFn)(({ color, exposure })=>{
+    // optimized filmic operator by Jim Hejl and Richard Burgess-Dawson
+    color = color.mul(exposure);
+    color = color.sub(0.004).max(0.0);
+    const a = color.mul(color.mul(6.2).add(0.5));
+    const b = color.mul(color.mul(6.2).add(1.7)).add(0.06);
+    return a.div(b).pow(2.2);
+});
+// source: https://github.com/selfshadow/ltc_code/blob/master/webgl/shaders/ltc/ltc_blit.fs
+const RRTAndODTFit = (0, _shaderNodeJs.tslFn)(({ color })=>{
+    const a = color.mul(color.add(0.0245786)).sub(0.000090537);
+    const b = color.mul(color.add(0.4329510).mul(0.983729)).add(0.238081);
+    return a.div(b);
+});
+// source: https://github.com/selfshadow/ltc_code/blob/master/webgl/shaders/ltc/ltc_blit.fs
+const ACESFilmicToneMappingNode = (0, _shaderNodeJs.tslFn)(({ color, exposure })=>{
+    // sRGB => XYZ => D65_2_D60 => AP1 => RRT_SAT
+    const ACESInputMat = (0, _shaderNodeJs.mat3)(0.59719, 0.35458, 0.04823, 0.07600, 0.90834, 0.01566, 0.02840, 0.13383, 0.83777);
+    // ODT_SAT => XYZ => D60_2_D65 => sRGB
+    const ACESOutputMat = (0, _shaderNodeJs.mat3)(1.60475, -0.53108, -0.07367, -0.10208, 1.10813, -0.00605, -0.00327, -0.07276, 1.07602);
+    color = color.mul(exposure).div(0.6);
+    color = ACESInputMat.mul(color);
+    // Apply RRT and ODT
+    color = RRTAndODTFit({
+        color
+    });
+    color = ACESOutputMat.mul(color);
+    // Clamp to [0, 1]
+    return color.clamp();
+});
+const LINEAR_REC2020_TO_LINEAR_SRGB = (0, _shaderNodeJs.mat3)((0, _shaderNodeJs.vec3)(1.6605, -0.1246, -0.0182), (0, _shaderNodeJs.vec3)(-0.5876, 1.1329, -0.1006), (0, _shaderNodeJs.vec3)(-0.0728, -0.0083, 1.1187));
+const LINEAR_SRGB_TO_LINEAR_REC2020 = (0, _shaderNodeJs.mat3)((0, _shaderNodeJs.vec3)(0.6274, 0.0691, 0.0164), (0, _shaderNodeJs.vec3)(0.3293, 0.9195, 0.0880), (0, _shaderNodeJs.vec3)(0.0433, 0.0113, 0.8956));
+const agxDefaultContrastApprox = (0, _shaderNodeJs.tslFn)(([x_immutable])=>{
+    const x = (0, _shaderNodeJs.vec3)(x_immutable).toVar();
+    const x2 = (0, _shaderNodeJs.vec3)(x.mul(x)).toVar();
+    const x4 = (0, _shaderNodeJs.vec3)(x2.mul(x2)).toVar();
+    return (0, _shaderNodeJs.float)(15.5).mul(x4.mul(x2)).sub((0, _operatorNodeJs.mul)(40.14, x4.mul(x))).add((0, _operatorNodeJs.mul)(31.96, x4).sub((0, _operatorNodeJs.mul)(6.868, x2.mul(x))).add((0, _operatorNodeJs.mul)(0.4298, x2).add((0, _operatorNodeJs.mul)(0.1191, x).sub(0.00232))));
+});
+const AGXToneMappingNode = (0, _shaderNodeJs.tslFn)(({ color, exposure })=>{
+    const colortone = (0, _shaderNodeJs.vec3)(color).toVar();
+    const AgXInsetMatrix = (0, _shaderNodeJs.mat3)((0, _shaderNodeJs.vec3)(0.856627153315983, 0.137318972929847, 0.11189821299995), (0, _shaderNodeJs.vec3)(0.0951212405381588, 0.761241990602591, 0.0767994186031903), (0, _shaderNodeJs.vec3)(0.0482516061458583, 0.101439036467562, 0.811302368396859));
+    const AgXOutsetMatrix = (0, _shaderNodeJs.mat3)((0, _shaderNodeJs.vec3)(1.1271005818144368, -0.1413297634984383, -0.14132976349843826), (0, _shaderNodeJs.vec3)(-0.11060664309660323, 1.157823702216272, -0.11060664309660294), (0, _shaderNodeJs.vec3)(-0.016493938717834573, -0.016493938717834257, 1.2519364065950405));
+    const AgxMinEv = (0, _shaderNodeJs.float)(-12.47393);
+    const AgxMaxEv = (0, _shaderNodeJs.float)(4.026069);
+    colortone.mulAssign(exposure);
+    colortone.assign(LINEAR_SRGB_TO_LINEAR_REC2020.mul(colortone));
+    colortone.assign(AgXInsetMatrix.mul(colortone));
+    colortone.assign((0, _mathNodeJs.max)(colortone, 1e-10));
+    colortone.assign((0, _mathNodeJs.log2)(colortone));
+    colortone.assign(colortone.sub(AgxMinEv).div(AgxMaxEv.sub(AgxMinEv)));
+    colortone.assign((0, _mathNodeJs.clamp)(colortone, 0.0, 1.0));
+    colortone.assign(agxDefaultContrastApprox(colortone));
+    colortone.assign(AgXOutsetMatrix.mul(colortone));
+    colortone.assign((0, _mathNodeJs.pow)((0, _mathNodeJs.max)((0, _shaderNodeJs.vec3)(0.0), colortone), (0, _shaderNodeJs.vec3)(2.2)));
+    colortone.assign(LINEAR_REC2020_TO_LINEAR_SRGB.mul(colortone));
+    colortone.assign((0, _mathNodeJs.clamp)(colortone, 0.0, 1.0));
+    return colortone;
+});
+const toneMappingLib = {
+    [(0, _three.LinearToneMapping)]: LinearToneMappingNode,
+    [(0, _three.ReinhardToneMapping)]: ReinhardToneMappingNode,
+    [(0, _three.CineonToneMapping)]: OptimizedCineonToneMappingNode,
+    [(0, _three.ACESFilmicToneMapping)]: ACESFilmicToneMappingNode,
+    [(0, _three.AgXToneMapping)]: AGXToneMappingNode
+};
+class ToneMappingNode extends (0, _tempNodeJsDefault.default) {
+    constructor(toneMapping = (0, _three.NoToneMapping), exposureNode = (0, _shaderNodeJs.float)(1), colorNode = null){
+        super("vec3");
+        this.toneMapping = toneMapping;
+        this.exposureNode = exposureNode;
+        this.colorNode = colorNode;
+    }
+    getCacheKey() {
+        let cacheKey = super.getCacheKey();
+        cacheKey = "{toneMapping:" + this.toneMapping + ",nodes:" + cacheKey + "}";
+        return cacheKey;
+    }
+    setup(builder) {
+        const colorNode = this.colorNode || builder.context.color;
+        const toneMapping = this.toneMapping;
+        if (toneMapping === (0, _three.NoToneMapping)) return colorNode;
+        const toneMappingParams = {
+            exposure: this.exposureNode,
+            color: colorNode
+        };
+        const toneMappingNode = toneMappingLib[toneMapping];
+        let outputNode = null;
+        if (toneMappingNode) outputNode = toneMappingNode(toneMappingParams);
+        else {
+            console.error("ToneMappingNode: Unsupported Tone Mapping configuration.", toneMapping);
+            outputNode = colorNode;
+        }
+        return outputNode;
+    }
+}
+exports.default = ToneMappingNode;
+const toneMapping = (mapping, exposure, color)=>(0, _shaderNodeJs.nodeObject)(new ToneMappingNode(mapping, (0, _shaderNodeJs.nodeObject)(exposure), (0, _shaderNodeJs.nodeObject)(color)));
+(0, _nodeJs.addNodeClass)("ToneMappingNode", ToneMappingNode);
+
+},{"../core/TempNode.js":"l0t0Y","../core/Node.js":"cld0p","../shadernode/ShaderNode.js":"8Xgcj","three":"ktPTu","../math/MathNode.js":"84OFe","../math/OperatorNode.js":"hCYI5","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"eL2MW":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "viewportSharedTexture", ()=>viewportSharedTexture);
+var _viewportTextureNodeJs = require("./ViewportTextureNode.js");
+var _viewportTextureNodeJsDefault = parcelHelpers.interopDefault(_viewportTextureNodeJs);
+var _nodeJs = require("../core/Node.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+var _viewportNodeJs = require("./ViewportNode.js");
+var _three = require("three");
+let _sharedFramebuffer = null;
+class ViewportSharedTextureNode extends (0, _viewportTextureNodeJsDefault.default) {
+    constructor(uvNode = (0, _viewportNodeJs.viewportTopLeft), levelNode = null){
+        if (_sharedFramebuffer === null) _sharedFramebuffer = new (0, _three.FramebufferTexture)();
+        super(uvNode, levelNode, _sharedFramebuffer);
+    }
+}
+exports.default = ViewportSharedTextureNode;
+const viewportSharedTexture = (0, _shaderNodeJs.nodeProxy)(ViewportSharedTextureNode);
+(0, _shaderNodeJs.addNodeElement)("viewportSharedTexture", viewportSharedTexture);
+(0, _nodeJs.addNodeClass)("ViewportSharedTextureNode", ViewportSharedTextureNode);
+
+},{"./ViewportTextureNode.js":"7krR3","../core/Node.js":"cld0p","../shadernode/ShaderNode.js":"8Xgcj","./ViewportNode.js":"6pmzu","three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"dG51u":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "gaussianBlur", ()=>gaussianBlur);
+var _tempNodeJs = require("../core/TempNode.js");
+var _tempNodeJsDefault = parcelHelpers.interopDefault(_tempNodeJs);
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+var _constantsJs = require("../core/constants.js");
+var _operatorNodeJs = require("../math/OperatorNode.js");
+var _uvnodeJs = require("../accessors/UVNode.js");
+var _passNodeJs = require("./PassNode.js");
+var _uniformNodeJs = require("../core/UniformNode.js");
+var _three = require("three");
+var _quadMeshJs = require("../../objects/QuadMesh.js");
+var _quadMeshJsDefault = parcelHelpers.interopDefault(_quadMeshJs);
+// WebGPU: The use of a single QuadMesh for both gaussian blur passes results in a single RenderObject with a SampledTexture binding that
+// alternates between source textures and triggers creation of new BindGroups and BindGroupLayouts every frame.
+const quadMesh1 = new (0, _quadMeshJsDefault.default)();
+const quadMesh2 = new (0, _quadMeshJsDefault.default)();
+class GaussianBlurNode extends (0, _tempNodeJsDefault.default) {
+    constructor(textureNode, sigma = 2){
+        super("vec4");
+        this.textureNode = textureNode;
+        this.sigma = sigma;
+        this.directionNode = (0, _shaderNodeJs.vec2)(1);
+        this._invSize = (0, _uniformNodeJs.uniform)(new (0, _three.Vector2)());
+        this._passDirection = (0, _uniformNodeJs.uniform)(new (0, _three.Vector2)());
+        this._horizontalRT = new (0, _three.RenderTarget)();
+        this._horizontalRT.texture.name = "GaussianBlurNode.horizontal";
+        this._verticalRT = new (0, _three.RenderTarget)();
+        this._verticalRT.texture.name = "GaussianBlurNode.vertical";
+        this._textureNode = (0, _passNodeJs.texturePass)(this, this._verticalRT.texture);
+        this.updateBeforeType = (0, _constantsJs.NodeUpdateType).RENDER;
+        this.resolution = new (0, _three.Vector2)(1, 1);
+    }
+    setSize(width, height) {
+        width = Math.max(Math.round(width * this.resolution.x), 1);
+        height = Math.max(Math.round(height * this.resolution.y), 1);
+        this._invSize.value.set(1 / width, 1 / height);
+        this._horizontalRT.setSize(width, height);
+        this._verticalRT.setSize(width, height);
+    }
+    updateBefore(frame) {
+        const { renderer } = frame;
+        const textureNode = this.textureNode;
+        const map = textureNode.value;
+        const currentRenderTarget = renderer.getRenderTarget();
+        const currentTexture = textureNode.value;
+        quadMesh1.material = this._material;
+        quadMesh2.material = this._material;
+        this.setSize(map.image.width, map.image.height);
+        const textureType = map.type;
+        this._horizontalRT.texture.type = textureType;
+        this._verticalRT.texture.type = textureType;
+        // horizontal
+        renderer.setRenderTarget(this._horizontalRT);
+        this._passDirection.value.set(1, 0);
+        quadMesh1.render(renderer);
+        // vertical
+        textureNode.value = this._horizontalRT.texture;
+        renderer.setRenderTarget(this._verticalRT);
+        this._passDirection.value.set(0, 1);
+        quadMesh2.render(renderer);
+        // restore
+        renderer.setRenderTarget(currentRenderTarget);
+        textureNode.value = currentTexture;
+    }
+    getTextureNode() {
+        return this._textureNode;
+    }
+    setup(builder) {
+        const textureNode = this.textureNode;
+        if (textureNode.isTextureNode !== true) {
+            console.error("GaussianBlurNode requires a TextureNode.");
+            return (0, _shaderNodeJs.vec4)();
+        }
+        //
+        const uvNode = textureNode.uvNode || (0, _uvnodeJs.uv)();
+        const sampleTexture = (uv)=>textureNode.cache().context({
+                getUV: ()=>uv,
+                forceUVContext: true
+            });
+        const blur = (0, _shaderNodeJs.tslFn)(()=>{
+            const kernelSize = 3 + 2 * this.sigma;
+            const gaussianCoefficients = this._getCoefficients(kernelSize);
+            const invSize = this._invSize;
+            const direction = (0, _shaderNodeJs.vec2)(this.directionNode).mul(this._passDirection);
+            const weightSum = (0, _shaderNodeJs.float)(gaussianCoefficients[0]).toVar();
+            const diffuseSum = (0, _shaderNodeJs.vec4)(sampleTexture(uvNode).mul(weightSum)).toVar();
+            for(let i = 1; i < kernelSize; i++){
+                const x = (0, _shaderNodeJs.float)(i);
+                const w = (0, _shaderNodeJs.float)(gaussianCoefficients[i]);
+                const uvOffset = (0, _shaderNodeJs.vec2)(direction.mul(invSize.mul(x))).toVar();
+                const sample1 = (0, _shaderNodeJs.vec4)(sampleTexture(uvNode.add(uvOffset)));
+                const sample2 = (0, _shaderNodeJs.vec4)(sampleTexture(uvNode.sub(uvOffset)));
+                diffuseSum.addAssign(sample1.add(sample2).mul(w));
+                weightSum.addAssign((0, _operatorNodeJs.mul)(2.0, w));
+            }
+            return diffuseSum.div(weightSum);
+        });
+        //
+        const material = this._material || (this._material = builder.createNodeMaterial());
+        material.fragmentNode = blur();
+        //
+        const properties = builder.getNodeProperties(this);
+        properties.textureNode = textureNode;
+        //
+        return this._textureNode;
+    }
+    _getCoefficients(kernelRadius) {
+        const coefficients = [];
+        for(let i = 0; i < kernelRadius; i++)coefficients.push(0.39894 * Math.exp(-0.5 * i * i / (kernelRadius * kernelRadius)) / kernelRadius);
+        return coefficients;
+    }
+}
+const gaussianBlur = (node, sigma)=>(0, _shaderNodeJs.nodeObject)(new GaussianBlurNode((0, _shaderNodeJs.nodeObject)(node), sigma));
+(0, _shaderNodeJs.addNodeElement)("gaussianBlur", gaussianBlur);
+exports.default = GaussianBlurNode;
+
+},{"../core/TempNode.js":"l0t0Y","../shadernode/ShaderNode.js":"8Xgcj","../core/constants.js":"6tdkL","../math/OperatorNode.js":"hCYI5","../accessors/UVNode.js":"dj0CK","./PassNode.js":"gEajz","../core/UniformNode.js":"cfhYS","three":"ktPTu","../../objects/QuadMesh.js":"9pXpo","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gEajz":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "pass", ()=>pass);
+parcelHelpers.export(exports, "texturePass", ()=>texturePass);
+parcelHelpers.export(exports, "depthPass", ()=>depthPass);
+var _nodeJs = require("../core/Node.js");
+var _tempNodeJs = require("../core/TempNode.js");
+var _tempNodeJsDefault = parcelHelpers.interopDefault(_tempNodeJs);
+var _textureNodeJs = require("../accessors/TextureNode.js");
+var _textureNodeJsDefault = parcelHelpers.interopDefault(_textureNodeJs);
+var _constantsJs = require("../core/constants.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+var _uniformNodeJs = require("../core/UniformNode.js");
+var _viewportDepthNodeJs = require("./ViewportDepthNode.js");
+var _three = require("three");
+class PassTextureNode extends (0, _textureNodeJsDefault.default) {
+    constructor(passNode, texture){
+        super(texture);
+        this.passNode = passNode;
+        this.setUpdateMatrix(false);
+    }
+    setup(builder) {
+        this.passNode.build(builder);
+        return super.setup(builder);
+    }
+    clone() {
+        return new this.constructor(this.passNode, this.value);
+    }
+}
+class PassNode extends (0, _tempNodeJsDefault.default) {
+    constructor(scope, scene, camera){
+        super("vec4");
+        this.scope = scope;
+        this.scene = scene;
+        this.camera = camera;
+        this._pixelRatio = 1;
+        this._width = 1;
+        this._height = 1;
+        const depthTexture = new (0, _three.DepthTexture)();
+        depthTexture.isRenderTargetTexture = true;
+        //depthTexture.type = FloatType;
+        depthTexture.name = "PostProcessingDepth";
+        const renderTarget = new (0, _three.RenderTarget)(this._width * this._pixelRatio, this._height * this._pixelRatio, {
+            type: (0, _three.HalfFloatType)
+        });
+        renderTarget.texture.name = "PostProcessing";
+        renderTarget.depthTexture = depthTexture;
+        this.renderTarget = renderTarget;
+        this.updateBeforeType = (0, _constantsJs.NodeUpdateType).FRAME;
+        this._textureNode = (0, _shaderNodeJs.nodeObject)(new PassTextureNode(this, renderTarget.texture));
+        this._depthTextureNode = (0, _shaderNodeJs.nodeObject)(new PassTextureNode(this, depthTexture));
+        this._depthNode = null;
+        this._cameraNear = (0, _uniformNodeJs.uniform)(0);
+        this._cameraFar = (0, _uniformNodeJs.uniform)(0);
+        this.isPassNode = true;
+    }
+    isGlobal() {
+        return true;
+    }
+    getTextureNode() {
+        return this._textureNode;
+    }
+    getTextureDepthNode() {
+        return this._depthTextureNode;
+    }
+    getDepthNode() {
+        if (this._depthNode === null) {
+            const cameraNear = this._cameraNear;
+            const cameraFar = this._cameraFar;
+            this._depthNode = (0, _viewportDepthNodeJs.viewZToOrthographicDepth)((0, _viewportDepthNodeJs.perspectiveDepthToViewZ)(this._depthTextureNode, cameraNear, cameraFar), cameraNear, cameraFar);
+        }
+        return this._depthNode;
+    }
+    setup() {
+        return this.scope === PassNode.COLOR ? this.getTextureNode() : this.getDepthNode();
+    }
+    updateBefore(frame) {
+        const { renderer } = frame;
+        const { scene, camera } = this;
+        this._pixelRatio = renderer.getPixelRatio();
+        const size = renderer.getSize(new (0, _three.Vector2)());
+        this.setSize(size.width, size.height);
+        const currentToneMapping = renderer.toneMapping;
+        const currentToneMappingNode = renderer.toneMappingNode;
+        const currentRenderTarget = renderer.getRenderTarget();
+        this._cameraNear.value = camera.near;
+        this._cameraFar.value = camera.far;
+        renderer.toneMapping = (0, _three.NoToneMapping);
+        renderer.toneMappingNode = null;
+        renderer.setRenderTarget(this.renderTarget);
+        renderer.render(scene, camera);
+        renderer.toneMapping = currentToneMapping;
+        renderer.toneMappingNode = currentToneMappingNode;
+        renderer.setRenderTarget(currentRenderTarget);
+    }
+    setSize(width, height) {
+        this._width = width;
+        this._height = height;
+        const effectiveWidth = this._width * this._pixelRatio;
+        const effectiveHeight = this._height * this._pixelRatio;
+        this.renderTarget.setSize(effectiveWidth, effectiveHeight);
+    }
+    setPixelRatio(pixelRatio) {
+        this._pixelRatio = pixelRatio;
+        this.setSize(this._width, this._height);
+    }
+    dispose() {
+        this.renderTarget.dispose();
+    }
+}
+PassNode.COLOR = "color";
+PassNode.DEPTH = "depth";
+exports.default = PassNode;
+const pass = (scene, camera)=>(0, _shaderNodeJs.nodeObject)(new PassNode(PassNode.COLOR, scene, camera));
+const texturePass = (pass, texture)=>(0, _shaderNodeJs.nodeObject)(new PassTextureNode(pass, texture));
+const depthPass = (scene, camera)=>(0, _shaderNodeJs.nodeObject)(new PassNode(PassNode.DEPTH, scene, camera));
+(0, _nodeJs.addNodeClass)("PassNode", PassNode);
+
+},{"../core/Node.js":"cld0p","../core/TempNode.js":"l0t0Y","../accessors/TextureNode.js":"4V1bd","../core/constants.js":"6tdkL","../shadernode/ShaderNode.js":"8Xgcj","../core/UniformNode.js":"cfhYS","./ViewportDepthNode.js":"eqnm6","three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"9pXpo":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _three = require("three");
+// Helper for passes that need to fill the viewport with a single quad.
+const _camera = new (0, _three.OrthographicCamera)(-1, 1, 1, -1, 0, 1);
+// https://github.com/mrdoob/three.js/pull/21358
+class QuadGeometry extends (0, _three.BufferGeometry) {
+    constructor(flipY = false){
+        super();
+        const uv = flipY === false ? [
+            0,
+            -1,
+            0,
+            1,
+            2,
+            1
+        ] : [
+            0,
+            2,
+            0,
+            0,
+            2,
+            0
+        ];
+        this.setAttribute("position", new (0, _three.Float32BufferAttribute)([
+            -1,
+            3,
+            0,
+            -1,
+            -1,
+            0,
+            3,
+            -1,
+            0
+        ], 3));
+        this.setAttribute("uv", new (0, _three.Float32BufferAttribute)(uv, 2));
+    }
+}
+const _geometry = new QuadGeometry();
+class QuadMesh {
+    constructor(material = null){
+        this._mesh = new (0, _three.Mesh)(_geometry, material);
+    }
+    dispose() {
+        this._mesh.geometry.dispose();
+    }
+    async renderAsync(renderer) {
+        await renderer.renderAsync(this._mesh, _camera);
+    }
+    get material() {
+        return this._mesh.material;
+    }
+    set material(value) {
+        this._mesh.material = value;
+    }
+    get render() {
+        return this.renderAsync;
+    }
+}
+exports.default = QuadMesh;
+
+},{"three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"2Wlcl":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "afterImage", ()=>afterImage);
+var _tempNodeJs = require("../core/TempNode.js");
+var _tempNodeJsDefault = parcelHelpers.interopDefault(_tempNodeJs);
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+var _constantsJs = require("../core/constants.js");
+var _uvnodeJs = require("../accessors/UVNode.js");
+var _textureNodeJs = require("../accessors/TextureNode.js");
+var _passNodeJs = require("./PassNode.js");
+var _uniformNodeJs = require("../core/UniformNode.js");
+var _three = require("three");
+var _mathNodeJs = require("../math/MathNode.js");
+var _quadMeshJs = require("../../objects/QuadMesh.js");
+var _quadMeshJsDefault = parcelHelpers.interopDefault(_quadMeshJs);
+const quadMeshComp = new (0, _quadMeshJsDefault.default)();
+class AfterImageNode extends (0, _tempNodeJsDefault.default) {
+    constructor(textureNode, damp = 0.96){
+        super(textureNode);
+        this.textureNode = textureNode;
+        this.textureNodeOld = (0, _textureNodeJs.texture)();
+        this.damp = (0, _uniformNodeJs.uniform)(damp);
+        this._compRT = new (0, _three.RenderTarget)();
+        this._compRT.texture.name = "AfterImageNode.comp";
+        this._oldRT = new (0, _three.RenderTarget)();
+        this._oldRT.texture.name = "AfterImageNode.old";
+        this._textureNode = (0, _passNodeJs.texturePass)(this, this._compRT.texture);
+        this.updateBeforeType = (0, _constantsJs.NodeUpdateType).RENDER;
+    }
+    getTextureNode() {
+        return this._textureNode;
+    }
+    setSize(width, height) {
+        this._compRT.setSize(width, height);
+        this._oldRT.setSize(width, height);
+    }
+    updateBefore(frame) {
+        const { renderer } = frame;
+        const textureNode = this.textureNode;
+        const map = textureNode.value;
+        const textureType = map.type;
+        this._compRT.texture.type = textureType;
+        this._oldRT.texture.type = textureType;
+        const currentRenderTarget = renderer.getRenderTarget();
+        const currentTexture = textureNode.value;
+        this.textureNodeOld.value = this._oldRT.texture;
+        // comp
+        renderer.setRenderTarget(this._compRT);
+        quadMeshComp.render(renderer);
+        // Swap the textures
+        const temp = this._oldRT;
+        this._oldRT = this._compRT;
+        this._compRT = temp;
+        // set size before swapping fails
+        this.setSize(map.image.width, map.image.height);
+        renderer.setRenderTarget(currentRenderTarget);
+        textureNode.value = currentTexture;
+    }
+    setup(builder) {
+        const textureNode = this.textureNode;
+        const textureNodeOld = this.textureNodeOld;
+        if (textureNode.isTextureNode !== true) {
+            console.error("AfterImageNode requires a TextureNode.");
+            return (0, _shaderNodeJs.vec4)();
+        }
+        //
+        const uvNode = textureNode.uvNode || (0, _uvnodeJs.uv)();
+        textureNodeOld.uvNode = uvNode;
+        const sampleTexture = (uv)=>textureNode.cache().context({
+                getUV: ()=>uv,
+                forceUVContext: true
+            });
+        const when_gt = (0, _shaderNodeJs.tslFn)(([x_immutable, y_immutable])=>{
+            const y = (0, _shaderNodeJs.float)(y_immutable).toVar();
+            const x = (0, _shaderNodeJs.vec4)(x_immutable).toVar();
+            return (0, _mathNodeJs.max)((0, _mathNodeJs.sign)(x.sub(y)), 0.0);
+        });
+        const afterImg = (0, _shaderNodeJs.tslFn)(()=>{
+            const texelOld = (0, _shaderNodeJs.vec4)(textureNodeOld);
+            const texelNew = (0, _shaderNodeJs.vec4)(sampleTexture(uvNode));
+            texelOld.mulAssign(this.damp.mul(when_gt(texelOld, 0.1)));
+            return (0, _mathNodeJs.max)(texelNew, texelOld);
+        });
+        //
+        const materialComposed = this._materialComposed || (this._materialComposed = builder.createNodeMaterial());
+        materialComposed.fragmentNode = afterImg();
+        quadMeshComp.material = materialComposed;
+        //
+        const properties = builder.getNodeProperties(this);
+        properties.textureNode = textureNode;
+        //
+        return this._textureNode;
+    }
+}
+const afterImage = (node, damp)=>(0, _shaderNodeJs.nodeObject)(new AfterImageNode((0, _shaderNodeJs.nodeObject)(node), damp));
+(0, _shaderNodeJs.addNodeElement)("afterImage", afterImage);
+exports.default = AfterImageNode;
+
+},{"../core/TempNode.js":"l0t0Y","../shadernode/ShaderNode.js":"8Xgcj","../core/constants.js":"6tdkL","../accessors/UVNode.js":"dj0CK","../accessors/TextureNode.js":"4V1bd","./PassNode.js":"gEajz","../core/UniformNode.js":"cfhYS","three":"ktPTu","../math/MathNode.js":"84OFe","../../objects/QuadMesh.js":"9pXpo","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"be98K":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "anamorphic", ()=>anamorphic);
+var _tempNodeJs = require("../core/TempNode.js");
+var _tempNodeJsDefault = parcelHelpers.interopDefault(_tempNodeJs);
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+var _loopNodeJs = require("../utils/LoopNode.js");
+var _uniformNodeJs = require("../core/UniformNode.js");
+var _constantsJs = require("../core/constants.js");
+var _colorAdjustmentNodeJs = require("./ColorAdjustmentNode.js");
+var _uvnodeJs = require("../accessors/UVNode.js");
+var _passNodeJs = require("./PassNode.js");
+var _three = require("three");
+var _quadMeshJs = require("../../objects/QuadMesh.js");
+var _quadMeshJsDefault = parcelHelpers.interopDefault(_quadMeshJs);
+const quadMesh = new (0, _quadMeshJsDefault.default)();
+class AnamorphicNode extends (0, _tempNodeJsDefault.default) {
+    constructor(textureNode, tresholdNode, scaleNode, samples){
+        super("vec4");
+        this.textureNode = textureNode;
+        this.tresholdNode = tresholdNode;
+        this.scaleNode = scaleNode;
+        this.colorNode = (0, _shaderNodeJs.vec3)(0.1, 0.0, 1.0);
+        this.samples = samples;
+        this.resolution = new (0, _three.Vector2)(1, 1);
+        this._renderTarget = new (0, _three.RenderTarget)();
+        this._renderTarget.texture.name = "anamorphic";
+        this._invSize = (0, _uniformNodeJs.uniform)(new (0, _three.Vector2)());
+        this._textureNode = (0, _passNodeJs.texturePass)(this, this._renderTarget.texture);
+        this.updateBeforeType = (0, _constantsJs.NodeUpdateType).RENDER;
+    }
+    getTextureNode() {
+        return this._textureNode;
+    }
+    setSize(width, height) {
+        this._invSize.value.set(1 / width, 1 / height);
+        width = Math.max(Math.round(width * this.resolution.x), 1);
+        height = Math.max(Math.round(height * this.resolution.y), 1);
+        this._renderTarget.setSize(width, height);
+    }
+    updateBefore(frame) {
+        const { renderer } = frame;
+        const textureNode = this.textureNode;
+        const map = textureNode.value;
+        this._renderTarget.texture.type = map.type;
+        const currentRenderTarget = renderer.getRenderTarget();
+        const currentTexture = textureNode.value;
+        quadMesh.material = this._material;
+        this.setSize(map.image.width, map.image.height);
+        // render
+        renderer.setRenderTarget(this._renderTarget);
+        quadMesh.render(renderer);
+        // restore
+        renderer.setRenderTarget(currentRenderTarget);
+        textureNode.value = currentTexture;
+    }
+    setup(builder) {
+        const textureNode = this.textureNode;
+        if (textureNode.isTextureNode !== true) {
+            console.error("AnamorphNode requires a TextureNode.");
+            return (0, _shaderNodeJs.vec4)();
+        }
+        //
+        const uvNode = textureNode.uvNode || (0, _uvnodeJs.uv)();
+        const sampleTexture = (uv)=>textureNode.cache().context({
+                getUV: ()=>uv,
+                forceUVContext: true
+            });
+        const anamorph = (0, _shaderNodeJs.tslFn)(()=>{
+            const samples = this.samples;
+            const halfSamples = Math.floor(samples / 2);
+            const total = (0, _shaderNodeJs.vec3)(0).toVar();
+            (0, _loopNodeJs.loop)({
+                start: -halfSamples,
+                end: halfSamples
+            }, ({ i })=>{
+                const softness = (0, _shaderNodeJs.float)(i).abs().div(halfSamples).oneMinus();
+                const uv = (0, _shaderNodeJs.vec2)(uvNode.x.add(this._invSize.x.mul(i).mul(this.scaleNode)), uvNode.y);
+                const color = sampleTexture(uv);
+                const pass = (0, _colorAdjustmentNodeJs.threshold)(color, this.tresholdNode).mul(softness);
+                total.addAssign(pass);
+            });
+            return total.mul(this.colorNode);
+        });
+        //
+        const material = this._material || (this._material = builder.createNodeMaterial());
+        material.fragmentNode = anamorph();
+        //
+        const properties = builder.getNodeProperties(this);
+        properties.textureNode = textureNode;
+        //
+        return this._textureNode;
+    }
+}
+const anamorphic = (node, threshold = .9, scale = 3, samples = 32)=>(0, _shaderNodeJs.nodeObject)(new AnamorphicNode((0, _shaderNodeJs.nodeObject)(node), (0, _shaderNodeJs.nodeObject)(threshold), (0, _shaderNodeJs.nodeObject)(scale), samples));
+(0, _shaderNodeJs.addNodeElement)("anamorphic", anamorphic);
+exports.default = AnamorphicNode;
+
+},{"../core/TempNode.js":"l0t0Y","../shadernode/ShaderNode.js":"8Xgcj","../utils/LoopNode.js":"g3yUg","../core/UniformNode.js":"cfhYS","../core/constants.js":"6tdkL","./ColorAdjustmentNode.js":"6fxXm","../accessors/UVNode.js":"dj0CK","./PassNode.js":"gEajz","three":"ktPTu","../../objects/QuadMesh.js":"9pXpo","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"dnwB3":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "call", ()=>call);
+var _tempNodeJs = require("../core/TempNode.js");
+var _tempNodeJsDefault = parcelHelpers.interopDefault(_tempNodeJs);
+var _nodeJs = require("../core/Node.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class FunctionCallNode extends (0, _tempNodeJsDefault.default) {
+    constructor(functionNode = null, parameters = {}){
+        super();
+        this.functionNode = functionNode;
+        this.parameters = parameters;
+    }
+    setParameters(parameters) {
+        this.parameters = parameters;
+        return this;
+    }
+    getParameters() {
+        return this.parameters;
+    }
+    getNodeType(builder) {
+        return this.functionNode.getNodeType(builder);
+    }
+    generate(builder) {
+        const params = [];
+        const functionNode = this.functionNode;
+        const inputs = functionNode.getInputs(builder);
+        const parameters = this.parameters;
+        if (Array.isArray(parameters)) for(let i = 0; i < parameters.length; i++){
+            const inputNode = inputs[i];
+            const node = parameters[i];
+            params.push(node.build(builder, inputNode.type));
+        }
+        else for (const inputNode of inputs){
+            const node = parameters[inputNode.name];
+            if (node !== undefined) params.push(node.build(builder, inputNode.type));
+            else throw new Error(`FunctionCallNode: Input '${inputNode.name}' not found in FunctionNode.`);
+        }
+        const functionName = functionNode.build(builder, "property");
+        return `${functionName}( ${params.join(", ")} )`;
+    }
+}
+exports.default = FunctionCallNode;
+const call = (func, ...params)=>{
+    params = params.length > 1 || params[0] && params[0].isNode === true ? (0, _shaderNodeJs.nodeArray)(params) : (0, _shaderNodeJs.nodeObjects)(params[0]);
+    return (0, _shaderNodeJs.nodeObject)(new FunctionCallNode((0, _shaderNodeJs.nodeObject)(func), params));
+};
+(0, _shaderNodeJs.addNodeElement)("call", call);
+(0, _nodeJs.addNodeClass)("FunctionCallNode", FunctionCallNode);
+
+},{"../core/TempNode.js":"l0t0Y","../core/Node.js":"cld0p","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"okum5":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "global", ()=>global);
+parcelHelpers.export(exports, "scriptable", ()=>scriptable);
+var _nodeJs = require("../core/Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+var _scriptableValueNodeJs = require("./ScriptableValueNode.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class Resources extends Map {
+    get(key, callback = null, ...params) {
+        if (this.has(key)) return super.get(key);
+        if (callback !== null) {
+            const value = callback(...params);
+            this.set(key, value);
+            return value;
+        }
+    }
+}
+class Parameters {
+    constructor(scriptableNode){
+        this.scriptableNode = scriptableNode;
+    }
+    get parameters() {
+        return this.scriptableNode.parameters;
+    }
+    get layout() {
+        return this.scriptableNode.getLayout();
+    }
+    getInputLayout(id) {
+        return this.scriptableNode.getInputLayout(id);
+    }
+    get(name) {
+        const param = this.parameters[name];
+        const value = param ? param.getValue() : null;
+        return value;
+    }
+}
+const global = new Resources();
+class ScriptableNode extends (0, _nodeJsDefault.default) {
+    constructor(codeNode = null, parameters = {}){
+        super();
+        this.codeNode = codeNode;
+        this.parameters = parameters;
+        this._local = new Resources();
+        this._output = (0, _scriptableValueNodeJs.scriptableValue)();
+        this._outputs = {};
+        this._source = this.source;
+        this._method = null;
+        this._object = null;
+        this._value = null;
+        this._needsOutputUpdate = true;
+        this.onRefresh = this.onRefresh.bind(this);
+        this.isScriptableNode = true;
+    }
+    get source() {
+        return this.codeNode ? this.codeNode.code : "";
+    }
+    setLocal(name, value) {
+        return this._local.set(name, value);
+    }
+    getLocal(name) {
+        return this._local.get(name);
+    }
+    onRefresh() {
+        this._refresh();
+    }
+    getInputLayout(id) {
+        for (const element of this.getLayout()){
+            if (element.inputType && (element.id === id || element.name === id)) return element;
+        }
+    }
+    getOutputLayout(id) {
+        for (const element of this.getLayout()){
+            if (element.outputType && (element.id === id || element.name === id)) return element;
+        }
+    }
+    setOutput(name, value) {
+        const outputs = this._outputs;
+        if (outputs[name] === undefined) outputs[name] = (0, _scriptableValueNodeJs.scriptableValue)(value);
+        else outputs[name].value = value;
+        return this;
+    }
+    getOutput(name) {
+        return this._outputs[name];
+    }
+    getParameter(name) {
+        return this.parameters[name];
+    }
+    setParameter(name, value) {
+        const parameters = this.parameters;
+        if (value && value.isScriptableNode) {
+            this.deleteParameter(name);
+            parameters[name] = value;
+            parameters[name].getDefaultOutput().events.addEventListener("refresh", this.onRefresh);
+        } else if (value && value.isScriptableValueNode) {
+            this.deleteParameter(name);
+            parameters[name] = value;
+            parameters[name].events.addEventListener("refresh", this.onRefresh);
+        } else if (parameters[name] === undefined) {
+            parameters[name] = (0, _scriptableValueNodeJs.scriptableValue)(value);
+            parameters[name].events.addEventListener("refresh", this.onRefresh);
+        } else parameters[name].value = value;
+        return this;
+    }
+    getValue() {
+        return this.getDefaultOutput().getValue();
+    }
+    deleteParameter(name) {
+        let valueNode = this.parameters[name];
+        if (valueNode) {
+            if (valueNode.isScriptableNode) valueNode = valueNode.getDefaultOutput();
+            valueNode.events.removeEventListener("refresh", this.onRefresh);
+        }
+        return this;
+    }
+    clearParameters() {
+        for (const name of Object.keys(this.parameters))this.deleteParameter(name);
+        this.needsUpdate = true;
+        return this;
+    }
+    call(name, ...params) {
+        const object = this.getObject();
+        const method = object[name];
+        if (typeof method === "function") return method(...params);
+    }
+    async callAsync(name, ...params) {
+        const object = this.getObject();
+        const method = object[name];
+        if (typeof method === "function") return method.constructor.name === "AsyncFunction" ? await method(...params) : method(...params);
+    }
+    getNodeType(builder) {
+        return this.getDefaultOutputNode().getNodeType(builder);
+    }
+    refresh(output = null) {
+        if (output !== null) this.getOutput(output).refresh();
+        else this._refresh();
+    }
+    getObject() {
+        if (this.needsUpdate) this.dispose();
+        if (this._object !== null) return this._object;
+        //
+        const refresh = ()=>this.refresh();
+        const setOutput = (id, value)=>this.setOutput(id, value);
+        const parameters = new Parameters(this);
+        const THREE = global.get("THREE");
+        const TSL = global.get("TSL");
+        const method = this.getMethod(this.codeNode);
+        const params = [
+            parameters,
+            this._local,
+            global,
+            refresh,
+            setOutput,
+            THREE,
+            TSL
+        ];
+        this._object = method(...params);
+        const layout = this._object.layout;
+        if (layout) {
+            if (layout.cache === false) this._local.clear();
+            // default output
+            this._output.outputType = layout.outputType || null;
+            if (Array.isArray(layout.elements)) for (const element of layout.elements){
+                const id = element.id || element.name;
+                if (element.inputType) {
+                    if (this.getParameter(id) === undefined) this.setParameter(id, null);
+                    this.getParameter(id).inputType = element.inputType;
+                }
+                if (element.outputType) {
+                    if (this.getOutput(id) === undefined) this.setOutput(id, null);
+                    this.getOutput(id).outputType = element.outputType;
+                }
+            }
+        }
+        return this._object;
+    }
+    deserialize(data) {
+        super.deserialize(data);
+        for(const name in this.parameters){
+            let valueNode = this.parameters[name];
+            if (valueNode.isScriptableNode) valueNode = valueNode.getDefaultOutput();
+            valueNode.events.addEventListener("refresh", this.onRefresh);
+        }
+    }
+    getLayout() {
+        return this.getObject().layout;
+    }
+    getDefaultOutputNode() {
+        const output = this.getDefaultOutput().value;
+        if (output && output.isNode) return output;
+        return (0, _shaderNodeJs.float)();
+    }
+    getDefaultOutput() {
+        return this._exec()._output;
+    }
+    getMethod() {
+        if (this.needsUpdate) this.dispose();
+        if (this._method !== null) return this._method;
+        //
+        const parametersProps = [
+            "parameters",
+            "local",
+            "global",
+            "refresh",
+            "setOutput",
+            "THREE",
+            "TSL"
+        ];
+        const interfaceProps = [
+            "layout",
+            "init",
+            "main",
+            "dispose"
+        ];
+        const properties = interfaceProps.join(", ");
+        const declarations = "var " + properties + "; var output = {};\n";
+        const returns = "\nreturn { ...output, " + properties + " };";
+        const code = declarations + this.codeNode.code + returns;
+        //
+        this._method = new Function(...parametersProps, code);
+        return this._method;
+    }
+    dispose() {
+        if (this._method === null) return;
+        if (this._object && typeof this._object.dispose === "function") this._object.dispose();
+        this._method = null;
+        this._object = null;
+        this._source = null;
+        this._value = null;
+        this._needsOutputUpdate = true;
+        this._output.value = null;
+        this._outputs = {};
+    }
+    setup() {
+        return this.getDefaultOutputNode();
+    }
+    set needsUpdate(value) {
+        if (value === true) this.dispose();
+    }
+    get needsUpdate() {
+        return this.source !== this._source;
+    }
+    _exec() {
+        if (this.codeNode === null) return this;
+        if (this._needsOutputUpdate === true) {
+            this._value = this.call("main");
+            this._needsOutputUpdate = false;
+        }
+        this._output.value = this._value;
+        return this;
+    }
+    _refresh() {
+        this.needsUpdate = true;
+        this._exec();
+        this._output.refresh();
+    }
+}
+exports.default = ScriptableNode;
+const scriptable = (0, _shaderNodeJs.nodeProxy)(ScriptableNode);
+(0, _shaderNodeJs.addNodeElement)("scriptable", scriptable);
+(0, _nodeJs.addNodeClass)("ScriptableNode", ScriptableNode);
+
+},{"../core/Node.js":"cld0p","./ScriptableValueNode.js":"jJBWH","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"jJBWH":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "scriptableValue", ()=>scriptableValue);
+var _nodeJs = require("../core/Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+var _nodeUtilsJs = require("../core/NodeUtils.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+var _three = require("three");
+class ScriptableValueNode extends (0, _nodeJsDefault.default) {
+    constructor(value = null){
+        super();
+        this._value = value;
+        this._cache = null;
+        this.inputType = null;
+        this.outpuType = null;
+        this.events = new (0, _three.EventDispatcher)();
+        this.isScriptableValueNode = true;
+    }
+    get isScriptableOutputNode() {
+        return this.outputType !== null;
+    }
+    set value(val) {
+        if (this._value === val) return;
+        if (this._cache && this.inputType === "URL" && this.value.value instanceof ArrayBuffer) {
+            URL.revokeObjectURL(this._cache);
+            this._cache = null;
+        }
+        this._value = val;
+        this.events.dispatchEvent({
+            type: "change"
+        });
+        this.refresh();
+    }
+    get value() {
+        return this._value;
+    }
+    refresh() {
+        this.events.dispatchEvent({
+            type: "refresh"
+        });
+    }
+    getValue() {
+        const value = this.value;
+        if (value && this._cache === null && this.inputType === "URL" && value.value instanceof ArrayBuffer) this._cache = URL.createObjectURL(new Blob([
+            value.value
+        ]));
+        else if (value && value.value !== null && value.value !== undefined && ((this.inputType === "URL" || this.inputType === "String") && typeof value.value === "string" || this.inputType === "Number" && typeof value.value === "number" || this.inputType === "Vector2" && value.value.isVector2 || this.inputType === "Vector3" && value.value.isVector3 || this.inputType === "Vector4" && value.value.isVector4 || this.inputType === "Color" && value.value.isColor || this.inputType === "Matrix3" && value.value.isMatrix3 || this.inputType === "Matrix4" && value.value.isMatrix4)) return value.value;
+        return this._cache || value;
+    }
+    getNodeType(builder) {
+        return this.value && this.value.isNode ? this.value.getNodeType(builder) : "float";
+    }
+    setup() {
+        return this.value && this.value.isNode ? this.value : (0, _shaderNodeJs.float)();
+    }
+    serialize(data) {
+        super.serialize(data);
+        if (this.value !== null) {
+            if (this.inputType === "ArrayBuffer") data.value = (0, _nodeUtilsJs.arrayBufferToBase64)(this.value);
+            else data.value = this.value ? this.value.toJSON(data.meta).uuid : null;
+        } else data.value = null;
+        data.inputType = this.inputType;
+        data.outputType = this.outputType;
+    }
+    deserialize(data) {
+        super.deserialize(data);
+        let value = null;
+        if (data.value !== null) {
+            if (data.inputType === "ArrayBuffer") value = (0, _nodeUtilsJs.base64ToArrayBuffer)(data.value);
+            else if (data.inputType === "Texture") value = data.meta.textures[data.value];
+            else value = data.meta.nodes[data.value] || null;
+        }
+        this.value = value;
+        this.inputType = data.inputType;
+        this.outputType = data.outputType;
+    }
+}
+exports.default = ScriptableValueNode;
+const scriptableValue = (0, _shaderNodeJs.nodeProxy)(ScriptableValueNode);
+(0, _shaderNodeJs.addNodeElement)("scriptableValue", scriptableValue);
+(0, _nodeJs.addNodeClass)("ScriptableValueNode", ScriptableValueNode);
+
+},{"../core/Node.js":"cld0p","../core/NodeUtils.js":"6F9Ti","../shadernode/ShaderNode.js":"8Xgcj","three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"12Guo":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "fog", ()=>fog);
+var _nodeJs = require("../core/Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+var _mathNodeJs = require("../math/MathNode.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class FogNode extends (0, _nodeJsDefault.default) {
+    constructor(colorNode, factorNode){
+        super("float");
+        this.isFogNode = true;
+        this.colorNode = colorNode;
+        this.factorNode = factorNode;
+    }
+    mixAssign(outputNode) {
+        return (0, _mathNodeJs.mix)(outputNode, this.colorNode, this);
+    }
+    setup() {
+        return this.factorNode;
+    }
+}
+exports.default = FogNode;
+const fog = (0, _shaderNodeJs.nodeProxy)(FogNode);
+(0, _shaderNodeJs.addNodeElement)("fog", fog);
+(0, _nodeJs.addNodeClass)("FogNode", FogNode);
+
+},{"../core/Node.js":"cld0p","../math/MathNode.js":"84OFe","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"aT0Dq":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "rangeFog", ()=>rangeFog);
+var _fogNodeJs = require("./FogNode.js");
+var _fogNodeJsDefault = parcelHelpers.interopDefault(_fogNodeJs);
+var _mathNodeJs = require("../math/MathNode.js");
+var _positionNodeJs = require("../accessors/PositionNode.js");
+var _nodeJs = require("../core/Node.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class FogRangeNode extends (0, _fogNodeJsDefault.default) {
+    constructor(colorNode, nearNode, farNode){
+        super(colorNode);
+        this.isFogRangeNode = true;
+        this.nearNode = nearNode;
+        this.farNode = farNode;
+    }
+    setup() {
+        return (0, _mathNodeJs.smoothstep)(this.nearNode, this.farNode, (0, _positionNodeJs.positionView).z.negate());
+    }
+}
+exports.default = FogRangeNode;
+const rangeFog = (0, _shaderNodeJs.nodeProxy)(FogRangeNode);
+(0, _shaderNodeJs.addNodeElement)("rangeFog", rangeFog);
+(0, _nodeJs.addNodeClass)("FogRangeNode", FogRangeNode);
+
+},{"./FogNode.js":"12Guo","../math/MathNode.js":"84OFe","../accessors/PositionNode.js":"1WXKm","../core/Node.js":"cld0p","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"kHXf8":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "densityFog", ()=>densityFog);
+var _fogNodeJs = require("./FogNode.js");
+var _fogNodeJsDefault = parcelHelpers.interopDefault(_fogNodeJs);
+var _positionNodeJs = require("../accessors/PositionNode.js");
+var _nodeJs = require("../core/Node.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class FogExp2Node extends (0, _fogNodeJsDefault.default) {
+    constructor(colorNode, densityNode){
+        super(colorNode);
+        this.isFogExp2Node = true;
+        this.densityNode = densityNode;
+    }
+    setup() {
+        const depthNode = (0, _positionNodeJs.positionView).z.negate();
+        const densityNode = this.densityNode;
+        return densityNode.mul(densityNode, depthNode, depthNode).negate().exp().oneMinus();
+    }
+}
+exports.default = FogExp2Node;
+const densityFog = (0, _shaderNodeJs.nodeProxy)(FogExp2Node);
+(0, _shaderNodeJs.addNodeElement)("densityFog", densityFog);
+(0, _nodeJs.addNodeClass)("FogExp2Node", FogExp2Node);
+
+},{"./FogNode.js":"12Guo","../accessors/PositionNode.js":"1WXKm","../core/Node.js":"cld0p","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gV2N7":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "range", ()=>range);
+var _nodeJs = require("../core/Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+var _nodeUtilsJs = require("../core/NodeUtils.js");
+var _bufferNodeJs = require("../accessors/BufferNode.js");
+//import { bufferAttribute } from '../accessors/BufferAttributeNode.js';
+var _indexNodeJs = require("../core/IndexNode.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+var _three = require("three");
+let min = null;
+let max = null;
+class RangeNode extends (0, _nodeJsDefault.default) {
+    constructor(minNode = (0, _shaderNodeJs.float)(), maxNode = (0, _shaderNodeJs.float)()){
+        super();
+        this.minNode = minNode;
+        this.maxNode = maxNode;
+    }
+    getVectorLength(builder) {
+        const minLength = builder.getTypeLength((0, _nodeUtilsJs.getValueType)(this.minNode.value));
+        const maxLength = builder.getTypeLength((0, _nodeUtilsJs.getValueType)(this.maxNode.value));
+        return minLength > maxLength ? minLength : maxLength;
+    }
+    getNodeType(builder) {
+        return builder.object.isInstancedMesh === true ? builder.getTypeFromLength(this.getVectorLength(builder)) : "float";
+    }
+    setup(builder) {
+        const object = builder.object;
+        let output = null;
+        if (object.isInstancedMesh === true) {
+            const minValue = this.minNode.value;
+            const maxValue = this.maxNode.value;
+            const minLength = builder.getTypeLength((0, _nodeUtilsJs.getValueType)(minValue));
+            const maxLength = builder.getTypeLength((0, _nodeUtilsJs.getValueType)(maxValue));
+            min = min || new (0, _three.Vector4)();
+            max = max || new (0, _three.Vector4)();
+            min.setScalar(0);
+            max.setScalar(0);
+            if (minLength === 1) min.setScalar(minValue);
+            else if (minValue.isColor) min.set(minValue.r, minValue.g, minValue.b);
+            else min.set(minValue.x, minValue.y, minValue.z || 0, minValue.w || 0);
+            if (maxLength === 1) max.setScalar(maxValue);
+            else if (maxValue.isColor) max.set(maxValue.r, maxValue.g, maxValue.b);
+            else max.set(maxValue.x, maxValue.y, maxValue.z || 0, maxValue.w || 0);
+            const stride = 4;
+            const length = stride * object.count;
+            const array = new Float32Array(length);
+            for(let i = 0; i < length; i++){
+                const index = i % stride;
+                const minElementValue = min.getComponent(index);
+                const maxElementValue = max.getComponent(index);
+                array[i] = (0, _three.MathUtils).lerp(minElementValue, maxElementValue, Math.random());
+            }
+            const nodeType = this.getNodeType(builder);
+            output = (0, _bufferNodeJs.buffer)(array, "vec4", object.count).element((0, _indexNodeJs.instanceIndex)).convert(nodeType);
+        //output = bufferAttribute( array, 'vec4', 4, 0 ).convert( nodeType );
+        } else output = (0, _shaderNodeJs.float)(0);
+        return output;
+    }
+}
+exports.default = RangeNode;
+const range = (0, _shaderNodeJs.nodeProxy)(RangeNode);
+(0, _nodeJs.addNodeClass)("RangeNode", RangeNode);
+
+},{"../core/Node.js":"cld0p","../core/NodeUtils.js":"6F9Ti","../accessors/BufferNode.js":"5k9aZ","../core/IndexNode.js":"az1vR","../shadernode/ShaderNode.js":"8Xgcj","three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"5Ql0B":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "compute", ()=>compute);
+var _nodeJs = require("../core/Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+var _constantsJs = require("../core/constants.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class ComputeNode extends (0, _nodeJsDefault.default) {
+    constructor(computeNode, count, workgroupSize = [
+        64
+    ]){
+        super("void");
+        this.isComputeNode = true;
+        this.computeNode = computeNode;
+        this.count = count;
+        this.workgroupSize = workgroupSize;
+        this.dispatchCount = 0;
+        this.version = 1;
+        this.updateBeforeType = (0, _constantsJs.NodeUpdateType).OBJECT;
+        this.updateDispatchCount();
+    }
+    dispose() {
+        this.dispatchEvent({
+            type: "dispose"
+        });
+    }
+    set needsUpdate(value) {
+        if (value === true) this.version++;
+    }
+    updateDispatchCount() {
+        const { count, workgroupSize } = this;
+        let size = workgroupSize[0];
+        for(let i = 1; i < workgroupSize.length; i++)size *= workgroupSize[i];
+        this.dispatchCount = Math.ceil(count / size);
+    }
+    onInit() {}
+    updateBefore({ renderer }) {
+        renderer.compute(this);
+    }
+    generate(builder) {
+        const { shaderStage } = builder;
+        if (shaderStage === "compute") {
+            const snippet = this.computeNode.build(builder, "void");
+            if (snippet !== "") builder.addLineFlowCode(snippet);
+        }
+    }
+}
+exports.default = ComputeNode;
+const compute = (node, count, workgroupSize)=>(0, _shaderNodeJs.nodeObject)(new ComputeNode((0, _shaderNodeJs.nodeObject)(node), count, workgroupSize));
+(0, _shaderNodeJs.addNodeElement)("compute", compute);
+(0, _nodeJs.addNodeClass)("ComputeNode", ComputeNode);
+
+},{"../core/Node.js":"cld0p","../core/constants.js":"6tdkL","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"fyjUt":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "lightTargetDirection", ()=>lightTargetDirection);
+var _nodeJs = require("../core/Node.js");
+var _nodeJsDefault = parcelHelpers.interopDefault(_nodeJs);
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+var _object3DNodeJs = require("../accessors/Object3DNode.js");
+var _cameraNodeJs = require("../accessors/CameraNode.js");
+class LightNode extends (0, _nodeJsDefault.default) {
+    constructor(scope = LightNode.TARGET_DIRECTION, light = null){
+        super();
+        this.scope = scope;
+        this.light = light;
+    }
+    setup() {
+        const { scope, light } = this;
+        let output = null;
+        if (scope === LightNode.TARGET_DIRECTION) output = (0, _cameraNodeJs.cameraViewMatrix).transformDirection((0, _object3DNodeJs.objectPosition)(light).sub((0, _object3DNodeJs.objectPosition)(light.target)));
+        return output;
+    }
+    serialize(data) {
+        super.serialize(data);
+        data.scope = this.scope;
+    }
+    deserialize(data) {
+        super.deserialize(data);
+        this.scope = data.scope;
+    }
+}
+LightNode.TARGET_DIRECTION = "targetDirection";
+exports.default = LightNode;
+const lightTargetDirection = (0, _shaderNodeJs.nodeProxy)(LightNode, LightNode.TARGET_DIRECTION);
+(0, _nodeJs.addNodeClass)("LightNode", LightNode);
+
+},{"../core/Node.js":"cld0p","../shadernode/ShaderNode.js":"8Xgcj","../accessors/Object3DNode.js":"jydh6","../accessors/CameraNode.js":"kZ1gx","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"aw7yv":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _analyticLightNodeJs = require("./AnalyticLightNode.js");
+var _analyticLightNodeJsDefault = parcelHelpers.interopDefault(_analyticLightNodeJs);
+var _lightsNodeJs = require("./LightsNode.js");
+var _lightUtilsJs = require("./LightUtils.js");
+var _uniformNodeJs = require("../core/UniformNode.js");
+var _object3DNodeJs = require("../accessors/Object3DNode.js");
+var _positionNodeJs = require("../accessors/PositionNode.js");
+var _nodeJs = require("../core/Node.js");
+var _three = require("three");
+class PointLightNode extends (0, _analyticLightNodeJsDefault.default) {
+    constructor(light = null){
+        super(light);
+        this.cutoffDistanceNode = (0, _uniformNodeJs.uniform)(0);
+        this.decayExponentNode = (0, _uniformNodeJs.uniform)(0);
+    }
+    update(frame) {
+        const { light } = this;
+        super.update(frame);
+        this.cutoffDistanceNode.value = light.distance;
+        this.decayExponentNode.value = light.decay;
+    }
+    setup(builder) {
+        const { colorNode, cutoffDistanceNode, decayExponentNode, light } = this;
+        const lightingModel = builder.context.lightingModel;
+        const lVector = (0, _object3DNodeJs.objectViewPosition)(light).sub((0, _positionNodeJs.positionView)); // @TODO: Add it into LightNode
+        const lightDirection = lVector.normalize();
+        const lightDistance = lVector.length();
+        const lightAttenuation = (0, _lightUtilsJs.getDistanceAttenuation)({
+            lightDistance,
+            cutoffDistance: cutoffDistanceNode,
+            decayExponent: decayExponentNode
+        });
+        const lightColor = colorNode.mul(lightAttenuation);
+        const reflectedLight = builder.context.reflectedLight;
+        lightingModel.direct({
+            lightDirection,
+            lightColor,
+            reflectedLight
+        }, builder.stack, builder);
+    }
+}
+exports.default = PointLightNode;
+(0, _nodeJs.addNodeClass)("PointLightNode", PointLightNode);
+(0, _lightsNodeJs.addLightNode)((0, _three.PointLight), PointLightNode);
+
+},{"./AnalyticLightNode.js":"ckR1j","./LightsNode.js":"175Gf","./LightUtils.js":"dXUaS","../core/UniformNode.js":"cfhYS","../accessors/Object3DNode.js":"jydh6","../accessors/PositionNode.js":"1WXKm","../core/Node.js":"cld0p","three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"dXUaS":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "getDistanceAttenuation", ()=>getDistanceAttenuation);
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+const getDistanceAttenuation = (0, _shaderNodeJs.tslFn)((inputs)=>{
+    const { lightDistance, cutoffDistance, decayExponent } = inputs;
+    // based upon Frostbite 3 Moving to Physically-based Rendering
+    // page 32, equation 26: E[window1]
+    // https://seblagarde.files.wordpress.com/2015/07/course_notes_moving_frostbite_to_pbr_v32.pdf
+    const distanceFalloff = lightDistance.pow(decayExponent).max(0.01).reciprocal();
+    return cutoffDistance.greaterThan(0).cond(distanceFalloff.mul(lightDistance.div(cutoffDistance).pow4().oneMinus().clamp().pow2()), distanceFalloff);
+}); // validated
+
+},{"../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gHHmS":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _analyticLightNodeJs = require("./AnalyticLightNode.js");
+var _analyticLightNodeJsDefault = parcelHelpers.interopDefault(_analyticLightNodeJs);
+var _lightNodeJs = require("./LightNode.js");
+var _lightsNodeJs = require("./LightsNode.js");
+var _nodeJs = require("../core/Node.js");
+var _three = require("three");
+class DirectionalLightNode extends (0, _analyticLightNodeJsDefault.default) {
+    constructor(light = null){
+        super(light);
+    }
+    setup(builder) {
+        super.setup(builder);
+        const lightingModel = builder.context.lightingModel;
+        const lightColor = this.colorNode;
+        const lightDirection = (0, _lightNodeJs.lightTargetDirection)(this.light);
+        const reflectedLight = builder.context.reflectedLight;
+        lightingModel.direct({
+            lightDirection,
+            lightColor,
+            reflectedLight
+        }, builder.stack, builder);
+    }
+}
+exports.default = DirectionalLightNode;
+(0, _nodeJs.addNodeClass)("DirectionalLightNode", DirectionalLightNode);
+(0, _lightsNodeJs.addLightNode)((0, _three.DirectionalLight), DirectionalLightNode);
+
+},{"./AnalyticLightNode.js":"ckR1j","./LightNode.js":"fyjUt","./LightsNode.js":"175Gf","../core/Node.js":"cld0p","three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gWi07":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _analyticLightNodeJs = require("./AnalyticLightNode.js");
+var _analyticLightNodeJsDefault = parcelHelpers.interopDefault(_analyticLightNodeJs);
+var _lightNodeJs = require("./LightNode.js");
+var _lightsNodeJs = require("./LightsNode.js");
+var _lightUtilsJs = require("./LightUtils.js");
+var _uniformNodeJs = require("../core/UniformNode.js");
+var _mathNodeJs = require("../math/MathNode.js");
+var _object3DNodeJs = require("../accessors/Object3DNode.js");
+var _positionNodeJs = require("../accessors/PositionNode.js");
+var _nodeJs = require("../core/Node.js");
+var _three = require("three");
+class SpotLightNode extends (0, _analyticLightNodeJsDefault.default) {
+    constructor(light = null){
+        super(light);
+        this.coneCosNode = (0, _uniformNodeJs.uniform)(0);
+        this.penumbraCosNode = (0, _uniformNodeJs.uniform)(0);
+        this.cutoffDistanceNode = (0, _uniformNodeJs.uniform)(0);
+        this.decayExponentNode = (0, _uniformNodeJs.uniform)(0);
+    }
+    update(frame) {
+        super.update(frame);
+        const { light } = this;
+        this.coneCosNode.value = Math.cos(light.angle);
+        this.penumbraCosNode.value = Math.cos(light.angle * (1 - light.penumbra));
+        this.cutoffDistanceNode.value = light.distance;
+        this.decayExponentNode.value = light.decay;
+    }
+    getSpotAttenuation(angleCosine) {
+        const { coneCosNode, penumbraCosNode } = this;
+        return (0, _mathNodeJs.smoothstep)(coneCosNode, penumbraCosNode, angleCosine);
+    }
+    setup(builder) {
+        super.setup(builder);
+        const lightingModel = builder.context.lightingModel;
+        const { colorNode, cutoffDistanceNode, decayExponentNode, light } = this;
+        const lVector = (0, _object3DNodeJs.objectViewPosition)(light).sub((0, _positionNodeJs.positionView)); // @TODO: Add it into LightNode
+        const lightDirection = lVector.normalize();
+        const angleCos = lightDirection.dot((0, _lightNodeJs.lightTargetDirection)(light));
+        const spotAttenuation = this.getSpotAttenuation(angleCos);
+        const lightDistance = lVector.length();
+        const lightAttenuation = (0, _lightUtilsJs.getDistanceAttenuation)({
+            lightDistance,
+            cutoffDistance: cutoffDistanceNode,
+            decayExponent: decayExponentNode
+        });
+        const lightColor = colorNode.mul(spotAttenuation).mul(lightAttenuation);
+        const reflectedLight = builder.context.reflectedLight;
+        lightingModel.direct({
+            lightDirection,
+            lightColor,
+            reflectedLight
+        }, builder.stack, builder);
+    }
+}
+exports.default = SpotLightNode;
+(0, _nodeJs.addNodeClass)("SpotLightNode", SpotLightNode);
+(0, _lightsNodeJs.addLightNode)((0, _three.SpotLight), SpotLightNode);
+
+},{"./AnalyticLightNode.js":"ckR1j","./LightNode.js":"fyjUt","./LightsNode.js":"175Gf","./LightUtils.js":"dXUaS","../core/UniformNode.js":"cfhYS","../math/MathNode.js":"84OFe","../accessors/Object3DNode.js":"jydh6","../accessors/PositionNode.js":"1WXKm","../core/Node.js":"cld0p","three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"iAgS7":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _spotLightNodeJs = require("./SpotLightNode.js");
+var _spotLightNodeJsDefault = parcelHelpers.interopDefault(_spotLightNodeJs);
+var _lightsNodeJs = require("./LightsNode.js");
+var _textureNodeJs = require("../accessors/TextureNode.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+var _nodeJs = require("../core/Node.js");
+var _iesspotLightJs = require("../../lights/IESSpotLight.js");
+var _iesspotLightJsDefault = parcelHelpers.interopDefault(_iesspotLightJs);
+class IESSpotLightNode extends (0, _spotLightNodeJsDefault.default) {
+    getSpotAttenuation(angleCosine) {
+        const iesMap = this.light.iesMap;
+        let spotAttenuation = null;
+        if (iesMap && iesMap.isTexture === true) {
+            const angle = angleCosine.acos().mul(1.0 / Math.PI);
+            spotAttenuation = (0, _textureNodeJs.texture)(iesMap, (0, _shaderNodeJs.vec2)(angle, 0), 0).r;
+        } else spotAttenuation = super.getSpotAttenuation(angleCosine);
+        return spotAttenuation;
+    }
+}
+exports.default = IESSpotLightNode;
+(0, _nodeJs.addNodeClass)("IESSpotLightNode", IESSpotLightNode);
+(0, _lightsNodeJs.addLightNode)((0, _iesspotLightJsDefault.default), IESSpotLightNode);
+
+},{"./SpotLightNode.js":"gWi07","./LightsNode.js":"175Gf","../accessors/TextureNode.js":"4V1bd","../shadernode/ShaderNode.js":"8Xgcj","../core/Node.js":"cld0p","../../lights/IESSpotLight.js":"jqt5R","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"jqt5R":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _three = require("three");
+class IESSpotLight extends (0, _three.SpotLight) {
+    constructor(color, intensity, distance, angle, penumbra, decay){
+        super(color, intensity, distance, angle, penumbra, decay);
+        this.iesMap = null;
+    }
+    copy(source, recursive) {
+        super.copy(source, recursive);
+        this.iesMap = source.iesMap;
+        return this;
+    }
+}
+exports.default = IESSpotLight;
+
+},{"three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"fguMh":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _analyticLightNodeJs = require("./AnalyticLightNode.js");
+var _analyticLightNodeJsDefault = parcelHelpers.interopDefault(_analyticLightNodeJs);
+var _lightsNodeJs = require("./LightsNode.js");
+var _nodeJs = require("../core/Node.js");
+var _three = require("three");
+class AmbientLightNode extends (0, _analyticLightNodeJsDefault.default) {
+    constructor(light = null){
+        super(light);
+    }
+    setup({ context }) {
+        context.irradiance.addAssign(this.colorNode);
+    }
+}
+exports.default = AmbientLightNode;
+(0, _nodeJs.addNodeClass)("AmbientLightNode", AmbientLightNode);
+(0, _lightsNodeJs.addLightNode)((0, _three.AmbientLight), AmbientLightNode);
+
+},{"./AnalyticLightNode.js":"ckR1j","./LightsNode.js":"175Gf","../core/Node.js":"cld0p","three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"fy9id":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _analyticLightNodeJs = require("./AnalyticLightNode.js");
+var _analyticLightNodeJsDefault = parcelHelpers.interopDefault(_analyticLightNodeJs);
+var _lightsNodeJs = require("./LightsNode.js");
+var _uniformNodeJs = require("../core/UniformNode.js");
+var _mathNodeJs = require("../math/MathNode.js");
+var _normalNodeJs = require("../accessors/NormalNode.js");
+var _object3DNodeJs = require("../accessors/Object3DNode.js");
+var _nodeJs = require("../core/Node.js");
+var _three = require("three");
+class HemisphereLightNode extends (0, _analyticLightNodeJsDefault.default) {
+    constructor(light = null){
+        super(light);
+        this.lightPositionNode = (0, _object3DNodeJs.objectPosition)(light);
+        this.lightDirectionNode = this.lightPositionNode.normalize();
+        this.groundColorNode = (0, _uniformNodeJs.uniform)(new (0, _three.Color)());
+    }
+    update(frame) {
+        const { light } = this;
+        super.update(frame);
+        this.lightPositionNode.object3d = light;
+        this.groundColorNode.value.copy(light.groundColor).multiplyScalar(light.intensity);
+    }
+    setup(builder) {
+        const { colorNode, groundColorNode, lightDirectionNode } = this;
+        const dotNL = (0, _normalNodeJs.normalView).dot(lightDirectionNode);
+        const hemiDiffuseWeight = dotNL.mul(0.5).add(0.5);
+        const irradiance = (0, _mathNodeJs.mix)(groundColorNode, colorNode, hemiDiffuseWeight);
+        builder.context.irradiance.addAssign(irradiance);
+    }
+}
+exports.default = HemisphereLightNode;
+(0, _nodeJs.addNodeClass)("HemisphereLightNode", HemisphereLightNode);
+(0, _lightsNodeJs.addLightNode)((0, _three.HemisphereLight), HemisphereLightNode);
+
+},{"./AnalyticLightNode.js":"ckR1j","./LightsNode.js":"175Gf","../core/UniformNode.js":"cfhYS","../math/MathNode.js":"84OFe","../accessors/NormalNode.js":"4n1Pc","../accessors/Object3DNode.js":"jydh6","../core/Node.js":"cld0p","three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"9vtbu":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "checker", ()=>checker);
+var _tempNodeJs = require("../core/TempNode.js");
+var _tempNodeJsDefault = parcelHelpers.interopDefault(_tempNodeJs);
+var _uvnodeJs = require("../accessors/UVNode.js");
+var _nodeJs = require("../core/Node.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+const checkerShaderNode = (0, _shaderNodeJs.tslFn)((inputs)=>{
+    const uv = inputs.uv.mul(2.0);
+    const cx = uv.x.floor();
+    const cy = uv.y.floor();
+    const result = cx.add(cy).mod(2.0);
+    return result.sign();
+});
+class CheckerNode extends (0, _tempNodeJsDefault.default) {
+    constructor(uvNode = (0, _uvnodeJs.uv)()){
+        super("float");
+        this.uvNode = uvNode;
+    }
+    setup() {
+        return checkerShaderNode({
+            uv: this.uvNode
+        });
+    }
+}
+exports.default = CheckerNode;
+const checker = (0, _shaderNodeJs.nodeProxy)(CheckerNode);
+(0, _shaderNodeJs.addNodeElement)("checker", checker);
+(0, _nodeJs.addNodeClass)("CheckerNode", CheckerNode);
+
+},{"../core/TempNode.js":"l0t0Y","../accessors/UVNode.js":"dj0CK","../core/Node.js":"cld0p","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"6fkFa":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _nodeJs = require("../core/Node.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+var _three = require("three");
+class NodeLoader extends (0, _three.Loader) {
+    constructor(manager){
+        super(manager);
+        this.textures = {};
+    }
+    load(url, onLoad, onProgress, onError) {
+        const loader = new (0, _three.FileLoader)(this.manager);
+        loader.setPath(this.path);
+        loader.setRequestHeader(this.requestHeader);
+        loader.setWithCredentials(this.withCredentials);
+        loader.load(url, (text)=>{
+            try {
+                onLoad(this.parse(JSON.parse(text)));
+            } catch (e) {
+                if (onError) onError(e);
+                else console.error(e);
+                this.manager.itemError(url);
+            }
+        }, onProgress, onError);
+    }
+    parseNodes(json) {
+        const nodes = {};
+        if (json !== undefined) {
+            for (const nodeJSON of json){
+                const { uuid, type } = nodeJSON;
+                nodes[uuid] = (0, _shaderNodeJs.nodeObject)((0, _nodeJs.createNodeFromType)(type)); // @TODO: Maybe nodeObjectify the node in createNodeFromType?
+                nodes[uuid].uuid = uuid;
+            }
+            const meta = {
+                nodes,
+                textures: this.textures
+            };
+            for (const nodeJSON of json){
+                nodeJSON.meta = meta;
+                const node = nodes[nodeJSON.uuid];
+                node.deserialize(nodeJSON);
+                delete nodeJSON.meta;
+            }
+        }
+        return nodes;
+    }
+    parse(json) {
+        const node = (0, _shaderNodeJs.nodeObject)((0, _nodeJs.createNodeFromType)(json.type));
+        node.uuid = json.uuid;
+        const nodes = this.parseNodes(json.nodes);
+        const meta = {
+            nodes,
+            textures: this.textures
+        };
+        json.meta = meta;
+        node.deserialize(json);
+        delete json.meta;
+        return node;
+    }
+    setTextures(value) {
+        this.textures = value;
+        return this;
+    }
+}
+exports.default = NodeLoader;
+
+},{"../core/Node.js":"cld0p","../shadernode/ShaderNode.js":"8Xgcj","three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"3cMAh":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _nodeLoaderJs = require("./NodeLoader.js");
+var _nodeLoaderJsDefault = parcelHelpers.interopDefault(_nodeLoaderJs);
+var _nodeMaterialLoaderJs = require("./NodeMaterialLoader.js");
+var _nodeMaterialLoaderJsDefault = parcelHelpers.interopDefault(_nodeMaterialLoaderJs);
+var _three = require("three");
+class NodeObjectLoader extends (0, _three.ObjectLoader) {
+    constructor(manager){
+        super(manager);
+        this._nodesJSON = null;
+    }
+    parse(json, onLoad) {
+        this._nodesJSON = json.nodes;
+        const data = super.parse(json, onLoad);
+        this._nodesJSON = null; // dispose
+        return data;
+    }
+    parseNodes(json, textures) {
+        if (json !== undefined) {
+            const loader = new (0, _nodeLoaderJsDefault.default)();
+            loader.setTextures(textures);
+            return loader.parseNodes(json);
+        }
+        return {};
+    }
+    parseMaterials(json, textures) {
+        const materials = {};
+        if (json !== undefined) {
+            const nodes = this.parseNodes(this._nodesJSON, textures);
+            const loader = new (0, _nodeMaterialLoaderJsDefault.default)();
+            loader.setTextures(textures);
+            loader.setNodes(nodes);
+            for(let i = 0, l = json.length; i < l; i++){
+                const data = json[i];
+                materials[data.uuid] = loader.parse(data);
+            }
+        }
+        return materials;
+    }
+}
+exports.default = NodeObjectLoader;
+
+},{"./NodeLoader.js":"6fkFa","./NodeMaterialLoader.js":"kfaMt","three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"kfaMt":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _three = require("three");
+var _materialsJs = require("../materials/Materials.js");
+const superFromTypeFunction = (0, _three.MaterialLoader).createMaterialFromType;
+(0, _three.MaterialLoader).createMaterialFromType = function(type) {
+    const material = (0, _materialsJs.createNodeMaterialFromType)(type);
+    if (material !== undefined) return material;
+    return superFromTypeFunction.call(this, type);
+};
+class NodeMaterialLoader extends (0, _three.MaterialLoader) {
+    constructor(manager){
+        super(manager);
+        this.nodes = {};
+    }
+    parse(json) {
+        const material = super.parse(json);
+        const nodes = this.nodes;
+        const inputNodes = json.inputNodes;
+        for(const property in inputNodes){
+            const uuid = inputNodes[property];
+            material[property] = nodes[uuid];
+        }
+        return material;
+    }
+    setNodes(value) {
+        this.nodes = value;
+        return this;
+    }
+}
+exports.default = NodeMaterialLoader;
+
+},{"three":"ktPTu","../materials/Materials.js":"3mpdR","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"3mpdR":[function(require,module,exports) {
+// @TODO: We can simplify "export { default as SomeNode, other, exports } from '...'" to just "export * from '...'" if we will use only named exports
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "NodeMaterial", ()=>(0, _nodeMaterialJsDefault.default));
+parcelHelpers.export(exports, "addNodeMaterial", ()=>(0, _nodeMaterialJs.addNodeMaterial));
+parcelHelpers.export(exports, "createNodeMaterialFromType", ()=>(0, _nodeMaterialJs.createNodeMaterialFromType));
+parcelHelpers.export(exports, "InstancedPointsNodeMaterial", ()=>(0, _instancedPointsNodeMaterialJsDefault.default));
+parcelHelpers.export(exports, "LineBasicNodeMaterial", ()=>(0, _lineBasicNodeMaterialJsDefault.default));
+parcelHelpers.export(exports, "LineDashedNodeMaterial", ()=>(0, _lineDashedNodeMaterialJsDefault.default));
+parcelHelpers.export(exports, "Line2NodeMaterial", ()=>(0, _line2NodeMaterialJsDefault.default));
+parcelHelpers.export(exports, "MeshNormalNodeMaterial", ()=>(0, _meshNormalNodeMaterialJsDefault.default));
+parcelHelpers.export(exports, "MeshBasicNodeMaterial", ()=>(0, _meshBasicNodeMaterialJsDefault.default));
+parcelHelpers.export(exports, "MeshLambertNodeMaterial", ()=>(0, _meshLambertNodeMaterialJsDefault.default));
+parcelHelpers.export(exports, "MeshPhongNodeMaterial", ()=>(0, _meshPhongNodeMaterialJsDefault.default));
+parcelHelpers.export(exports, "MeshStandardNodeMaterial", ()=>(0, _meshStandardNodeMaterialJsDefault.default));
+parcelHelpers.export(exports, "MeshPhysicalNodeMaterial", ()=>(0, _meshPhysicalNodeMaterialJsDefault.default));
+parcelHelpers.export(exports, "MeshSSSNodeMaterial", ()=>(0, _meshSSSNodeMaterialJsDefault.default));
+parcelHelpers.export(exports, "PointsNodeMaterial", ()=>(0, _pointsNodeMaterialJsDefault.default));
+parcelHelpers.export(exports, "SpriteNodeMaterial", ()=>(0, _spriteNodeMaterialJsDefault.default));
+var _nodeMaterialJs = require("./NodeMaterial.js");
+var _nodeMaterialJsDefault = parcelHelpers.interopDefault(_nodeMaterialJs);
+var _instancedPointsNodeMaterialJs = require("./InstancedPointsNodeMaterial.js");
+var _instancedPointsNodeMaterialJsDefault = parcelHelpers.interopDefault(_instancedPointsNodeMaterialJs);
+var _lineBasicNodeMaterialJs = require("./LineBasicNodeMaterial.js");
+var _lineBasicNodeMaterialJsDefault = parcelHelpers.interopDefault(_lineBasicNodeMaterialJs);
+var _lineDashedNodeMaterialJs = require("./LineDashedNodeMaterial.js");
+var _lineDashedNodeMaterialJsDefault = parcelHelpers.interopDefault(_lineDashedNodeMaterialJs);
+var _line2NodeMaterialJs = require("./Line2NodeMaterial.js");
+var _line2NodeMaterialJsDefault = parcelHelpers.interopDefault(_line2NodeMaterialJs);
+var _meshNormalNodeMaterialJs = require("./MeshNormalNodeMaterial.js");
+var _meshNormalNodeMaterialJsDefault = parcelHelpers.interopDefault(_meshNormalNodeMaterialJs);
+var _meshBasicNodeMaterialJs = require("./MeshBasicNodeMaterial.js");
+var _meshBasicNodeMaterialJsDefault = parcelHelpers.interopDefault(_meshBasicNodeMaterialJs);
+var _meshLambertNodeMaterialJs = require("./MeshLambertNodeMaterial.js");
+var _meshLambertNodeMaterialJsDefault = parcelHelpers.interopDefault(_meshLambertNodeMaterialJs);
+var _meshPhongNodeMaterialJs = require("./MeshPhongNodeMaterial.js");
+var _meshPhongNodeMaterialJsDefault = parcelHelpers.interopDefault(_meshPhongNodeMaterialJs);
+var _meshStandardNodeMaterialJs = require("./MeshStandardNodeMaterial.js");
+var _meshStandardNodeMaterialJsDefault = parcelHelpers.interopDefault(_meshStandardNodeMaterialJs);
+var _meshPhysicalNodeMaterialJs = require("./MeshPhysicalNodeMaterial.js");
+var _meshPhysicalNodeMaterialJsDefault = parcelHelpers.interopDefault(_meshPhysicalNodeMaterialJs);
+var _meshSSSNodeMaterialJs = require("./MeshSSSNodeMaterial.js");
+var _meshSSSNodeMaterialJsDefault = parcelHelpers.interopDefault(_meshSSSNodeMaterialJs);
+var _pointsNodeMaterialJs = require("./PointsNodeMaterial.js");
+var _pointsNodeMaterialJsDefault = parcelHelpers.interopDefault(_pointsNodeMaterialJs);
+var _spriteNodeMaterialJs = require("./SpriteNodeMaterial.js");
+var _spriteNodeMaterialJsDefault = parcelHelpers.interopDefault(_spriteNodeMaterialJs);
+
+},{"./NodeMaterial.js":"aQCWQ","./InstancedPointsNodeMaterial.js":"dKJw9","./LineBasicNodeMaterial.js":"60b71","./LineDashedNodeMaterial.js":"6Xg03","./Line2NodeMaterial.js":"7kG9E","./MeshNormalNodeMaterial.js":"8XVIZ","./MeshBasicNodeMaterial.js":"lgL0q","./MeshLambertNodeMaterial.js":"lLAvH","./MeshPhongNodeMaterial.js":"ghYlL","./MeshStandardNodeMaterial.js":"7bcv0","./MeshPhysicalNodeMaterial.js":"11ews","./MeshSSSNodeMaterial.js":"4xYge","./PointsNodeMaterial.js":"ksWYA","./SpriteNodeMaterial.js":"9oVPX","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"dKJw9":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _nodeMaterialJs = require("./NodeMaterial.js");
+var _nodeMaterialJsDefault = parcelHelpers.interopDefault(_nodeMaterialJs);
+var _varyingNodeJs = require("../core/VaryingNode.js");
+var _propertyNodeJs = require("../core/PropertyNode.js");
+var _attributeNodeJs = require("../core/AttributeNode.js");
+var _cameraNodeJs = require("../accessors/CameraNode.js");
+var _materialNodeJs = require("../accessors/MaterialNode.js"); // or should this be a property, instead?
+var _modelNodeJs = require("../accessors/ModelNode.js");
+var _positionNodeJs = require("../accessors/PositionNode.js");
+var _mathNodeJs = require("../math/MathNode.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+var _uvnodeJs = require("../accessors/UVNode.js");
+var _viewportNodeJs = require("../display/ViewportNode.js");
+var _three = require("three");
+const defaultValues = new (0, _three.PointsMaterial)();
+class InstancedPointsNodeMaterial extends (0, _nodeMaterialJsDefault.default) {
+    constructor(params = {}){
+        super();
+        this.normals = false;
+        this.lights = false;
+        this.useAlphaToCoverage = true;
+        this.useColor = params.vertexColors;
+        this.pointWidth = 1;
+        this.pointColorNode = null;
+        this.setDefaultValues(defaultValues);
+        this.setupShaders();
+        this.setValues(params);
+    }
+    setupShaders() {
+        const useAlphaToCoverage = this.alphaToCoverage;
+        const useColor = this.useColor;
+        this.vertexNode = (0, _shaderNodeJs.tslFn)(()=>{
+            //vUv = uv;
+            (0, _varyingNodeJs.varying)((0, _shaderNodeJs.vec2)(), "vUv").assign((0, _uvnodeJs.uv)()); // @TODO: Analyze other way to do this
+            const instancePosition = (0, _attributeNodeJs.attribute)("instancePosition");
+            // camera space
+            const mvPos = (0, _propertyNodeJs.property)("vec4", "mvPos");
+            mvPos.assign((0, _modelNodeJs.modelViewMatrix).mul((0, _shaderNodeJs.vec4)(instancePosition, 1.0)));
+            const aspect = (0, _viewportNodeJs.viewport).z.div((0, _viewportNodeJs.viewport).w);
+            // clip space
+            const clipPos = (0, _cameraNodeJs.cameraProjectionMatrix).mul(mvPos);
+            // offset in ndc space
+            const offset = (0, _propertyNodeJs.property)("vec2", "offset");
+            offset.assign((0, _positionNodeJs.positionGeometry).xy);
+            offset.assign(offset.mul((0, _materialNodeJs.materialPointWidth)));
+            offset.assign(offset.div((0, _viewportNodeJs.viewport).z));
+            offset.y.assign(offset.y.mul(aspect));
+            // back to clip space
+            offset.assign(offset.mul(clipPos.w));
+            //clipPos.xy += offset;
+            clipPos.assign(clipPos.add((0, _shaderNodeJs.vec4)(offset, 0, 0)));
+            return clipPos;
+        //vec4 mvPosition = mvPos; // this was used for somethihng...
+        })();
+        this.fragmentNode = (0, _shaderNodeJs.tslFn)(()=>{
+            const vUv = (0, _varyingNodeJs.varying)((0, _shaderNodeJs.vec2)(), "vUv");
+            // force assignment into correct place in flow
+            const alpha = (0, _propertyNodeJs.property)("float", "alpha");
+            alpha.assign(1);
+            const a = vUv.x;
+            const b = vUv.y;
+            const len2 = a.mul(a).add(b.mul(b));
+            if (useAlphaToCoverage) {
+                // force assignment out of following 'if' statement - to avoid uniform control flow errors
+                const dlen = (0, _propertyNodeJs.property)("float", "dlen");
+                dlen.assign(len2.fwidth());
+                alpha.assign((0, _mathNodeJs.smoothstep)(dlen.oneMinus(), dlen.add(1), len2).oneMinus());
+            } else len2.greaterThan(1.0).discard();
+            let pointColorNode;
+            if (this.pointColorNode) pointColorNode = this.pointColorNode;
+            else if (useColor) {
+                const instanceColor = (0, _attributeNodeJs.attribute)("instanceColor");
+                pointColorNode = instanceColor.mul((0, _materialNodeJs.materialColor));
+            } else pointColorNode = (0, _materialNodeJs.materialColor);
+            return (0, _shaderNodeJs.vec4)(pointColorNode, alpha);
+        })();
+        this.needsUpdate = true;
+    }
+    get alphaToCoverage() {
+        return this.useAlphaToCoverage;
+    }
+    set alphaToCoverage(value) {
+        if (this.useAlphaToCoverage !== value) {
+            this.useAlphaToCoverage = value;
+            this.setupShaders();
+        }
+    }
+}
+exports.default = InstancedPointsNodeMaterial;
+(0, _nodeMaterialJs.addNodeMaterial)("InstancedPointsNodeMaterial", InstancedPointsNodeMaterial);
+
+},{"./NodeMaterial.js":"aQCWQ","../core/VaryingNode.js":"iEE7L","../core/PropertyNode.js":"9JOy4","../core/AttributeNode.js":"8yUip","../accessors/CameraNode.js":"kZ1gx","../accessors/MaterialNode.js":"9GQWn","../accessors/ModelNode.js":"ix99b","../accessors/PositionNode.js":"1WXKm","../math/MathNode.js":"84OFe","../shadernode/ShaderNode.js":"8Xgcj","../accessors/UVNode.js":"dj0CK","../display/ViewportNode.js":"6pmzu","three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"60b71":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _nodeMaterialJs = require("./NodeMaterial.js");
+var _nodeMaterialJsDefault = parcelHelpers.interopDefault(_nodeMaterialJs);
+var _three = require("three");
+const defaultValues = new (0, _three.LineBasicMaterial)();
+class LineBasicNodeMaterial extends (0, _nodeMaterialJsDefault.default) {
+    constructor(parameters){
+        super();
+        this.isLineBasicNodeMaterial = true;
+        this.lights = false;
+        this.normals = false;
+        this.setDefaultValues(defaultValues);
+        this.setValues(parameters);
+    }
+}
+exports.default = LineBasicNodeMaterial;
+(0, _nodeMaterialJs.addNodeMaterial)("LineBasicNodeMaterial", LineBasicNodeMaterial);
+
+},{"./NodeMaterial.js":"aQCWQ","three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"6Xg03":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _nodeMaterialJs = require("./NodeMaterial.js");
+var _nodeMaterialJsDefault = parcelHelpers.interopDefault(_nodeMaterialJs);
+var _attributeNodeJs = require("../core/AttributeNode.js");
+var _varyingNodeJs = require("../core/VaryingNode.js");
+var _materialNodeJs = require("../accessors/MaterialNode.js");
+var _propertyNodeJs = require("../core/PropertyNode.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+var _three = require("three");
+const defaultValues = new (0, _three.LineDashedMaterial)();
+class LineDashedNodeMaterial extends (0, _nodeMaterialJsDefault.default) {
+    constructor(parameters){
+        super();
+        this.isLineDashedNodeMaterial = true;
+        this.lights = false;
+        this.normals = false;
+        this.setDefaultValues(defaultValues);
+        this.offsetNode = null;
+        this.dashScaleNode = null;
+        this.dashSizeNode = null;
+        this.gapSizeNode = null;
+        this.setValues(parameters);
+    }
+    setupVariants() {
+        const offsetNode = this.offsetNode;
+        const dashScaleNode = this.dashScaleNode ? (0, _shaderNodeJs.float)(this.dashScaleNode) : (0, _materialNodeJs.materialLineScale);
+        const dashSizeNode = this.dashSizeNode ? (0, _shaderNodeJs.float)(this.dashSizeNode) : (0, _materialNodeJs.materialLineDashSize);
+        const gapSizeNode = this.dashSizeNode ? (0, _shaderNodeJs.float)(this.dashGapNode) : (0, _materialNodeJs.materialLineGapSize);
+        (0, _propertyNodeJs.dashSize).assign(dashSizeNode);
+        (0, _propertyNodeJs.gapSize).assign(gapSizeNode);
+        const vLineDistance = (0, _varyingNodeJs.varying)((0, _attributeNodeJs.attribute)("lineDistance").mul(dashScaleNode));
+        const vLineDistanceOffset = offsetNode ? vLineDistance.add(offsetNode) : vLineDistance;
+        vLineDistanceOffset.mod((0, _propertyNodeJs.dashSize).add((0, _propertyNodeJs.gapSize))).greaterThan((0, _propertyNodeJs.dashSize)).discard();
+    }
+}
+exports.default = LineDashedNodeMaterial;
+(0, _nodeMaterialJs.addNodeMaterial)("LineDashedNodeMaterial", LineDashedNodeMaterial);
+
+},{"./NodeMaterial.js":"aQCWQ","../core/AttributeNode.js":"8yUip","../core/VaryingNode.js":"iEE7L","../accessors/MaterialNode.js":"9GQWn","../core/PropertyNode.js":"9JOy4","../shadernode/ShaderNode.js":"8Xgcj","three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"7kG9E":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _nodeMaterialJs = require("./NodeMaterial.js");
+var _nodeMaterialJsDefault = parcelHelpers.interopDefault(_nodeMaterialJs);
+var _varNodeJs = require("../core/VarNode.js");
+var _varyingNodeJs = require("../core/VaryingNode.js");
+var _propertyNodeJs = require("../core/PropertyNode.js");
+var _attributeNodeJs = require("../core/AttributeNode.js");
+var _cameraNodeJs = require("../accessors/CameraNode.js");
+var _materialNodeJs = require("../accessors/MaterialNode.js");
+var _modelNodeJs = require("../accessors/ModelNode.js");
+var _positionNodeJs = require("../accessors/PositionNode.js");
+var _mathNodeJs = require("../math/MathNode.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+var _uvnodeJs = require("../accessors/UVNode.js");
+var _viewportNodeJs = require("../display/ViewportNode.js");
+var _three = require("three");
+const defaultValues = new (0, _three.LineDashedMaterial)();
+class Line2NodeMaterial extends (0, _nodeMaterialJsDefault.default) {
+    constructor(params = {}){
+        super();
+        this.normals = false;
+        this.lights = false;
+        this.setDefaultValues(defaultValues);
+        this.useAlphaToCoverage = true;
+        this.useColor = params.vertexColors;
+        this.useDash = params.dashed;
+        this.useWorldUnits = false;
+        this.dashOffset = 0;
+        this.lineWidth = 1;
+        this.lineColorNode = null;
+        this.offsetNode = null;
+        this.dashScaleNode = null;
+        this.dashSizeNode = null;
+        this.gapSizeNode = null;
+        this.setupShaders();
+        this.setValues(params);
+    }
+    setupShaders() {
+        const useAlphaToCoverage = this.alphaToCoverage;
+        const useColor = this.useColor;
+        const useDash = this.dashed;
+        const useWorldUnits = this.worldUnits;
+        const trimSegment = (0, _shaderNodeJs.tslFn)(({ start, end })=>{
+            const a = (0, _cameraNodeJs.cameraProjectionMatrix).element(2).element(2); // 3nd entry in 3th column
+            const b = (0, _cameraNodeJs.cameraProjectionMatrix).element(3).element(2); // 3nd entry in 4th column
+            const nearEstimate = b.mul(-0.5).div(a);
+            const alpha = nearEstimate.sub(start.z).div(end.z.sub(start.z));
+            return (0, _shaderNodeJs.vec4)((0, _mathNodeJs.mix)(start.xyz, end.xyz, alpha), end.w);
+        });
+        this.vertexNode = (0, _shaderNodeJs.tslFn)(()=>{
+            (0, _propertyNodeJs.varyingProperty)("vec2", "vUv").assign((0, _uvnodeJs.uv)());
+            const instanceStart = (0, _attributeNodeJs.attribute)("instanceStart");
+            const instanceEnd = (0, _attributeNodeJs.attribute)("instanceEnd");
+            // camera space
+            const start = (0, _propertyNodeJs.property)("vec4", "start");
+            const end = (0, _propertyNodeJs.property)("vec4", "end");
+            start.assign((0, _modelNodeJs.modelViewMatrix).mul((0, _shaderNodeJs.vec4)(instanceStart, 1.0))); // force assignment into correct place in flow
+            end.assign((0, _modelNodeJs.modelViewMatrix).mul((0, _shaderNodeJs.vec4)(instanceEnd, 1.0)));
+            if (useWorldUnits) {
+                (0, _propertyNodeJs.varyingProperty)("vec3", "worldStart").assign(start.xyz);
+                (0, _propertyNodeJs.varyingProperty)("vec3", "worldEnd").assign(end.xyz);
+            }
+            const aspect = (0, _viewportNodeJs.viewport).z.div((0, _viewportNodeJs.viewport).w);
+            // special case for perspective projection, and segments that terminate either in, or behind, the camera plane
+            // clearly the gpu firmware has a way of addressing this issue when projecting into ndc space
+            // but we need to perform ndc-space calculations in the shader, so we must address this issue directly
+            // perhaps there is a more elegant solution -- WestLangley
+            const perspective = (0, _cameraNodeJs.cameraProjectionMatrix).element(2).element(3).equal(-1); // 4th entry in the 3rd column
+            (0, _shaderNodeJs.If)(perspective, ()=>{
+                (0, _shaderNodeJs.If)(start.z.lessThan(0.0).and(end.z.greaterThan(0.0)), ()=>{
+                    end.assign(trimSegment({
+                        start: start,
+                        end: end
+                    }));
+                }).elseif(end.z.lessThan(0.0).and(start.z.greaterThanEqual(0.0)), ()=>{
+                    start.assign(trimSegment({
+                        start: end,
+                        end: start
+                    }));
+                });
+            });
+            // clip space
+            const clipStart = (0, _cameraNodeJs.cameraProjectionMatrix).mul(start);
+            const clipEnd = (0, _cameraNodeJs.cameraProjectionMatrix).mul(end);
+            // ndc space
+            const ndcStart = clipStart.xyz.div(clipStart.w);
+            const ndcEnd = clipEnd.xyz.div(clipEnd.w);
+            // direction
+            const dir = ndcEnd.xy.sub(ndcStart.xy).temp();
+            // account for clip-space aspect ratio
+            dir.x.assign(dir.x.mul(aspect));
+            dir.assign(dir.normalize());
+            const clip = (0, _varNodeJs.temp)((0, _shaderNodeJs.vec4)());
+            if (useWorldUnits) {
+                // get the offset direction as perpendicular to the view vector
+                const worldDir = end.xyz.sub(start.xyz).normalize();
+                const tmpFwd = (0, _mathNodeJs.mix)(start.xyz, end.xyz, 0.5).normalize();
+                const worldUp = worldDir.cross(tmpFwd).normalize();
+                const worldFwd = worldDir.cross(worldUp);
+                const worldPos = (0, _propertyNodeJs.varyingProperty)("vec4", "worldPos");
+                worldPos.assign((0, _positionNodeJs.positionGeometry).y.lessThan(0.5).cond(start, end));
+                // height offset
+                const hw = (0, _materialNodeJs.materialLineWidth).mul(0.5);
+                worldPos.addAssign((0, _shaderNodeJs.vec4)((0, _positionNodeJs.positionGeometry).x.lessThan(0.0).cond(worldUp.mul(hw), worldUp.mul(hw).negate()), 0));
+                // don't extend the line if we're rendering dashes because we
+                // won't be rendering the endcaps
+                if (!useDash) {
+                    // cap extension
+                    worldPos.addAssign((0, _shaderNodeJs.vec4)((0, _positionNodeJs.positionGeometry).y.lessThan(0.5).cond(worldDir.mul(hw).negate(), worldDir.mul(hw)), 0));
+                    // add width to the box
+                    worldPos.addAssign((0, _shaderNodeJs.vec4)(worldFwd.mul(hw), 0));
+                    // endcaps
+                    (0, _shaderNodeJs.If)((0, _positionNodeJs.positionGeometry).y.greaterThan(1.0).or((0, _positionNodeJs.positionGeometry).y.lessThan(0.0)), ()=>{
+                        worldPos.subAssign((0, _shaderNodeJs.vec4)(worldFwd.mul(2.0).mul(hw), 0));
+                    });
+                }
+                // project the worldpos
+                clip.assign((0, _cameraNodeJs.cameraProjectionMatrix).mul(worldPos));
+                // shift the depth of the projected points so the line
+                // segments overlap neatly
+                const clipPose = (0, _varNodeJs.temp)((0, _shaderNodeJs.vec3)());
+                clipPose.assign((0, _positionNodeJs.positionGeometry).y.lessThan(0.5).cond(ndcStart, ndcEnd));
+                clip.z.assign(clipPose.z.mul(clip.w));
+            } else {
+                const offset = (0, _propertyNodeJs.property)("vec2", "offset");
+                offset.assign((0, _shaderNodeJs.vec2)(dir.y, dir.x.negate()));
+                // undo aspect ratio adjustment
+                dir.x.assign(dir.x.div(aspect));
+                offset.x.assign(offset.x.div(aspect));
+                // sign flip
+                offset.assign((0, _positionNodeJs.positionGeometry).x.lessThan(0.0).cond(offset.negate(), offset));
+                // endcaps
+                (0, _shaderNodeJs.If)((0, _positionNodeJs.positionGeometry).y.lessThan(0.0), ()=>{
+                    offset.assign(offset.sub(dir));
+                }).elseif((0, _positionNodeJs.positionGeometry).y.greaterThan(1.0), ()=>{
+                    offset.assign(offset.add(dir));
+                });
+                // adjust for linewidth
+                offset.assign(offset.mul((0, _materialNodeJs.materialLineWidth)));
+                // adjust for clip-space to screen-space conversion // maybe resolution should be based on viewport ...
+                offset.assign(offset.div((0, _viewportNodeJs.viewport).w));
+                // select end
+                clip.assign((0, _positionNodeJs.positionGeometry).y.lessThan(0.5).cond(clipStart, clipEnd));
+                // back to clip space
+                offset.assign(offset.mul(clip.w));
+                clip.assign(clip.add((0, _shaderNodeJs.vec4)(offset, 0, 0)));
+            }
+            return clip;
+        })();
+        const closestLineToLine = (0, _shaderNodeJs.tslFn)(({ p1, p2, p3, p4 })=>{
+            const p13 = p1.sub(p3);
+            const p43 = p4.sub(p3);
+            const p21 = p2.sub(p1);
+            const d1343 = p13.dot(p43);
+            const d4321 = p43.dot(p21);
+            const d1321 = p13.dot(p21);
+            const d4343 = p43.dot(p43);
+            const d2121 = p21.dot(p21);
+            const denom = d2121.mul(d4343).sub(d4321.mul(d4321));
+            const numer = d1343.mul(d4321).sub(d1321.mul(d4343));
+            const mua = numer.div(denom).clamp();
+            const mub = d1343.add(d4321.mul(mua)).div(d4343).clamp();
+            return (0, _shaderNodeJs.vec2)(mua, mub);
+        });
+        this.fragmentNode = (0, _shaderNodeJs.tslFn)(()=>{
+            const vUv = (0, _propertyNodeJs.varyingProperty)("vec2", "vUv");
+            if (useDash) {
+                const offsetNode = this.offsetNode ? (0, _shaderNodeJs.float)(this.offsetNodeNode) : (0, _materialNodeJs.materialLineDashOffset);
+                const dashScaleNode = this.dashScaleNode ? (0, _shaderNodeJs.float)(this.dashScaleNode) : (0, _materialNodeJs.materialLineScale);
+                const dashSizeNode = this.dashSizeNode ? (0, _shaderNodeJs.float)(this.dashSizeNode) : (0, _materialNodeJs.materialLineDashSize);
+                const gapSizeNode = this.dashSizeNode ? (0, _shaderNodeJs.float)(this.dashGapNode) : (0, _materialNodeJs.materialLineGapSize);
+                (0, _propertyNodeJs.dashSize).assign(dashSizeNode);
+                (0, _propertyNodeJs.gapSize).assign(gapSizeNode);
+                const instanceDistanceStart = (0, _attributeNodeJs.attribute)("instanceDistanceStart");
+                const instanceDistanceEnd = (0, _attributeNodeJs.attribute)("instanceDistanceEnd");
+                const lineDistance = (0, _positionNodeJs.positionGeometry).y.lessThan(0.5).cond(dashScaleNode.mul(instanceDistanceStart), (0, _materialNodeJs.materialLineScale).mul(instanceDistanceEnd));
+                const vLineDistance = (0, _varyingNodeJs.varying)(lineDistance.add((0, _materialNodeJs.materialLineDashOffset)));
+                const vLineDistanceOffset = offsetNode ? vLineDistance.add(offsetNode) : vLineDistance;
+                vUv.y.lessThan(-1).or(vUv.y.greaterThan(1.0)).discard(); // discard endcaps
+                vLineDistanceOffset.mod((0, _propertyNodeJs.dashSize).add((0, _propertyNodeJs.gapSize))).greaterThan((0, _propertyNodeJs.dashSize)).discard(); // todo - FIX
+            }
+            // force assignment into correct place in flow
+            const alpha = (0, _propertyNodeJs.property)("float", "alpha");
+            alpha.assign(1);
+            if (useWorldUnits) {
+                const worldStart = (0, _propertyNodeJs.varyingProperty)("vec3", "worldStart");
+                const worldEnd = (0, _propertyNodeJs.varyingProperty)("vec3", "worldEnd");
+                // Find the closest points on the view ray and the line segment
+                const rayEnd = (0, _propertyNodeJs.varyingProperty)("vec4", "worldPos").xyz.normalize().mul(1e5);
+                const lineDir = worldEnd.sub(worldStart);
+                const params = closestLineToLine({
+                    p1: worldStart,
+                    p2: worldEnd,
+                    p3: (0, _shaderNodeJs.vec3)(0.0, 0.0, 0.0),
+                    p4: rayEnd
+                });
+                const p1 = worldStart.add(lineDir.mul(params.x));
+                const p2 = rayEnd.mul(params.y);
+                const delta = p1.sub(p2);
+                const len = delta.length();
+                const norm = len.div((0, _materialNodeJs.materialLineWidth));
+                if (!useDash) {
+                    if (useAlphaToCoverage) {
+                        const dnorm = norm.fwidth();
+                        alpha.assign((0, _mathNodeJs.smoothstep)(dnorm.negate().add(0.5), dnorm.add(0.5), norm).oneMinus());
+                    } else norm.greaterThan(0.5).discard();
+                }
+            } else // round endcaps
+            if (useAlphaToCoverage) {
+                const a = vUv.x;
+                const b = vUv.y.greaterThan(0.0).cond(vUv.y.sub(1.0), vUv.y.add(1.0));
+                const len2 = a.mul(a).add(b.mul(b));
+                // force assignment out of following 'if' statement - to avoid uniform control flow errors
+                const dlen = (0, _propertyNodeJs.property)("float", "dlen");
+                dlen.assign(len2.fwidth());
+                (0, _shaderNodeJs.If)(vUv.y.abs().greaterThan(1.0), ()=>{
+                    alpha.assign((0, _mathNodeJs.smoothstep)(dlen.oneMinus(), dlen.add(1), len2).oneMinus());
+                });
+            } else (0, _shaderNodeJs.If)(vUv.y.abs().greaterThan(1.0), ()=>{
+                const a = vUv.x;
+                const b = vUv.y.greaterThan(0.0).cond(vUv.y.sub(1.0), vUv.y.add(1.0));
+                const len2 = a.mul(a).add(b.mul(b));
+                len2.greaterThan(1.0).discard();
+            });
+            let lineColorNode;
+            if (this.lineColorNode) lineColorNode = this.lineColorNode;
+            else if (useColor) {
+                const instanceColorStart = (0, _attributeNodeJs.attribute)("instanceColorStart");
+                const instanceColorEnd = (0, _attributeNodeJs.attribute)("instanceColorEnd");
+                const instanceColor = (0, _positionNodeJs.positionGeometry).y.lessThan(0.5).cond(instanceColorStart, instanceColorEnd);
+                lineColorNode = instanceColor.mul((0, _materialNodeJs.materialColor));
+            } else lineColorNode = (0, _materialNodeJs.materialColor);
+            return (0, _shaderNodeJs.vec4)(lineColorNode, alpha);
+        })();
+        this.needsUpdate = true;
+    }
+    get worldUnits() {
+        return this.useWorldUnits;
+    }
+    set worldUnits(value) {
+        if (this.useWorldUnits !== value) {
+            this.useWorldUnits = value;
+            this.setupShaders();
+        }
+    }
+    get dashed() {
+        return this.useDash;
+    }
+    set dashed(value) {
+        if (this.useDash !== value) {
+            this.useDash = value;
+            this.setupShaders();
+        }
+    }
+    get alphaToCoverage() {
+        return this.useAlphaToCoverage;
+    }
+    set alphaToCoverage(value) {
+        if (this.useAlphaToCoverage !== value) {
+            this.useAlphaToCoverage = value;
+            this.setupShaders();
+        }
+    }
+}
+exports.default = Line2NodeMaterial;
+(0, _nodeMaterialJs.addNodeMaterial)("Line2NodeMaterial", Line2NodeMaterial);
+
+},{"./NodeMaterial.js":"aQCWQ","../core/VarNode.js":"4EKsV","../core/VaryingNode.js":"iEE7L","../core/PropertyNode.js":"9JOy4","../core/AttributeNode.js":"8yUip","../accessors/CameraNode.js":"kZ1gx","../accessors/MaterialNode.js":"9GQWn","../accessors/ModelNode.js":"ix99b","../accessors/PositionNode.js":"1WXKm","../math/MathNode.js":"84OFe","../shadernode/ShaderNode.js":"8Xgcj","../accessors/UVNode.js":"dj0CK","../display/ViewportNode.js":"6pmzu","three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"8XVIZ":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _nodeMaterialJs = require("./NodeMaterial.js");
+var _nodeMaterialJsDefault = parcelHelpers.interopDefault(_nodeMaterialJs);
+var _propertyNodeJs = require("../core/PropertyNode.js");
+var _packingNodeJs = require("../utils/PackingNode.js");
+var _materialNodeJs = require("../accessors/MaterialNode.js");
+var _normalNodeJs = require("../accessors/NormalNode.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+var _three = require("three");
+const defaultValues = new (0, _three.MeshNormalMaterial)();
+class MeshNormalNodeMaterial extends (0, _nodeMaterialJsDefault.default) {
+    constructor(parameters){
+        super();
+        this.isMeshNormalNodeMaterial = true;
+        this.colorSpaced = false;
+        this.setDefaultValues(defaultValues);
+        this.setValues(parameters);
+    }
+    setupDiffuseColor() {
+        const opacityNode = this.opacityNode ? (0, _shaderNodeJs.float)(this.opacityNode) : (0, _materialNodeJs.materialOpacity);
+        (0, _propertyNodeJs.diffuseColor).assign((0, _shaderNodeJs.vec4)((0, _packingNodeJs.directionToColor)((0, _normalNodeJs.transformedNormalView)), opacityNode));
+    }
+}
+exports.default = MeshNormalNodeMaterial;
+(0, _nodeMaterialJs.addNodeMaterial)("MeshNormalNodeMaterial", MeshNormalNodeMaterial);
+
+},{"./NodeMaterial.js":"aQCWQ","../core/PropertyNode.js":"9JOy4","../utils/PackingNode.js":"c5f7w","../accessors/MaterialNode.js":"9GQWn","../accessors/NormalNode.js":"4n1Pc","../shadernode/ShaderNode.js":"8Xgcj","three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"lgL0q":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _nodeMaterialJs = require("./NodeMaterial.js");
+var _nodeMaterialJsDefault = parcelHelpers.interopDefault(_nodeMaterialJs);
+var _three = require("three");
+const defaultValues = new (0, _three.MeshBasicMaterial)();
+class MeshBasicNodeMaterial extends (0, _nodeMaterialJsDefault.default) {
+    constructor(parameters){
+        super();
+        this.isMeshBasicNodeMaterial = true;
+        this.lights = false;
+        //this.normals = false; @TODO: normals usage by context
+        this.setDefaultValues(defaultValues);
+        this.setValues(parameters);
+    }
+}
+exports.default = MeshBasicNodeMaterial;
+(0, _nodeMaterialJs.addNodeMaterial)("MeshBasicNodeMaterial", MeshBasicNodeMaterial);
+
+},{"./NodeMaterial.js":"aQCWQ","three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"lLAvH":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _nodeMaterialJs = require("./NodeMaterial.js");
+var _nodeMaterialJsDefault = parcelHelpers.interopDefault(_nodeMaterialJs);
+var _phongLightingModelJs = require("../functions/PhongLightingModel.js");
+var _phongLightingModelJsDefault = parcelHelpers.interopDefault(_phongLightingModelJs);
+var _three = require("three");
+const defaultValues = new (0, _three.MeshLambertMaterial)();
+class MeshLambertNodeMaterial extends (0, _nodeMaterialJsDefault.default) {
+    constructor(parameters){
+        super();
+        this.isMeshLambertNodeMaterial = true;
+        this.lights = true;
+        this.setDefaultValues(defaultValues);
+        this.setValues(parameters);
+    }
+    setupLightingModel() {
+        return new (0, _phongLightingModelJsDefault.default)(false); // ( specular ) -> force lambert
+    }
+}
+exports.default = MeshLambertNodeMaterial;
+(0, _nodeMaterialJs.addNodeMaterial)("MeshLambertNodeMaterial", MeshLambertNodeMaterial);
+
+},{"./NodeMaterial.js":"aQCWQ","../functions/PhongLightingModel.js":"2JzuC","three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"2JzuC":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _lightingModelJs = require("../core/LightingModel.js");
+var _lightingModelJsDefault = parcelHelpers.interopDefault(_lightingModelJs);
+var _fSchlickJs = require("./BSDF/F_Schlick.js");
+var _fSchlickJsDefault = parcelHelpers.interopDefault(_fSchlickJs);
+var _brdfLambertJs = require("./BSDF/BRDF_Lambert.js");
+var _brdfLambertJsDefault = parcelHelpers.interopDefault(_brdfLambertJs);
+var _propertyNodeJs = require("../core/PropertyNode.js");
+var _normalNodeJs = require("../accessors/NormalNode.js");
+var _materialNodeJs = require("../accessors/MaterialNode.js");
+var _positionNodeJs = require("../accessors/PositionNode.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+const G_BlinnPhong_Implicit = ()=>(0, _shaderNodeJs.float)(0.25);
+const D_BlinnPhong = (0, _shaderNodeJs.tslFn)(({ dotNH })=>{
+    return (0, _propertyNodeJs.shininess).mul(0.5 / Math.PI).add(1.0).mul(dotNH.pow((0, _propertyNodeJs.shininess)));
+});
+const BRDF_BlinnPhong = (0, _shaderNodeJs.tslFn)(({ lightDirection })=>{
+    const halfDir = lightDirection.add((0, _positionNodeJs.positionViewDirection)).normalize();
+    const dotNH = (0, _normalNodeJs.transformedNormalView).dot(halfDir).clamp();
+    const dotVH = (0, _positionNodeJs.positionViewDirection).dot(halfDir).clamp();
+    const F = (0, _fSchlickJsDefault.default)({
+        f0: (0, _propertyNodeJs.specularColor),
+        f90: 1.0,
+        dotVH
+    });
+    const G = G_BlinnPhong_Implicit();
+    const D = D_BlinnPhong({
+        dotNH
+    });
+    return F.mul(G).mul(D);
+});
+class PhongLightingModel extends (0, _lightingModelJsDefault.default) {
+    constructor(specular = true){
+        super();
+        this.specular = specular;
+    }
+    direct({ lightDirection, lightColor, reflectedLight }) {
+        const dotNL = (0, _normalNodeJs.transformedNormalView).dot(lightDirection).clamp();
+        const irradiance = dotNL.mul(lightColor);
+        reflectedLight.directDiffuse.addAssign(irradiance.mul((0, _brdfLambertJsDefault.default)({
+            diffuseColor: (0, _propertyNodeJs.diffuseColor).rgb
+        })));
+        if (this.specular === true) reflectedLight.directSpecular.addAssign(irradiance.mul(BRDF_BlinnPhong({
+            lightDirection
+        })).mul((0, _materialNodeJs.materialSpecularStrength)));
+    }
+    indirectDiffuse({ irradiance, reflectedLight }) {
+        reflectedLight.indirectDiffuse.addAssign(irradiance.mul((0, _brdfLambertJsDefault.default)({
+            diffuseColor: (0, _propertyNodeJs.diffuseColor)
+        })));
+    }
+}
+exports.default = PhongLightingModel;
+
+},{"../core/LightingModel.js":"dTTYF","./BSDF/F_Schlick.js":"1ysaX","./BSDF/BRDF_Lambert.js":"isgtE","../core/PropertyNode.js":"9JOy4","../accessors/NormalNode.js":"4n1Pc","../accessors/MaterialNode.js":"9GQWn","../accessors/PositionNode.js":"1WXKm","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"1ysaX":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _shaderNodeJs = require("../../shadernode/ShaderNode.js");
+const F_Schlick = (0, _shaderNodeJs.tslFn)(({ f0, f90, dotVH })=>{
+    // Original approximation by Christophe Schlick '94
+    // float fresnel = pow( 1.0 - dotVH, 5.0 );
+    // Optimized variant (presented by Epic at SIGGRAPH '13)
+    // https://cdn2.unrealengine.com/Resources/files/2013SiggraphPresentationsNotes-26915738.pdf
+    const fresnel = dotVH.mul(-5.55473).sub(6.98316).mul(dotVH).exp2();
+    return f0.mul(fresnel.oneMinus()).add(f90.mul(fresnel));
+}); // validated
+exports.default = F_Schlick;
+
+},{"../../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"isgtE":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _shaderNodeJs = require("../../shadernode/ShaderNode.js");
+const BRDF_Lambert = (0, _shaderNodeJs.tslFn)((inputs)=>{
+    return inputs.diffuseColor.mul(1 / Math.PI); // punctual light
+}); // validated
+exports.default = BRDF_Lambert;
+
+},{"../../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"ghYlL":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _nodeMaterialJs = require("./NodeMaterial.js");
+var _nodeMaterialJsDefault = parcelHelpers.interopDefault(_nodeMaterialJs);
+var _propertyNodeJs = require("../core/PropertyNode.js");
+var _materialNodeJs = require("../accessors/MaterialNode.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+var _phongLightingModelJs = require("../functions/PhongLightingModel.js");
+var _phongLightingModelJsDefault = parcelHelpers.interopDefault(_phongLightingModelJs);
+var _three = require("three");
+const defaultValues = new (0, _three.MeshPhongMaterial)();
+class MeshPhongNodeMaterial extends (0, _nodeMaterialJsDefault.default) {
+    constructor(parameters){
+        super();
+        this.isMeshPhongNodeMaterial = true;
+        this.lights = true;
+        this.shininessNode = null;
+        this.specularNode = null;
+        this.setDefaultValues(defaultValues);
+        this.setValues(parameters);
+    }
+    setupLightingModel() {
+        return new (0, _phongLightingModelJsDefault.default)();
+    }
+    setupVariants() {
+        // SHININESS
+        const shininessNode = (this.shininessNode ? (0, _shaderNodeJs.float)(this.shininessNode) : (0, _materialNodeJs.materialShininess)).max(1e-4); // to prevent pow( 0.0, 0.0 )
+        (0, _propertyNodeJs.shininess).assign(shininessNode);
+        // SPECULAR COLOR
+        const specularNode = this.specularNode || (0, _materialNodeJs.materialSpecularColor);
+        (0, _propertyNodeJs.specularColor).assign(specularNode);
+    }
+    copy(source) {
+        this.shininessNode = source.shininessNode;
+        this.specularNode = source.specularNode;
+        return super.copy(source);
+    }
+}
+exports.default = MeshPhongNodeMaterial;
+(0, _nodeMaterialJs.addNodeMaterial)("MeshPhongNodeMaterial", MeshPhongNodeMaterial);
+
+},{"./NodeMaterial.js":"aQCWQ","../core/PropertyNode.js":"9JOy4","../accessors/MaterialNode.js":"9GQWn","../shadernode/ShaderNode.js":"8Xgcj","../functions/PhongLightingModel.js":"2JzuC","three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"7bcv0":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _nodeMaterialJs = require("./NodeMaterial.js");
+var _nodeMaterialJsDefault = parcelHelpers.interopDefault(_nodeMaterialJs);
+var _propertyNodeJs = require("../core/PropertyNode.js");
+var _mathNodeJs = require("../math/MathNode.js");
+var _materialNodeJs = require("../accessors/MaterialNode.js");
+var _getRoughnessJs = require("../functions/material/getRoughness.js");
+var _getRoughnessJsDefault = parcelHelpers.interopDefault(_getRoughnessJs);
+var _physicalLightingModelJs = require("../functions/PhysicalLightingModel.js");
+var _physicalLightingModelJsDefault = parcelHelpers.interopDefault(_physicalLightingModelJs);
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+var _three = require("three");
+const defaultValues = new (0, _three.MeshStandardMaterial)();
+class MeshStandardNodeMaterial extends (0, _nodeMaterialJsDefault.default) {
+    constructor(parameters){
+        super();
+        this.isMeshStandardNodeMaterial = true;
+        this.emissiveNode = null;
+        this.metalnessNode = null;
+        this.roughnessNode = null;
+        this.setDefaultValues(defaultValues);
+        this.setValues(parameters);
+    }
+    setupLightingModel() {
+        return new (0, _physicalLightingModelJsDefault.default)();
+    }
+    setupVariants() {
+        // METALNESS
+        const metalnessNode = this.metalnessNode ? (0, _shaderNodeJs.float)(this.metalnessNode) : (0, _materialNodeJs.materialMetalness);
+        (0, _propertyNodeJs.metalness).assign(metalnessNode);
+        // ROUGHNESS
+        let roughnessNode = this.roughnessNode ? (0, _shaderNodeJs.float)(this.roughnessNode) : (0, _materialNodeJs.materialRoughness);
+        roughnessNode = (0, _getRoughnessJsDefault.default)({
+            roughness: roughnessNode
+        });
+        (0, _propertyNodeJs.roughness).assign(roughnessNode);
+        // SPECULAR COLOR
+        const specularColorNode = (0, _mathNodeJs.mix)((0, _shaderNodeJs.vec3)(0.04), (0, _propertyNodeJs.diffuseColor).rgb, metalnessNode);
+        (0, _propertyNodeJs.specularColor).assign(specularColorNode);
+        // DIFFUSE COLOR
+        (0, _propertyNodeJs.diffuseColor).assign((0, _shaderNodeJs.vec4)((0, _propertyNodeJs.diffuseColor).rgb.mul(metalnessNode.oneMinus()), (0, _propertyNodeJs.diffuseColor).a));
+    }
+    copy(source) {
+        this.emissiveNode = source.emissiveNode;
+        this.metalnessNode = source.metalnessNode;
+        this.roughnessNode = source.roughnessNode;
+        return super.copy(source);
+    }
+}
+exports.default = MeshStandardNodeMaterial;
+(0, _nodeMaterialJs.addNodeMaterial)("MeshStandardNodeMaterial", MeshStandardNodeMaterial);
+
+},{"./NodeMaterial.js":"aQCWQ","../core/PropertyNode.js":"9JOy4","../math/MathNode.js":"84OFe","../accessors/MaterialNode.js":"9GQWn","../functions/material/getRoughness.js":"5w800","../functions/PhysicalLightingModel.js":"3M8WI","../shadernode/ShaderNode.js":"8Xgcj","three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"5w800":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _getGeometryRoughnessJs = require("./getGeometryRoughness.js");
+var _getGeometryRoughnessJsDefault = parcelHelpers.interopDefault(_getGeometryRoughnessJs);
+var _shaderNodeJs = require("../../shadernode/ShaderNode.js");
+const getRoughness = (0, _shaderNodeJs.tslFn)((inputs)=>{
+    const { roughness } = inputs;
+    const geometryRoughness = (0, _getGeometryRoughnessJsDefault.default)();
+    let roughnessFactor = roughness.max(0.0525); // 0.0525 corresponds to the base mip of a 256 cubemap.
+    roughnessFactor = roughnessFactor.add(geometryRoughness);
+    roughnessFactor = roughnessFactor.min(1.0);
+    return roughnessFactor;
+});
+exports.default = getRoughness;
+
+},{"./getGeometryRoughness.js":"deg3K","../../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"deg3K":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _normalNodeJs = require("../../accessors/NormalNode.js");
+var _shaderNodeJs = require("../../shadernode/ShaderNode.js");
+const getGeometryRoughness = (0, _shaderNodeJs.tslFn)(()=>{
+    const dxy = (0, _normalNodeJs.normalGeometry).dFdx().abs().max((0, _normalNodeJs.normalGeometry).dFdy().abs());
+    const geometryRoughness = dxy.x.max(dxy.y).max(dxy.z);
+    return geometryRoughness;
+});
+exports.default = getGeometryRoughness;
+
+},{"../../accessors/NormalNode.js":"4n1Pc","../../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"3M8WI":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _brdfLambertJs = require("./BSDF/BRDF_Lambert.js");
+var _brdfLambertJsDefault = parcelHelpers.interopDefault(_brdfLambertJs);
+var _brdfGgxJs = require("./BSDF/BRDF_GGX.js");
+var _brdfGgxJsDefault = parcelHelpers.interopDefault(_brdfGgxJs);
+var _dfgapproxJs = require("./BSDF/DFGApprox.js");
+var _dfgapproxJsDefault = parcelHelpers.interopDefault(_dfgapproxJs);
+var _environmentBRDFJs = require("./BSDF/EnvironmentBRDF.js");
+var _environmentBRDFJsDefault = parcelHelpers.interopDefault(_environmentBRDFJs);
+var _fSchlickJs = require("./BSDF/F_Schlick.js");
+var _fSchlickJsDefault = parcelHelpers.interopDefault(_fSchlickJs);
+var _schlickToF0Js = require("./BSDF/Schlick_to_F0.js");
+var _schlickToF0JsDefault = parcelHelpers.interopDefault(_schlickToF0Js);
+var _brdfSheenJs = require("./BSDF/BRDF_Sheen.js");
+var _brdfSheenJsDefault = parcelHelpers.interopDefault(_brdfSheenJs);
+var _lightingModelJs = require("../core/LightingModel.js");
+var _lightingModelJsDefault = parcelHelpers.interopDefault(_lightingModelJs);
+var _propertyNodeJs = require("../core/PropertyNode.js");
+var _normalNodeJs = require("../accessors/NormalNode.js");
+var _positionNodeJs = require("../accessors/PositionNode.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+var _condNodeJs = require("../math/CondNode.js");
+var _mathNodeJs = require("../math/MathNode.js");
+//
+// Iridescence
+//
+// XYZ to linear-sRGB color space
+const XYZ_TO_REC709 = (0, _shaderNodeJs.mat3)(3.2404542, -0.969266, 0.0556434, -1.5371385, 1.8760108, -0.2040259, -0.4985314, 0.0415560, 1.0572252);
+// Assume air interface for top
+// Note: We don't handle the case fresnel0 == 1
+const Fresnel0ToIor = (fresnel0)=>{
+    const sqrtF0 = fresnel0.sqrt();
+    return (0, _shaderNodeJs.vec3)(1.0).add(sqrtF0).div((0, _shaderNodeJs.vec3)(1.0).sub(sqrtF0));
+};
+// ior is a value between 1.0 and 3.0. 1.0 is air interface
+const IorToFresnel0 = (transmittedIor, incidentIor)=>{
+    return transmittedIor.sub(incidentIor).div(transmittedIor.add(incidentIor)).pow2();
+};
+// Fresnel equations for dielectric/dielectric interfaces.
+// Ref: https://belcour.github.io/blog/research/2017/05/01/brdf-thin-film.html
+// Evaluation XYZ sensitivity curves in Fourier space
+const evalSensitivity = (OPD, shift)=>{
+    const phase = OPD.mul(2.0 * Math.PI * 1.0e-9);
+    const val = (0, _shaderNodeJs.vec3)(5.4856e-13, 4.4201e-13, 5.2481e-13);
+    const pos = (0, _shaderNodeJs.vec3)(1.6810e+06, 1.7953e+06, 2.2084e+06);
+    const VAR = (0, _shaderNodeJs.vec3)(4.3278e+09, 9.3046e+09, 6.6121e+09);
+    const x = (0, _shaderNodeJs.float)(9.7470e-14 * Math.sqrt(2.0 * Math.PI * 4.5282e+09)).mul(phase.mul(2.2399e+06).add(shift.x).cos()).mul(phase.pow2().mul(-4528200000).exp());
+    let xyz = val.mul(VAR.mul(2.0 * Math.PI).sqrt()).mul(pos.mul(phase).add(shift).cos()).mul(phase.pow2().negate().mul(VAR).exp());
+    xyz = (0, _shaderNodeJs.vec3)(xyz.x.add(x), xyz.y, xyz.z).div(1.0685e-7);
+    const rgb = XYZ_TO_REC709.mul(xyz);
+    return rgb;
+};
+const evalIridescence = (0, _shaderNodeJs.tslFn)(({ outsideIOR, eta2, cosTheta1, thinFilmThickness, baseF0 })=>{
+    // Force iridescenceIOR -> outsideIOR when thinFilmThickness -> 0.0
+    const iridescenceIOR = (0, _mathNodeJs.mix)(outsideIOR, eta2, (0, _mathNodeJs.smoothstep)(0.0, 0.03, thinFilmThickness));
+    // Evaluate the cosTheta on the base layer (Snell law)
+    const sinTheta2Sq = outsideIOR.div(iridescenceIOR).pow2().mul((0, _shaderNodeJs.float)(1).sub(cosTheta1.pow2()));
+    // Handle TIR:
+    const cosTheta2Sq = (0, _shaderNodeJs.float)(1).sub(sinTheta2Sq);
+    /*if ( cosTheta2Sq < 0.0 ) {
+
+			return vec3( 1.0 );
+
+	}*/ const cosTheta2 = cosTheta2Sq.sqrt();
+    // First interface
+    const R0 = IorToFresnel0(iridescenceIOR, outsideIOR);
+    const R12 = (0, _fSchlickJsDefault.default)({
+        f0: R0,
+        f90: 1.0,
+        dotVH: cosTheta1
+    });
+    //const R21 = R12;
+    const T121 = R12.oneMinus();
+    const phi12 = iridescenceIOR.lessThan(outsideIOR).cond(Math.PI, 0.0);
+    const phi21 = (0, _shaderNodeJs.float)(Math.PI).sub(phi12);
+    // Second interface
+    const baseIOR = Fresnel0ToIor(baseF0.clamp(0.0, 0.9999)); // guard against 1.0
+    const R1 = IorToFresnel0(baseIOR, iridescenceIOR.vec3());
+    const R23 = (0, _fSchlickJsDefault.default)({
+        f0: R1,
+        f90: 1.0,
+        dotVH: cosTheta2
+    });
+    const phi23 = (0, _shaderNodeJs.vec3)(baseIOR.x.lessThan(iridescenceIOR).cond(Math.PI, 0.0), baseIOR.y.lessThan(iridescenceIOR).cond(Math.PI, 0.0), baseIOR.z.lessThan(iridescenceIOR).cond(Math.PI, 0.0));
+    // Phase shift
+    const OPD = iridescenceIOR.mul(thinFilmThickness, cosTheta2, 2.0);
+    const phi = (0, _shaderNodeJs.vec3)(phi21).add(phi23);
+    // Compound terms
+    const R123 = R12.mul(R23).clamp(1e-5, 0.9999);
+    const r123 = R123.sqrt();
+    const Rs = T121.pow2().mul(R23).div((0, _shaderNodeJs.vec3)(1.0).sub(R123));
+    // Reflectance term for m = 0 (DC term amplitude)
+    const C0 = R12.add(Rs);
+    let I = C0;
+    // Reflectance term for m > 0 (pairs of diracs)
+    let Cm = Rs.sub(T121);
+    for(let m = 1; m <= 2; ++m){
+        Cm = Cm.mul(r123);
+        const Sm = evalSensitivity((0, _shaderNodeJs.float)(m).mul(OPD), (0, _shaderNodeJs.float)(m).mul(phi)).mul(2.0);
+        I = I.add(Cm.mul(Sm));
+    }
+    // Since out of gamut colors might be produced, negative color values are clamped to 0.
+    return I.max((0, _shaderNodeJs.vec3)(0.0));
+}).setLayout({
+    name: "evalIridescence",
+    type: "vec3",
+    inputs: [
+        {
+            name: "outsideIOR",
+            type: "float"
+        },
+        {
+            name: "eta2",
+            type: "float"
+        },
+        {
+            name: "cosTheta1",
+            type: "float"
+        },
+        {
+            name: "thinFilmThickness",
+            type: "float"
+        },
+        {
+            name: "baseF0",
+            type: "vec3"
+        }
+    ]
+});
+//
+//	Sheen
+//
+// This is a curve-fit approxmation to the "Charlie sheen" BRDF integrated over the hemisphere from
+// Estevez and Kulla 2017, "Production Friendly Microfacet Sheen BRDF". The analysis can be found
+// in the Sheen section of https://drive.google.com/file/d/1T0D1VSyR4AllqIJTQAraEIzjlb5h4FKH/view?usp=sharing
+const IBLSheenBRDF = (0, _shaderNodeJs.tslFn)(({ normal, viewDir, roughness })=>{
+    const dotNV = normal.dot(viewDir).saturate();
+    const r2 = roughness.pow2();
+    const a = (0, _condNodeJs.cond)(roughness.lessThan(0.25), (0, _shaderNodeJs.float)(-339.2).mul(r2).add((0, _shaderNodeJs.float)(161.4).mul(roughness)).sub(25.9), (0, _shaderNodeJs.float)(-8.48).mul(r2).add((0, _shaderNodeJs.float)(14.3).mul(roughness)).sub(9.95));
+    const b = (0, _condNodeJs.cond)(roughness.lessThan(0.25), (0, _shaderNodeJs.float)(44.0).mul(r2).sub((0, _shaderNodeJs.float)(23.7).mul(roughness)).add(3.26), (0, _shaderNodeJs.float)(1.97).mul(r2).sub((0, _shaderNodeJs.float)(3.27).mul(roughness)).add(0.72));
+    const DG = (0, _condNodeJs.cond)(roughness.lessThan(0.25), 0.0, (0, _shaderNodeJs.float)(0.1).mul(roughness).sub(0.025)).add(a.mul(dotNV).add(b).exp());
+    return DG.mul(1.0 / Math.PI).saturate();
+});
+const clearcoatF0 = (0, _shaderNodeJs.vec3)(0.04);
+const clearcoatF90 = (0, _shaderNodeJs.vec3)(1);
+//
+class PhysicalLightingModel extends (0, _lightingModelJsDefault.default) {
+    constructor(clearcoat = false, sheen = false, iridescence = false){
+        super();
+        this.clearcoat = clearcoat;
+        this.sheen = sheen;
+        this.iridescence = iridescence;
+        this.clearcoatRadiance = null;
+        this.clearcoatSpecularDirect = null;
+        this.clearcoatSpecularIndirect = null;
+        this.sheenSpecularDirect = null;
+        this.sheenSpecularIndirect = null;
+        this.iridescenceFresnel = null;
+        this.iridescenceF0 = null;
+    }
+    start() {
+        if (this.clearcoat === true) {
+            this.clearcoatRadiance = (0, _shaderNodeJs.vec3)().temp("clearcoatRadiance");
+            this.clearcoatSpecularDirect = (0, _shaderNodeJs.vec3)().temp("clearcoatSpecularDirect");
+            this.clearcoatSpecularIndirect = (0, _shaderNodeJs.vec3)().temp("clearcoatSpecularIndirect");
+        }
+        if (this.sheen === true) {
+            this.sheenSpecularDirect = (0, _shaderNodeJs.vec3)().temp("sheenSpecularDirect");
+            this.sheenSpecularIndirect = (0, _shaderNodeJs.vec3)().temp("sheenSpecularIndirect");
+        }
+        if (this.iridescence === true) {
+            const dotNVi = (0, _normalNodeJs.transformedNormalView).dot((0, _positionNodeJs.positionViewDirection)).clamp();
+            this.iridescenceFresnel = evalIridescence({
+                outsideIOR: (0, _shaderNodeJs.float)(1.0),
+                eta2: (0, _propertyNodeJs.iridescenceIOR),
+                cosTheta1: dotNVi,
+                thinFilmThickness: (0, _propertyNodeJs.iridescenceThickness),
+                baseF0: (0, _propertyNodeJs.specularColor)
+            });
+            this.iridescenceF0 = (0, _schlickToF0JsDefault.default)({
+                f: this.iridescenceFresnel,
+                f90: 1.0,
+                dotVH: dotNVi
+            });
+        }
+    }
+    // Fdez-Agüera's "Multiple-Scattering Microfacet Model for Real-Time Image Based Lighting"
+    // Approximates multiscattering in order to preserve energy.
+    // http://www.jcgt.org/published/0008/01/03/
+    computeMultiscattering(singleScatter, multiScatter, specularF90 = (0, _shaderNodeJs.float)(1)) {
+        const dotNV = (0, _normalNodeJs.transformedNormalView).dot((0, _positionNodeJs.positionViewDirection)).clamp(); // @ TODO: Move to core dotNV
+        const fab = (0, _dfgapproxJsDefault.default)({
+            roughness: (0, _propertyNodeJs.roughness),
+            dotNV
+        });
+        const Fr = this.iridescenceF0 ? (0, _propertyNodeJs.iridescence).mix((0, _propertyNodeJs.specularColor), this.iridescenceF0) : (0, _propertyNodeJs.specularColor);
+        const FssEss = Fr.mul(fab.x).add(specularF90.mul(fab.y));
+        const Ess = fab.x.add(fab.y);
+        const Ems = Ess.oneMinus();
+        const Favg = (0, _propertyNodeJs.specularColor).add((0, _propertyNodeJs.specularColor).oneMinus().mul(0.047619)); // 1/21
+        const Fms = FssEss.mul(Favg).div(Ems.mul(Favg).oneMinus());
+        singleScatter.addAssign(FssEss);
+        multiScatter.addAssign(Fms.mul(Ems));
+    }
+    direct({ lightDirection, lightColor, reflectedLight }) {
+        const dotNL = (0, _normalNodeJs.transformedNormalView).dot(lightDirection).clamp();
+        const irradiance = dotNL.mul(lightColor);
+        if (this.sheen === true) this.sheenSpecularDirect.addAssign(irradiance.mul((0, _brdfSheenJsDefault.default)({
+            lightDirection
+        })));
+        if (this.clearcoat === true) {
+            const dotNLcc = (0, _normalNodeJs.transformedClearcoatNormalView).dot(lightDirection).clamp();
+            const ccIrradiance = dotNLcc.mul(lightColor);
+            this.clearcoatSpecularDirect.addAssign(ccIrradiance.mul((0, _brdfGgxJsDefault.default)({
+                lightDirection,
+                f0: clearcoatF0,
+                f90: clearcoatF90,
+                roughness: (0, _propertyNodeJs.clearcoatRoughness),
+                normalView: (0, _normalNodeJs.transformedClearcoatNormalView)
+            })));
+        }
+        reflectedLight.directDiffuse.addAssign(irradiance.mul((0, _brdfLambertJsDefault.default)({
+            diffuseColor: (0, _propertyNodeJs.diffuseColor).rgb
+        })));
+        reflectedLight.directSpecular.addAssign(irradiance.mul((0, _brdfGgxJsDefault.default)({
+            lightDirection,
+            f0: (0, _propertyNodeJs.specularColor),
+            f90: 1,
+            roughness: (0, _propertyNodeJs.roughness),
+            iridescence: this.iridescence,
+            iridescenceFresnel: this.iridescenceFresnel
+        })));
+    }
+    indirectDiffuse({ irradiance, reflectedLight }) {
+        reflectedLight.indirectDiffuse.addAssign(irradiance.mul((0, _brdfLambertJsDefault.default)({
+            diffuseColor: (0, _propertyNodeJs.diffuseColor)
+        })));
+    }
+    indirectSpecular({ radiance, iblIrradiance, reflectedLight }) {
+        if (this.sheen === true) this.sheenSpecularIndirect.addAssign(iblIrradiance.mul((0, _propertyNodeJs.sheen), IBLSheenBRDF({
+            normal: (0, _normalNodeJs.transformedNormalView),
+            viewDir: (0, _positionNodeJs.positionViewDirection),
+            roughness: (0, _propertyNodeJs.sheenRoughness)
+        })));
+        if (this.clearcoat === true) {
+            const dotNVcc = (0, _normalNodeJs.transformedClearcoatNormalView).dot((0, _positionNodeJs.positionViewDirection)).clamp();
+            const clearcoatEnv = (0, _environmentBRDFJsDefault.default)({
+                dotNV: dotNVcc,
+                specularColor: clearcoatF0,
+                specularF90: clearcoatF90,
+                roughness: (0, _propertyNodeJs.clearcoatRoughness)
+            });
+            this.clearcoatSpecularIndirect.addAssign(this.clearcoatRadiance.mul(clearcoatEnv));
+        }
+        // Both indirect specular and indirect diffuse light accumulate here
+        const singleScattering = (0, _shaderNodeJs.vec3)().temp("singleScattering");
+        const multiScattering = (0, _shaderNodeJs.vec3)().temp("multiScattering");
+        const cosineWeightedIrradiance = iblIrradiance.mul(1 / Math.PI);
+        this.computeMultiscattering(singleScattering, multiScattering);
+        const totalScattering = singleScattering.add(multiScattering);
+        const diffuse = (0, _propertyNodeJs.diffuseColor).mul(totalScattering.r.max(totalScattering.g).max(totalScattering.b).oneMinus());
+        reflectedLight.indirectSpecular.addAssign(radiance.mul(singleScattering));
+        reflectedLight.indirectSpecular.addAssign(multiScattering.mul(cosineWeightedIrradiance));
+        reflectedLight.indirectDiffuse.addAssign(diffuse.mul(cosineWeightedIrradiance));
+    }
+    ambientOcclusion({ ambientOcclusion, reflectedLight }) {
+        const dotNV = (0, _normalNodeJs.transformedNormalView).dot((0, _positionNodeJs.positionViewDirection)).clamp(); // @ TODO: Move to core dotNV
+        const aoNV = dotNV.add(ambientOcclusion);
+        const aoExp = (0, _propertyNodeJs.roughness).mul(-16).oneMinus().negate().exp2();
+        const aoNode = ambientOcclusion.sub(aoNV.pow(aoExp).oneMinus()).clamp();
+        if (this.clearcoat === true) this.clearcoatSpecularIndirect.mulAssign(ambientOcclusion);
+        if (this.sheen === true) this.sheenSpecularIndirect.mulAssign(ambientOcclusion);
+        reflectedLight.indirectDiffuse.mulAssign(ambientOcclusion);
+        reflectedLight.indirectSpecular.mulAssign(aoNode);
+    }
+    finish(context) {
+        const { outgoingLight } = context;
+        if (this.clearcoat === true) {
+            const dotNVcc = (0, _normalNodeJs.transformedClearcoatNormalView).dot((0, _positionNodeJs.positionViewDirection)).clamp();
+            const Fcc = (0, _fSchlickJsDefault.default)({
+                dotVH: dotNVcc,
+                f0: clearcoatF0,
+                f90: clearcoatF90
+            });
+            const clearcoatLight = outgoingLight.mul((0, _propertyNodeJs.clearcoat).mul(Fcc).oneMinus()).add(this.clearcoatSpecularDirect.add(this.clearcoatSpecularIndirect).mul((0, _propertyNodeJs.clearcoat)));
+            outgoingLight.assign(clearcoatLight);
+        }
+        if (this.sheen === true) {
+            const sheenEnergyComp = (0, _propertyNodeJs.sheen).r.max((0, _propertyNodeJs.sheen).g).max((0, _propertyNodeJs.sheen).b).mul(0.157).oneMinus();
+            const sheenLight = outgoingLight.mul(sheenEnergyComp).add(this.sheenSpecularDirect, this.sheenSpecularIndirect);
+            outgoingLight.assign(sheenLight);
+        }
+    }
+}
+exports.default = PhysicalLightingModel;
+
+},{"./BSDF/BRDF_Lambert.js":"isgtE","./BSDF/BRDF_GGX.js":"axeQ6","./BSDF/DFGApprox.js":"8zKdU","./BSDF/EnvironmentBRDF.js":"fDwrB","./BSDF/F_Schlick.js":"1ysaX","./BSDF/Schlick_to_F0.js":"6Lq5a","./BSDF/BRDF_Sheen.js":"ka6ol","../core/LightingModel.js":"dTTYF","../core/PropertyNode.js":"9JOy4","../accessors/NormalNode.js":"4n1Pc","../accessors/PositionNode.js":"1WXKm","../shadernode/ShaderNode.js":"8Xgcj","../math/CondNode.js":"k5xIS","../math/MathNode.js":"84OFe","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"axeQ6":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _fSchlickJs = require("./F_Schlick.js");
+var _fSchlickJsDefault = parcelHelpers.interopDefault(_fSchlickJs);
+var _vGgxSmithCorrelatedJs = require("./V_GGX_SmithCorrelated.js");
+var _vGgxSmithCorrelatedJsDefault = parcelHelpers.interopDefault(_vGgxSmithCorrelatedJs);
+var _dGgxJs = require("./D_GGX.js");
+var _dGgxJsDefault = parcelHelpers.interopDefault(_dGgxJs);
+var _normalNodeJs = require("../../accessors/NormalNode.js");
+var _positionNodeJs = require("../../accessors/PositionNode.js");
+var _propertyNodeJs = require("../../core/PropertyNode.js");
+var _shaderNodeJs = require("../../shadernode/ShaderNode.js");
+// GGX Distribution, Schlick Fresnel, GGX_SmithCorrelated Visibility
+const BRDF_GGX = (0, _shaderNodeJs.tslFn)((inputs)=>{
+    const { lightDirection, f0, f90, roughness, iridescenceFresnel } = inputs;
+    const normalView = inputs.normalView || (0, _normalNodeJs.transformedNormalView);
+    const alpha = roughness.pow2(); // UE4's roughness
+    const halfDir = lightDirection.add((0, _positionNodeJs.positionViewDirection)).normalize();
+    const dotNL = normalView.dot(lightDirection).clamp();
+    const dotNV = normalView.dot((0, _positionNodeJs.positionViewDirection)).clamp(); // @ TODO: Move to core dotNV
+    const dotNH = normalView.dot(halfDir).clamp();
+    const dotVH = (0, _positionNodeJs.positionViewDirection).dot(halfDir).clamp();
+    let F = (0, _fSchlickJsDefault.default)({
+        f0,
+        f90,
+        dotVH
+    });
+    if (iridescenceFresnel) F = (0, _propertyNodeJs.iridescence).mix(F, iridescenceFresnel);
+    const V = (0, _vGgxSmithCorrelatedJsDefault.default)({
+        alpha,
+        dotNL,
+        dotNV
+    });
+    const D = (0, _dGgxJsDefault.default)({
+        alpha,
+        dotNH
+    });
+    return F.mul(V).mul(D);
+}); // validated
+exports.default = BRDF_GGX;
+
+},{"./F_Schlick.js":"1ysaX","./V_GGX_SmithCorrelated.js":"i9Llm","./D_GGX.js":"jTFaq","../../accessors/NormalNode.js":"4n1Pc","../../accessors/PositionNode.js":"1WXKm","../../core/PropertyNode.js":"9JOy4","../../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"i9Llm":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _operatorNodeJs = require("../../math/OperatorNode.js");
+var _mathNodeJs = require("../../math/MathNode.js");
+var _shaderNodeJs = require("../../shadernode/ShaderNode.js");
+// Moving Frostbite to Physically Based Rendering 3.0 - page 12, listing 2
+// https://seblagarde.files.wordpress.com/2015/07/course_notes_moving_frostbite_to_pbr_v32.pdf
+const V_GGX_SmithCorrelated = (0, _shaderNodeJs.tslFn)((inputs)=>{
+    const { alpha, dotNL, dotNV } = inputs;
+    const a2 = alpha.pow2();
+    const gv = dotNL.mul(a2.add(a2.oneMinus().mul(dotNV.pow2())).sqrt());
+    const gl = dotNV.mul(a2.add(a2.oneMinus().mul(dotNL.pow2())).sqrt());
+    return (0, _operatorNodeJs.div)(0.5, gv.add(gl).max((0, _mathNodeJs.EPSILON)));
+}).setLayout({
+    name: "V_GGX_SmithCorrelated",
+    type: "float",
+    inputs: [
+        {
+            name: "alpha",
+            type: "float"
+        },
+        {
+            name: "dotNL",
+            type: "float"
+        },
+        {
+            name: "dotNV",
+            type: "float"
+        }
+    ]
+}); // validated
+exports.default = V_GGX_SmithCorrelated;
+
+},{"../../math/OperatorNode.js":"hCYI5","../../math/MathNode.js":"84OFe","../../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"jTFaq":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _shaderNodeJs = require("../../shadernode/ShaderNode.js");
+// Microfacet Models for Refraction through Rough Surfaces - equation (33)
+// http://graphicrants.blogspot.com/2013/08/specular-brdf-reference.html
+// alpha is "roughness squared" in Disney’s reparameterization
+const D_GGX = (0, _shaderNodeJs.tslFn)(({ alpha, dotNH })=>{
+    const a2 = alpha.pow2();
+    const denom = dotNH.pow2().mul(a2.oneMinus()).oneMinus(); // avoid alpha = 0 with dotNH = 1
+    return a2.div(denom.pow2()).mul(1 / Math.PI);
+}).setLayout({
+    name: "D_GGX",
+    type: "float",
+    inputs: [
+        {
+            name: "alpha",
+            type: "float"
+        },
+        {
+            name: "dotNH",
+            type: "float"
+        }
+    ]
+}); // validated
+exports.default = D_GGX;
+
+},{"../../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"8zKdU":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _shaderNodeJs = require("../../shadernode/ShaderNode.js");
+// Analytical approximation of the DFG LUT, one half of the
+// split-sum approximation used in indirect specular lighting.
+// via 'environmentBRDF' from "Physically Based Shading on Mobile"
+// https://www.unrealengine.com/blog/physically-based-shading-on-mobile
+const DFGApprox = (0, _shaderNodeJs.tslFn)(({ roughness, dotNV })=>{
+    const c0 = (0, _shaderNodeJs.vec4)(-1, -0.0275, -0.572, 0.022);
+    const c1 = (0, _shaderNodeJs.vec4)(1, 0.0425, 1.04, -0.04);
+    const r = roughness.mul(c0).add(c1);
+    const a004 = r.x.mul(r.x).min(dotNV.mul(-9.28).exp2()).mul(r.x).add(r.y);
+    const fab = (0, _shaderNodeJs.vec2)(-1.04, 1.04).mul(a004).add(r.zw);
+    return fab;
+}).setLayout({
+    name: "DFGApprox",
+    type: "vec2",
+    inputs: [
+        {
+            name: "roughness",
+            type: "float"
+        },
+        {
+            name: "dotNV",
+            type: "vec3"
+        }
+    ]
+});
+exports.default = DFGApprox;
+
+},{"../../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"fDwrB":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _dfgapproxJs = require("./DFGApprox.js");
+var _dfgapproxJsDefault = parcelHelpers.interopDefault(_dfgapproxJs);
+var _shaderNodeJs = require("../../shadernode/ShaderNode.js");
+const EnvironmentBRDF = (0, _shaderNodeJs.tslFn)((inputs)=>{
+    const { dotNV, specularColor, specularF90, roughness } = inputs;
+    const fab = (0, _dfgapproxJsDefault.default)({
+        dotNV,
+        roughness
+    });
+    return specularColor.mul(fab.x).add(specularF90.mul(fab.y));
+});
+exports.default = EnvironmentBRDF;
+
+},{"./DFGApprox.js":"8zKdU","../../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"6Lq5a":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _shaderNodeJs = require("../../shadernode/ShaderNode.js");
+const Schlick_to_F0 = (0, _shaderNodeJs.tslFn)(({ f, f90, dotVH })=>{
+    const x = dotVH.oneMinus().saturate();
+    const x2 = x.mul(x);
+    const x5 = x.mul(x2, x2).clamp(0, .9999);
+    return f.sub((0, _shaderNodeJs.vec3)(f90).mul(x5)).div(x5.oneMinus());
+}).setLayout({
+    name: "Schlick_to_F0",
+    type: "vec3",
+    inputs: [
+        {
+            name: "f",
+            type: "vec3"
+        },
+        {
+            name: "f90",
+            type: "float"
+        },
+        {
+            name: "dotVH",
+            type: "float"
+        }
+    ]
+});
+exports.default = Schlick_to_F0;
+
+},{"../../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"ka6ol":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _normalNodeJs = require("../../accessors/NormalNode.js");
+var _positionNodeJs = require("../../accessors/PositionNode.js");
+var _propertyNodeJs = require("../../core/PropertyNode.js");
+var _shaderNodeJs = require("../../shadernode/ShaderNode.js");
+// https://github.com/google/filament/blob/master/shaders/src/brdf.fs
+const D_Charlie = (0, _shaderNodeJs.tslFn)(({ roughness, dotNH })=>{
+    const alpha = roughness.pow2();
+    // Estevez and Kulla 2017, "Production Friendly Microfacet Sheen BRDF"
+    const invAlpha = (0, _shaderNodeJs.float)(1.0).div(alpha);
+    const cos2h = dotNH.pow2();
+    const sin2h = cos2h.oneMinus().max(0.0078125); // 2^(-14/2), so sin2h^2 > 0 in fp16
+    return (0, _shaderNodeJs.float)(2.0).add(invAlpha).mul(sin2h.pow(invAlpha.mul(0.5))).div(2.0 * Math.PI);
+}).setLayout({
+    name: "D_Charlie",
+    type: "float",
+    inputs: [
+        {
+            name: "roughness",
+            type: "float"
+        },
+        {
+            name: "dotNH",
+            type: "float"
+        }
+    ]
+});
+// https://github.com/google/filament/blob/master/shaders/src/brdf.fs
+const V_Neubelt = (0, _shaderNodeJs.tslFn)(({ dotNV, dotNL })=>{
+    // Neubelt and Pettineo 2013, "Crafting a Next-gen Material Pipeline for The Order: 1886"
+    return (0, _shaderNodeJs.float)(1.0).div((0, _shaderNodeJs.float)(4.0).mul(dotNL.add(dotNV).sub(dotNL.mul(dotNV))));
+}).setLayout({
+    name: "V_Neubelt",
+    type: "float",
+    inputs: [
+        {
+            name: "dotNV",
+            type: "float"
+        },
+        {
+            name: "dotNL",
+            type: "float"
+        }
+    ]
+});
+const BRDF_Sheen = (0, _shaderNodeJs.tslFn)(({ lightDirection })=>{
+    const halfDir = lightDirection.add((0, _positionNodeJs.positionViewDirection)).normalize();
+    const dotNL = (0, _normalNodeJs.transformedNormalView).dot(lightDirection).clamp();
+    const dotNV = (0, _normalNodeJs.transformedNormalView).dot((0, _positionNodeJs.positionViewDirection)).clamp();
+    const dotNH = (0, _normalNodeJs.transformedNormalView).dot(halfDir).clamp();
+    const D = D_Charlie({
+        roughness: (0, _propertyNodeJs.sheenRoughness),
+        dotNH
+    });
+    const V = V_Neubelt({
+        dotNV,
+        dotNL
+    });
+    return (0, _propertyNodeJs.sheen).mul(D).mul(V);
+});
+exports.default = BRDF_Sheen;
+
+},{"../../accessors/NormalNode.js":"4n1Pc","../../accessors/PositionNode.js":"1WXKm","../../core/PropertyNode.js":"9JOy4","../../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"11ews":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _nodeMaterialJs = require("./NodeMaterial.js");
+var _normalNodeJs = require("../accessors/NormalNode.js");
+var _propertyNodeJs = require("../core/PropertyNode.js");
+var _materialNodeJs = require("../accessors/MaterialNode.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+var _physicalLightingModelJs = require("../functions/PhysicalLightingModel.js");
+var _physicalLightingModelJsDefault = parcelHelpers.interopDefault(_physicalLightingModelJs);
+var _meshStandardNodeMaterialJs = require("./MeshStandardNodeMaterial.js");
+var _meshStandardNodeMaterialJsDefault = parcelHelpers.interopDefault(_meshStandardNodeMaterialJs);
+var _three = require("three");
+const defaultValues = new (0, _three.MeshPhysicalMaterial)();
+class MeshPhysicalNodeMaterial extends (0, _meshStandardNodeMaterialJsDefault.default) {
+    constructor(parameters){
+        super();
+        this.isMeshPhysicalNodeMaterial = true;
+        this.clearcoatNode = null;
+        this.clearcoatRoughnessNode = null;
+        this.clearcoatNormalNode = null;
+        this.sheenNode = null;
+        this.sheenRoughnessNode = null;
+        this.iridescenceNode = null;
+        this.iridescenceIORNode = null;
+        this.iridescenceThicknessNode = null;
+        this.specularIntensityNode = null;
+        this.specularColorNode = null;
+        this.transmissionNode = null;
+        this.thicknessNode = null;
+        this.attenuationDistanceNode = null;
+        this.attenuationColorNode = null;
+        this.setDefaultValues(defaultValues);
+        this.setValues(parameters);
+    }
+    get useClearcoat() {
+        return this.clearcoat > 0 || this.clearcoatNode !== null;
+    }
+    get useIridescence() {
+        return this.iridescence > 0 || this.iridescenceNode !== null;
+    }
+    get useSheen() {
+        return this.sheen > 0 || this.sheenNode !== null;
+    }
+    setupLightingModel() {
+        return new (0, _physicalLightingModelJsDefault.default)(this.useClearcoat, this.useSheen, this.useIridescence);
+    }
+    setupVariants(builder) {
+        super.setupVariants(builder);
+        // CLEARCOAT
+        if (this.useClearcoat) {
+            const clearcoatNode = this.clearcoatNode ? (0, _shaderNodeJs.float)(this.clearcoatNode) : (0, _materialNodeJs.materialClearcoat);
+            const clearcoatRoughnessNode = this.clearcoatRoughnessNode ? (0, _shaderNodeJs.float)(this.clearcoatRoughnessNode) : (0, _materialNodeJs.materialClearcoatRoughness);
+            (0, _propertyNodeJs.clearcoat).assign(clearcoatNode);
+            (0, _propertyNodeJs.clearcoatRoughness).assign(clearcoatRoughnessNode);
+        }
+        // SHEEN
+        if (this.useSheen) {
+            const sheenNode = this.sheenNode ? (0, _shaderNodeJs.vec3)(this.sheenNode) : (0, _materialNodeJs.materialSheen);
+            const sheenRoughnessNode = this.sheenRoughnessNode ? (0, _shaderNodeJs.float)(this.sheenRoughnessNode) : (0, _materialNodeJs.materialSheenRoughness);
+            (0, _propertyNodeJs.sheen).assign(sheenNode);
+            (0, _propertyNodeJs.sheenRoughness).assign(sheenRoughnessNode);
+        }
+        // IRIDESCENCE
+        if (this.useIridescence) {
+            const iridescenceNode = this.iridescenceNode ? (0, _shaderNodeJs.float)(this.iridescenceNode) : (0, _materialNodeJs.materialIridescence);
+            const iridescenceIORNode = this.iridescenceIORNode ? (0, _shaderNodeJs.float)(this.iridescenceIORNode) : (0, _materialNodeJs.materialIridescenceIOR);
+            const iridescenceThicknessNode = this.iridescenceThicknessNode ? (0, _shaderNodeJs.float)(this.iridescenceThicknessNode) : (0, _materialNodeJs.materialIridescenceThickness);
+            (0, _propertyNodeJs.iridescence).assign(iridescenceNode);
+            (0, _propertyNodeJs.iridescenceIOR).assign(iridescenceIORNode);
+            (0, _propertyNodeJs.iridescenceThickness).assign(iridescenceThicknessNode);
+        }
+    }
+    setupNormal(builder) {
+        super.setupNormal(builder);
+        // CLEARCOAT NORMAL
+        const clearcoatNormalNode = this.clearcoatNormalNode ? (0, _shaderNodeJs.vec3)(this.clearcoatNormalNode) : (0, _materialNodeJs.materialClearcoatNormal);
+        (0, _normalNodeJs.transformedClearcoatNormalView).assign(clearcoatNormalNode);
+    }
+    copy(source) {
+        this.clearcoatNode = source.clearcoatNode;
+        this.clearcoatRoughnessNode = source.clearcoatRoughnessNode;
+        this.clearcoatNormalNode = source.clearcoatNormalNode;
+        this.sheenNode = source.sheenNode;
+        this.sheenRoughnessNode = source.sheenRoughnessNode;
+        this.iridescenceNode = source.iridescenceNode;
+        this.iridescenceIORNode = source.iridescenceIORNode;
+        this.iridescenceThicknessNode = source.iridescenceThicknessNode;
+        this.specularIntensityNode = source.specularIntensityNode;
+        this.specularColorNode = source.specularColorNode;
+        this.transmissionNode = source.transmissionNode;
+        this.thicknessNode = source.thicknessNode;
+        this.attenuationDistanceNode = source.attenuationDistanceNode;
+        this.attenuationColorNode = source.attenuationColorNode;
+        return super.copy(source);
+    }
+}
+exports.default = MeshPhysicalNodeMaterial;
+(0, _nodeMaterialJs.addNodeMaterial)("MeshPhysicalNodeMaterial", MeshPhysicalNodeMaterial);
+
+},{"./NodeMaterial.js":"aQCWQ","../accessors/NormalNode.js":"4n1Pc","../core/PropertyNode.js":"9JOy4","../accessors/MaterialNode.js":"9GQWn","../shadernode/ShaderNode.js":"8Xgcj","../functions/PhysicalLightingModel.js":"3M8WI","./MeshStandardNodeMaterial.js":"7bcv0","three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"4xYge":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _nodeMaterialJs = require("./NodeMaterial.js");
+var _normalNodeJs = require("../accessors/NormalNode.js");
+var _positionNodeJs = require("../accessors/PositionNode.js");
+var _physicalLightingModelJs = require("../functions/PhysicalLightingModel.js");
+var _physicalLightingModelJsDefault = parcelHelpers.interopDefault(_physicalLightingModelJs);
+var _meshPhysicalNodeMaterialJs = require("./MeshPhysicalNodeMaterial.js");
+var _meshPhysicalNodeMaterialJsDefault = parcelHelpers.interopDefault(_meshPhysicalNodeMaterialJs);
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+class SSSLightingModel extends (0, _physicalLightingModelJsDefault.default) {
+    constructor(useClearcoat, useSheen, useIridescence, useSSS){
+        super(useClearcoat, useSheen, useIridescence);
+        this.useSSS = useSSS;
+    }
+    direct({ lightDirection, lightColor, reflectedLight }, stack, builder) {
+        if (this.useSSS === true) {
+            const material = builder.material;
+            const { thicknessColorNode, thicknessDistortionNode, thicknessAmbientNode, thicknessAttenuationNode, thicknessPowerNode, thicknessScaleNode } = material;
+            const scatteringHalf = lightDirection.add((0, _normalNodeJs.transformedNormalView).mul(thicknessDistortionNode)).normalize();
+            const scatteringDot = (0, _shaderNodeJs.float)((0, _positionNodeJs.positionViewDirection).dot(scatteringHalf.negate()).saturate().pow(thicknessPowerNode).mul(thicknessScaleNode));
+            const scatteringIllu = (0, _shaderNodeJs.vec3)(scatteringDot.add(thicknessAmbientNode).mul(thicknessColorNode));
+            reflectedLight.directDiffuse.addAssign(scatteringIllu.mul(thicknessAttenuationNode.mul(lightColor)));
+        }
+        super.direct({
+            lightDirection,
+            lightColor,
+            reflectedLight
+        }, stack, builder);
+    }
+}
+class MeshSSSNodeMaterial extends (0, _meshPhysicalNodeMaterialJsDefault.default) {
+    constructor(parameters){
+        super(parameters);
+        this.thicknessColorNode = null;
+        this.thicknessDistortionNode = (0, _shaderNodeJs.float)(0.1);
+        this.thicknessAmbientNode = (0, _shaderNodeJs.float)(0.0);
+        this.thicknessAttenuationNode = (0, _shaderNodeJs.float)(.1);
+        this.thicknessPowerNode = (0, _shaderNodeJs.float)(2.0);
+        this.thicknessScaleNode = (0, _shaderNodeJs.float)(10.0);
+    }
+    get useSSS() {
+        return this.thicknessColorNode !== null;
+    }
+    setupLightingModel() {
+        return new SSSLightingModel(this.useClearcoat, this.useSheen, this.useIridescence, this.useSSS);
+    }
+    copy(source) {
+        this.thicknessColorNode = source.thicknessColorNode;
+        this.thicknessDistortionNode = source.thicknessDistortionNode;
+        this.thicknessAmbientNode = source.thicknessAmbientNode;
+        this.thicknessAttenuationNode = source.thicknessAttenuationNode;
+        this.thicknessPowerNode = source.thicknessPowerNode;
+        this.thicknessScaleNode = source.thicknessScaleNode;
+        return super.copy(source);
+    }
+}
+exports.default = MeshSSSNodeMaterial;
+(0, _nodeMaterialJs.addNodeMaterial)("MeshSSSNodeMaterial", MeshSSSNodeMaterial);
+
+},{"./NodeMaterial.js":"aQCWQ","../accessors/NormalNode.js":"4n1Pc","../accessors/PositionNode.js":"1WXKm","../functions/PhysicalLightingModel.js":"3M8WI","./MeshPhysicalNodeMaterial.js":"11ews","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"ksWYA":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _nodeMaterialJs = require("./NodeMaterial.js");
+var _nodeMaterialJsDefault = parcelHelpers.interopDefault(_nodeMaterialJs);
+var _three = require("three");
+const defaultValues = new (0, _three.PointsMaterial)();
+class PointsNodeMaterial extends (0, _nodeMaterialJsDefault.default) {
+    constructor(parameters){
+        super();
+        this.isPointsNodeMaterial = true;
+        this.lights = false;
+        this.normals = false;
+        this.transparent = true;
+        this.sizeNode = null;
+        this.setDefaultValues(defaultValues);
+        this.setValues(parameters);
+    }
+    copy(source) {
+        this.sizeNode = source.sizeNode;
+        return super.copy(source);
+    }
+}
+exports.default = PointsNodeMaterial;
+(0, _nodeMaterialJs.addNodeMaterial)("PointsNodeMaterial", PointsNodeMaterial);
+
+},{"./NodeMaterial.js":"aQCWQ","three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"9oVPX":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _nodeMaterialJs = require("./NodeMaterial.js");
+var _nodeMaterialJsDefault = parcelHelpers.interopDefault(_nodeMaterialJs);
+var _uniformNodeJs = require("../core/UniformNode.js");
+var _cameraNodeJs = require("../accessors/CameraNode.js");
+var _materialNodeJs = require("../accessors/MaterialNode.js");
+var _modelNodeJs = require("../accessors/ModelNode.js");
+var _positionNodeJs = require("../accessors/PositionNode.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+var _three = require("three");
+const defaultValues = new (0, _three.SpriteMaterial)();
+class SpriteNodeMaterial extends (0, _nodeMaterialJsDefault.default) {
+    constructor(parameters){
+        super();
+        this.isSpriteNodeMaterial = true;
+        this.lights = false;
+        this.normals = false;
+        this.positionNode = null;
+        this.rotationNode = null;
+        this.scaleNode = null;
+        this.setDefaultValues(defaultValues);
+        this.setValues(parameters);
+    }
+    setupPosition({ object, context }) {
+        // < VERTEX STAGE >
+        const { positionNode, rotationNode, scaleNode } = this;
+        const vertex = (0, _positionNodeJs.positionLocal);
+        let mvPosition = (0, _modelNodeJs.modelViewMatrix).mul((0, _shaderNodeJs.vec3)(positionNode || 0));
+        let scale = (0, _shaderNodeJs.vec2)((0, _modelNodeJs.modelWorldMatrix)[0].xyz.length(), (0, _modelNodeJs.modelWorldMatrix)[1].xyz.length());
+        if (scaleNode !== null) scale = scale.mul(scaleNode);
+        let alignedPosition = vertex.xy;
+        if (object.center && object.center.isVector2 === true) alignedPosition = alignedPosition.sub((0, _uniformNodeJs.uniform)(object.center).sub(0.5));
+        alignedPosition = alignedPosition.mul(scale);
+        const rotation = (0, _shaderNodeJs.float)(rotationNode || (0, _materialNodeJs.materialRotation));
+        const rotatedPosition = alignedPosition.rotate(rotation);
+        mvPosition = (0, _shaderNodeJs.vec4)(mvPosition.xy.add(rotatedPosition), mvPosition.zw);
+        const modelViewProjection = (0, _cameraNodeJs.cameraProjectionMatrix).mul(mvPosition);
+        context.vertex = vertex;
+        return modelViewProjection;
+    }
+    copy(source) {
+        this.positionNode = source.positionNode;
+        this.rotationNode = source.rotationNode;
+        this.scaleNode = source.scaleNode;
+        return super.copy(source);
+    }
+}
+exports.default = SpriteNodeMaterial;
+(0, _nodeMaterialJs.addNodeMaterial)("SpriteNodeMaterial", SpriteNodeMaterial);
+
+},{"./NodeMaterial.js":"aQCWQ","../core/UniformNode.js":"cfhYS","../accessors/CameraNode.js":"kZ1gx","../accessors/MaterialNode.js":"9GQWn","../accessors/ModelNode.js":"ix99b","../accessors/PositionNode.js":"1WXKm","../shadernode/ShaderNode.js":"8Xgcj","three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gYPyn":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _nodeParserJs = require("../core/NodeParser.js");
+var _nodeParserJsDefault = parcelHelpers.interopDefault(_nodeParserJs);
+var _glslnodeFunctionJs = require("./GLSLNodeFunction.js");
+var _glslnodeFunctionJsDefault = parcelHelpers.interopDefault(_glslnodeFunctionJs);
+class GLSLNodeParser extends (0, _nodeParserJsDefault.default) {
+    parseFunction(source) {
+        return new (0, _glslnodeFunctionJsDefault.default)(source);
+    }
+}
+exports.default = GLSLNodeParser;
+
+},{"../core/NodeParser.js":"g88Gz","./GLSLNodeFunction.js":"4RSZs","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"g88Gz":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+class NodeParser {
+    parseFunction() {
+        console.warn("Abstract function.");
+    }
+}
+exports.default = NodeParser;
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"4RSZs":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _nodeFunctionJs = require("../core/NodeFunction.js");
+var _nodeFunctionJsDefault = parcelHelpers.interopDefault(_nodeFunctionJs);
+var _nodeFunctionInputJs = require("../core/NodeFunctionInput.js");
+var _nodeFunctionInputJsDefault = parcelHelpers.interopDefault(_nodeFunctionInputJs);
+const declarationRegexp = /^\s*(highp|mediump|lowp)?\s*([a-z_0-9]+)\s*([a-z_0-9]+)?\s*\(([\s\S]*?)\)/i;
+const propertiesRegexp = /[a-z_0-9]+/ig;
+const pragmaMain = "#pragma main";
+const parse = (source)=>{
+    source = source.trim();
+    const pragmaMainIndex = source.indexOf(pragmaMain);
+    const mainCode = pragmaMainIndex !== -1 ? source.slice(pragmaMainIndex + pragmaMain.length) : source;
+    const declaration = mainCode.match(declarationRegexp);
+    if (declaration !== null && declaration.length === 5) {
+        // tokenizer
+        const inputsCode = declaration[4];
+        const propsMatches = [];
+        let nameMatch = null;
+        while((nameMatch = propertiesRegexp.exec(inputsCode)) !== null)propsMatches.push(nameMatch);
+        // parser
+        const inputs = [];
+        let i = 0;
+        while(i < propsMatches.length){
+            const isConst = propsMatches[i][0] === "const";
+            if (isConst === true) i++;
+            let qualifier = propsMatches[i][0];
+            if (qualifier === "in" || qualifier === "out" || qualifier === "inout") i++;
+            else qualifier = "";
+            const type = propsMatches[i++][0];
+            let count = Number.parseInt(propsMatches[i][0]);
+            if (Number.isNaN(count) === false) i++;
+            else count = null;
+            const name = propsMatches[i++][0];
+            inputs.push(new (0, _nodeFunctionInputJsDefault.default)(type, name, count, qualifier, isConst));
+        }
+        //
+        const blockCode = mainCode.substring(declaration[0].length);
+        const name = declaration[3] !== undefined ? declaration[3] : "";
+        const type = declaration[2];
+        const presicion = declaration[1] !== undefined ? declaration[1] : "";
+        const headerCode = pragmaMainIndex !== -1 ? source.slice(0, pragmaMainIndex) : "";
+        return {
+            type,
+            inputs,
+            name,
+            presicion,
+            inputsCode,
+            blockCode,
+            headerCode
+        };
+    } else throw new Error("FunctionNode: Function is not a GLSL code.");
+};
+class GLSLNodeFunction extends (0, _nodeFunctionJsDefault.default) {
+    constructor(source){
+        const { type, inputs, name, presicion, inputsCode, blockCode, headerCode } = parse(source);
+        super(type, inputs, name, presicion);
+        this.inputsCode = inputsCode;
+        this.blockCode = blockCode;
+        this.headerCode = headerCode;
+    }
+    getCode(name = this.name) {
+        let code;
+        const blockCode = this.blockCode;
+        if (blockCode !== "") {
+            const { type, inputsCode, headerCode, presicion } = this;
+            let declarationCode = `${type} ${name} ( ${inputsCode.trim()} )`;
+            if (presicion !== "") declarationCode = `${presicion} ${declarationCode}`;
+            code = headerCode + declarationCode + blockCode;
+        } else // interface function
+        code = "";
+        return code;
+    }
+}
+exports.default = GLSLNodeFunction;
+
+},{"../core/NodeFunction.js":"fCPYR","../core/NodeFunctionInput.js":"zfOUU","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"fCPYR":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+class NodeFunction {
+    constructor(type, inputs, name = "", presicion = ""){
+        this.type = type;
+        this.inputs = inputs;
+        this.name = name;
+        this.presicion = presicion;
+    }
+    getCode() {
+        console.warn("Abstract function.");
+    }
+}
+NodeFunction.isNodeFunction = true;
+exports.default = NodeFunction;
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"7yidb":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "mx_aastep", ()=>mx_aastep);
+parcelHelpers.export(exports, "mx_ramplr", ()=>mx_ramplr);
+parcelHelpers.export(exports, "mx_ramptb", ()=>mx_ramptb);
+parcelHelpers.export(exports, "mx_splitlr", ()=>mx_splitlr);
+parcelHelpers.export(exports, "mx_splittb", ()=>mx_splittb);
+parcelHelpers.export(exports, "mx_transform_uv", ()=>mx_transform_uv);
+parcelHelpers.export(exports, "mx_safepower", ()=>mx_safepower);
+parcelHelpers.export(exports, "mx_contrast", ()=>mx_contrast);
+parcelHelpers.export(exports, "mx_noise_float", ()=>mx_noise_float);
+parcelHelpers.export(exports, "mx_noise_vec3", ()=>mx_noise_vec3);
+parcelHelpers.export(exports, "mx_noise_vec4", ()=>mx_noise_vec4);
+parcelHelpers.export(exports, "mx_worley_noise_float", ()=>mx_worley_noise_float);
+parcelHelpers.export(exports, "mx_worley_noise_vec2", ()=>mx_worley_noise_vec2);
+parcelHelpers.export(exports, "mx_worley_noise_vec3", ()=>mx_worley_noise_vec3);
+parcelHelpers.export(exports, "mx_cell_noise_float", ()=>mx_cell_noise_float);
+parcelHelpers.export(exports, "mx_fractal_noise_float", ()=>mx_fractal_noise_float);
+parcelHelpers.export(exports, "mx_fractal_noise_vec2", ()=>mx_fractal_noise_vec2);
+parcelHelpers.export(exports, "mx_fractal_noise_vec3", ()=>mx_fractal_noise_vec3);
+parcelHelpers.export(exports, "mx_fractal_noise_vec4", ()=>mx_fractal_noise_vec4);
+parcelHelpers.export(exports, "mx_hsvtorgb", ()=>(0, _mxHsvJs.mx_hsvtorgb));
+parcelHelpers.export(exports, "mx_rgbtohsv", ()=>(0, _mxHsvJs.mx_rgbtohsv));
+parcelHelpers.export(exports, "mx_srgb_texture_to_lin_rec709", ()=>(0, _mxTransformColorJs.mx_srgb_texture_to_lin_rec709));
+var _mxNoiseJs = require("./lib/mx_noise.js");
+var _mxHsvJs = require("./lib/mx_hsv.js");
+var _mxTransformColorJs = require("./lib/mx_transform_color.js");
+var _mathNodeJs = require("../math/MathNode.js");
+var _uvnodeJs = require("../accessors/UVNode.js");
+var _shaderNodeJs = require("../shadernode/ShaderNode.js");
+const mx_aastep = (threshold, value)=>{
+    threshold = (0, _shaderNodeJs.float)(threshold);
+    value = (0, _shaderNodeJs.float)(value);
+    const afwidth = (0, _shaderNodeJs.vec2)(value.dFdx(), value.dFdy()).length().mul(0.70710678118654757);
+    return (0, _mathNodeJs.smoothstep)(threshold.sub(afwidth), threshold.add(afwidth), value);
+};
+const _ramp = (a, b, uv, p)=>(0, _mathNodeJs.mix)(a, b, uv[p].clamp());
+const mx_ramplr = (valuel, valuer, texcoord = (0, _uvnodeJs.uv)())=>_ramp(valuel, valuer, texcoord, "x");
+const mx_ramptb = (valuet, valueb, texcoord = (0, _uvnodeJs.uv)())=>_ramp(valuet, valueb, texcoord, "y");
+const _split = (a, b, center, uv, p)=>(0, _mathNodeJs.mix)(a, b, mx_aastep(center, uv[p]));
+const mx_splitlr = (valuel, valuer, center, texcoord = (0, _uvnodeJs.uv)())=>_split(valuel, valuer, center, texcoord, "x");
+const mx_splittb = (valuet, valueb, center, texcoord = (0, _uvnodeJs.uv)())=>_split(valuet, valueb, center, texcoord, "y");
+const mx_transform_uv = (uv_scale = 1, uv_offset = 0, uv_geo = (0, _uvnodeJs.uv)())=>uv_geo.mul(uv_scale).add(uv_offset);
+const mx_safepower = (in1, in2 = 1)=>{
+    in1 = (0, _shaderNodeJs.float)(in1);
+    return in1.abs().pow(in2).mul(in1.sign());
+};
+const mx_contrast = (input, amount = 1, pivot = .5)=>(0, _shaderNodeJs.float)(input).sub(pivot).mul(amount).add(pivot);
+const mx_noise_float = (texcoord = (0, _uvnodeJs.uv)(), amplitude = 1, pivot = 0)=>(0, _mxNoiseJs.mx_perlin_noise_float)(texcoord.convert("vec2|vec3")).mul(amplitude).add(pivot);
+const mx_noise_vec3 = (texcoord = (0, _uvnodeJs.uv)(), amplitude = 1, pivot = 0)=>(0, _mxNoiseJs.mx_perlin_noise_vec3)(texcoord.convert("vec2|vec3")).mul(amplitude).add(pivot);
+const mx_noise_vec4 = (texcoord = (0, _uvnodeJs.uv)(), amplitude = 1, pivot = 0)=>{
+    texcoord = texcoord.convert("vec2|vec3"); // overloading type
+    const noise_vec4 = (0, _shaderNodeJs.vec4)((0, _mxNoiseJs.mx_perlin_noise_vec3)(texcoord), (0, _mxNoiseJs.mx_perlin_noise_float)(texcoord.add((0, _shaderNodeJs.vec2)(19, 73))));
+    return noise_vec4.mul(amplitude).add(pivot);
+};
+const mx_worley_noise_float = (texcoord = (0, _uvnodeJs.uv)(), jitter = 1)=>(0, _mxNoiseJs.mx_worley_noise_float)(texcoord.convert("vec2|vec3"), jitter, (0, _shaderNodeJs.int)(1));
+const mx_worley_noise_vec2 = (texcoord = (0, _uvnodeJs.uv)(), jitter = 1)=>(0, _mxNoiseJs.mx_worley_noise_vec2)(texcoord.convert("vec2|vec3"), jitter, (0, _shaderNodeJs.int)(1));
+const mx_worley_noise_vec3 = (texcoord = (0, _uvnodeJs.uv)(), jitter = 1)=>(0, _mxNoiseJs.mx_worley_noise_vec3)(texcoord.convert("vec2|vec3"), jitter, (0, _shaderNodeJs.int)(1));
+const mx_cell_noise_float = (texcoord = (0, _uvnodeJs.uv)())=>(0, _mxNoiseJs.mx_cell_noise_float)(texcoord.convert("vec2|vec3"));
+const mx_fractal_noise_float = (position = (0, _uvnodeJs.uv)(), octaves = 3, lacunarity = 2, diminish = .5, amplitude = 1)=>(0, _mxNoiseJs.mx_fractal_noise_float)(position, (0, _shaderNodeJs.int)(octaves), lacunarity, diminish).mul(amplitude);
+const mx_fractal_noise_vec2 = (position = (0, _uvnodeJs.uv)(), octaves = 3, lacunarity = 2, diminish = .5, amplitude = 1)=>(0, _mxNoiseJs.mx_fractal_noise_vec2)(position, (0, _shaderNodeJs.int)(octaves), lacunarity, diminish).mul(amplitude);
+const mx_fractal_noise_vec3 = (position = (0, _uvnodeJs.uv)(), octaves = 3, lacunarity = 2, diminish = .5, amplitude = 1)=>(0, _mxNoiseJs.mx_fractal_noise_vec3)(position, (0, _shaderNodeJs.int)(octaves), lacunarity, diminish).mul(amplitude);
+const mx_fractal_noise_vec4 = (position = (0, _uvnodeJs.uv)(), octaves = 3, lacunarity = 2, diminish = .5, amplitude = 1)=>(0, _mxNoiseJs.mx_fractal_noise_vec4)(position, (0, _shaderNodeJs.int)(octaves), lacunarity, diminish).mul(amplitude);
+
+},{"./lib/mx_noise.js":"hzrcO","./lib/mx_hsv.js":"7mBPF","./lib/mx_transform_color.js":"hAP4j","../math/MathNode.js":"84OFe","../accessors/UVNode.js":"dj0CK","../shadernode/ShaderNode.js":"8Xgcj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"hzrcO":[function(require,module,exports) {
+// Three.js Transpiler
+// https://raw.githubusercontent.com/AcademySoftwareFoundation/MaterialX/main/libraries/stdlib/genglsl/lib/mx_noise.glsl
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "mx_select", ()=>mx_select);
+parcelHelpers.export(exports, "mx_negate_if", ()=>mx_negate_if);
+parcelHelpers.export(exports, "mx_floor", ()=>mx_floor);
+parcelHelpers.export(exports, "mx_floorfrac", ()=>mx_floorfrac);
+parcelHelpers.export(exports, "mx_bilerp", ()=>mx_bilerp);
+parcelHelpers.export(exports, "mx_trilerp", ()=>mx_trilerp);
+parcelHelpers.export(exports, "mx_gradient_float", ()=>mx_gradient_float);
+parcelHelpers.export(exports, "mx_gradient_vec3", ()=>mx_gradient_vec3);
+parcelHelpers.export(exports, "mx_gradient_scale2d", ()=>mx_gradient_scale2d);
+parcelHelpers.export(exports, "mx_gradient_scale3d", ()=>mx_gradient_scale3d);
+parcelHelpers.export(exports, "mx_rotl32", ()=>mx_rotl32);
+parcelHelpers.export(exports, "mx_bjmix", ()=>mx_bjmix);
+parcelHelpers.export(exports, "mx_bjfinal", ()=>mx_bjfinal);
+parcelHelpers.export(exports, "mx_bits_to_01", ()=>mx_bits_to_01);
+parcelHelpers.export(exports, "mx_fade", ()=>mx_fade);
+parcelHelpers.export(exports, "mx_hash_int", ()=>mx_hash_int);
+parcelHelpers.export(exports, "mx_hash_vec3", ()=>mx_hash_vec3);
+parcelHelpers.export(exports, "mx_perlin_noise_float", ()=>mx_perlin_noise_float);
+parcelHelpers.export(exports, "mx_perlin_noise_vec3", ()=>mx_perlin_noise_vec3);
+parcelHelpers.export(exports, "mx_cell_noise_float", ()=>mx_cell_noise_float);
+parcelHelpers.export(exports, "mx_cell_noise_vec3", ()=>mx_cell_noise_vec3);
+parcelHelpers.export(exports, "mx_fractal_noise_float", ()=>mx_fractal_noise_float);
+parcelHelpers.export(exports, "mx_fractal_noise_vec3", ()=>mx_fractal_noise_vec3);
+parcelHelpers.export(exports, "mx_fractal_noise_vec2", ()=>mx_fractal_noise_vec2);
+parcelHelpers.export(exports, "mx_fractal_noise_vec4", ()=>mx_fractal_noise_vec4);
+parcelHelpers.export(exports, "mx_worley_distance", ()=>mx_worley_distance);
+parcelHelpers.export(exports, "mx_worley_noise_float", ()=>mx_worley_noise_float);
+parcelHelpers.export(exports, "mx_worley_noise_vec2", ()=>mx_worley_noise_vec2);
+parcelHelpers.export(exports, "mx_worley_noise_vec3", ()=>mx_worley_noise_vec3);
+var _shaderNodeJs = require("../../shadernode/ShaderNode.js");
+var _condNodeJs = require("../../math/CondNode.js");
+var _operatorNodeJs = require("../../math/OperatorNode.js");
+var _mathNodeJs = require("../../math/MathNode.js");
+var _functionOverloadingNodeJs = require("../../utils/FunctionOverloadingNode.js");
+var _loopNodeJs = require("../../utils/LoopNode.js");
+const mx_select = (0, _shaderNodeJs.tslFn)(([b_immutable, t_immutable, f_immutable])=>{
+    const f = (0, _shaderNodeJs.float)(f_immutable).toVar();
+    const t = (0, _shaderNodeJs.float)(t_immutable).toVar();
+    const b = (0, _shaderNodeJs.bool)(b_immutable).toVar();
+    return (0, _condNodeJs.cond)(b, t, f);
+});
+const mx_negate_if = (0, _shaderNodeJs.tslFn)(([val_immutable, b_immutable])=>{
+    const b = (0, _shaderNodeJs.bool)(b_immutable).toVar();
+    const val = (0, _shaderNodeJs.float)(val_immutable).toVar();
+    return (0, _condNodeJs.cond)(b, val.negate(), val);
+});
+const mx_floor = (0, _shaderNodeJs.tslFn)(([x_immutable])=>{
+    const x = (0, _shaderNodeJs.float)(x_immutable).toVar();
+    return (0, _shaderNodeJs.int)((0, _mathNodeJs.floor)(x));
+});
+const mx_floorfrac = (0, _shaderNodeJs.tslFn)(([x_immutable, i])=>{
+    const x = (0, _shaderNodeJs.float)(x_immutable).toVar();
+    i.assign(mx_floor(x));
+    return x.sub((0, _shaderNodeJs.float)(i));
+});
+const mx_bilerp_0 = (0, _shaderNodeJs.tslFn)(([v0_immutable, v1_immutable, v2_immutable, v3_immutable, s_immutable, t_immutable])=>{
+    const t = (0, _shaderNodeJs.float)(t_immutable).toVar();
+    const s = (0, _shaderNodeJs.float)(s_immutable).toVar();
+    const v3 = (0, _shaderNodeJs.float)(v3_immutable).toVar();
+    const v2 = (0, _shaderNodeJs.float)(v2_immutable).toVar();
+    const v1 = (0, _shaderNodeJs.float)(v1_immutable).toVar();
+    const v0 = (0, _shaderNodeJs.float)(v0_immutable).toVar();
+    const s1 = (0, _shaderNodeJs.float)((0, _operatorNodeJs.sub)(1.0, s)).toVar();
+    return (0, _operatorNodeJs.sub)(1.0, t).mul(v0.mul(s1).add(v1.mul(s))).add(t.mul(v2.mul(s1).add(v3.mul(s))));
+});
+const mx_bilerp_1 = (0, _shaderNodeJs.tslFn)(([v0_immutable, v1_immutable, v2_immutable, v3_immutable, s_immutable, t_immutable])=>{
+    const t = (0, _shaderNodeJs.float)(t_immutable).toVar();
+    const s = (0, _shaderNodeJs.float)(s_immutable).toVar();
+    const v3 = (0, _shaderNodeJs.vec3)(v3_immutable).toVar();
+    const v2 = (0, _shaderNodeJs.vec3)(v2_immutable).toVar();
+    const v1 = (0, _shaderNodeJs.vec3)(v1_immutable).toVar();
+    const v0 = (0, _shaderNodeJs.vec3)(v0_immutable).toVar();
+    const s1 = (0, _shaderNodeJs.float)((0, _operatorNodeJs.sub)(1.0, s)).toVar();
+    return (0, _operatorNodeJs.sub)(1.0, t).mul(v0.mul(s1).add(v1.mul(s))).add(t.mul(v2.mul(s1).add(v3.mul(s))));
+});
+const mx_bilerp = (0, _functionOverloadingNodeJs.overloadingFn)([
+    mx_bilerp_0,
+    mx_bilerp_1
+]);
+const mx_trilerp_0 = (0, _shaderNodeJs.tslFn)(([v0_immutable, v1_immutable, v2_immutable, v3_immutable, v4_immutable, v5_immutable, v6_immutable, v7_immutable, s_immutable, t_immutable, r_immutable])=>{
+    const r = (0, _shaderNodeJs.float)(r_immutable).toVar();
+    const t = (0, _shaderNodeJs.float)(t_immutable).toVar();
+    const s = (0, _shaderNodeJs.float)(s_immutable).toVar();
+    const v7 = (0, _shaderNodeJs.float)(v7_immutable).toVar();
+    const v6 = (0, _shaderNodeJs.float)(v6_immutable).toVar();
+    const v5 = (0, _shaderNodeJs.float)(v5_immutable).toVar();
+    const v4 = (0, _shaderNodeJs.float)(v4_immutable).toVar();
+    const v3 = (0, _shaderNodeJs.float)(v3_immutable).toVar();
+    const v2 = (0, _shaderNodeJs.float)(v2_immutable).toVar();
+    const v1 = (0, _shaderNodeJs.float)(v1_immutable).toVar();
+    const v0 = (0, _shaderNodeJs.float)(v0_immutable).toVar();
+    const s1 = (0, _shaderNodeJs.float)((0, _operatorNodeJs.sub)(1.0, s)).toVar();
+    const t1 = (0, _shaderNodeJs.float)((0, _operatorNodeJs.sub)(1.0, t)).toVar();
+    const r1 = (0, _shaderNodeJs.float)((0, _operatorNodeJs.sub)(1.0, r)).toVar();
+    return r1.mul(t1.mul(v0.mul(s1).add(v1.mul(s))).add(t.mul(v2.mul(s1).add(v3.mul(s))))).add(r.mul(t1.mul(v4.mul(s1).add(v5.mul(s))).add(t.mul(v6.mul(s1).add(v7.mul(s))))));
+});
+const mx_trilerp_1 = (0, _shaderNodeJs.tslFn)(([v0_immutable, v1_immutable, v2_immutable, v3_immutable, v4_immutable, v5_immutable, v6_immutable, v7_immutable, s_immutable, t_immutable, r_immutable])=>{
+    const r = (0, _shaderNodeJs.float)(r_immutable).toVar();
+    const t = (0, _shaderNodeJs.float)(t_immutable).toVar();
+    const s = (0, _shaderNodeJs.float)(s_immutable).toVar();
+    const v7 = (0, _shaderNodeJs.vec3)(v7_immutable).toVar();
+    const v6 = (0, _shaderNodeJs.vec3)(v6_immutable).toVar();
+    const v5 = (0, _shaderNodeJs.vec3)(v5_immutable).toVar();
+    const v4 = (0, _shaderNodeJs.vec3)(v4_immutable).toVar();
+    const v3 = (0, _shaderNodeJs.vec3)(v3_immutable).toVar();
+    const v2 = (0, _shaderNodeJs.vec3)(v2_immutable).toVar();
+    const v1 = (0, _shaderNodeJs.vec3)(v1_immutable).toVar();
+    const v0 = (0, _shaderNodeJs.vec3)(v0_immutable).toVar();
+    const s1 = (0, _shaderNodeJs.float)((0, _operatorNodeJs.sub)(1.0, s)).toVar();
+    const t1 = (0, _shaderNodeJs.float)((0, _operatorNodeJs.sub)(1.0, t)).toVar();
+    const r1 = (0, _shaderNodeJs.float)((0, _operatorNodeJs.sub)(1.0, r)).toVar();
+    return r1.mul(t1.mul(v0.mul(s1).add(v1.mul(s))).add(t.mul(v2.mul(s1).add(v3.mul(s))))).add(r.mul(t1.mul(v4.mul(s1).add(v5.mul(s))).add(t.mul(v6.mul(s1).add(v7.mul(s))))));
+});
+const mx_trilerp = (0, _functionOverloadingNodeJs.overloadingFn)([
+    mx_trilerp_0,
+    mx_trilerp_1
+]);
+const mx_gradient_float_0 = (0, _shaderNodeJs.tslFn)(([hash_immutable, x_immutable, y_immutable])=>{
+    const y = (0, _shaderNodeJs.float)(y_immutable).toVar();
+    const x = (0, _shaderNodeJs.float)(x_immutable).toVar();
+    const hash = (0, _shaderNodeJs.uint)(hash_immutable).toVar();
+    const h = (0, _shaderNodeJs.uint)(hash.bitAnd((0, _shaderNodeJs.uint)(7))).toVar();
+    const u = (0, _shaderNodeJs.float)(mx_select(h.lessThan((0, _shaderNodeJs.uint)(4)), x, y)).toVar();
+    const v = (0, _shaderNodeJs.float)((0, _operatorNodeJs.mul)(2.0, mx_select(h.lessThan((0, _shaderNodeJs.uint)(4)), y, x))).toVar();
+    return mx_negate_if(u, (0, _shaderNodeJs.bool)(h.bitAnd((0, _shaderNodeJs.uint)(1)))).add(mx_negate_if(v, (0, _shaderNodeJs.bool)(h.bitAnd((0, _shaderNodeJs.uint)(2)))));
+});
+const mx_gradient_float_1 = (0, _shaderNodeJs.tslFn)(([hash_immutable, x_immutable, y_immutable, z_immutable])=>{
+    const z = (0, _shaderNodeJs.float)(z_immutable).toVar();
+    const y = (0, _shaderNodeJs.float)(y_immutable).toVar();
+    const x = (0, _shaderNodeJs.float)(x_immutable).toVar();
+    const hash = (0, _shaderNodeJs.uint)(hash_immutable).toVar();
+    const h = (0, _shaderNodeJs.uint)(hash.bitAnd((0, _shaderNodeJs.uint)(15))).toVar();
+    const u = (0, _shaderNodeJs.float)(mx_select(h.lessThan((0, _shaderNodeJs.uint)(8)), x, y)).toVar();
+    const v = (0, _shaderNodeJs.float)(mx_select(h.lessThan((0, _shaderNodeJs.uint)(4)), y, mx_select(h.equal((0, _shaderNodeJs.uint)(12)).or(h.equal((0, _shaderNodeJs.uint)(14))), x, z))).toVar();
+    return mx_negate_if(u, (0, _shaderNodeJs.bool)(h.bitAnd((0, _shaderNodeJs.uint)(1)))).add(mx_negate_if(v, (0, _shaderNodeJs.bool)(h.bitAnd((0, _shaderNodeJs.uint)(2)))));
+});
+const mx_gradient_float = (0, _functionOverloadingNodeJs.overloadingFn)([
+    mx_gradient_float_0,
+    mx_gradient_float_1
+]);
+const mx_gradient_vec3_0 = (0, _shaderNodeJs.tslFn)(([hash_immutable, x_immutable, y_immutable])=>{
+    const y = (0, _shaderNodeJs.float)(y_immutable).toVar();
+    const x = (0, _shaderNodeJs.float)(x_immutable).toVar();
+    const hash = (0, _shaderNodeJs.uvec3)(hash_immutable).toVar();
+    return (0, _shaderNodeJs.vec3)(mx_gradient_float(hash.x, x, y), mx_gradient_float(hash.y, x, y), mx_gradient_float(hash.z, x, y));
+});
+const mx_gradient_vec3_1 = (0, _shaderNodeJs.tslFn)(([hash_immutable, x_immutable, y_immutable, z_immutable])=>{
+    const z = (0, _shaderNodeJs.float)(z_immutable).toVar();
+    const y = (0, _shaderNodeJs.float)(y_immutable).toVar();
+    const x = (0, _shaderNodeJs.float)(x_immutable).toVar();
+    const hash = (0, _shaderNodeJs.uvec3)(hash_immutable).toVar();
+    return (0, _shaderNodeJs.vec3)(mx_gradient_float(hash.x, x, y, z), mx_gradient_float(hash.y, x, y, z), mx_gradient_float(hash.z, x, y, z));
+});
+const mx_gradient_vec3 = (0, _functionOverloadingNodeJs.overloadingFn)([
+    mx_gradient_vec3_0,
+    mx_gradient_vec3_1
+]);
+const mx_gradient_scale2d_0 = (0, _shaderNodeJs.tslFn)(([v_immutable])=>{
+    const v = (0, _shaderNodeJs.float)(v_immutable).toVar();
+    return (0, _operatorNodeJs.mul)(0.6616, v);
+});
+const mx_gradient_scale3d_0 = (0, _shaderNodeJs.tslFn)(([v_immutable])=>{
+    const v = (0, _shaderNodeJs.float)(v_immutable).toVar();
+    return (0, _operatorNodeJs.mul)(0.9820, v);
+});
+const mx_gradient_scale2d_1 = (0, _shaderNodeJs.tslFn)(([v_immutable])=>{
+    const v = (0, _shaderNodeJs.vec3)(v_immutable).toVar();
+    return (0, _operatorNodeJs.mul)(0.6616, v);
+});
+const mx_gradient_scale2d = (0, _functionOverloadingNodeJs.overloadingFn)([
+    mx_gradient_scale2d_0,
+    mx_gradient_scale2d_1
+]);
+const mx_gradient_scale3d_1 = (0, _shaderNodeJs.tslFn)(([v_immutable])=>{
+    const v = (0, _shaderNodeJs.vec3)(v_immutable).toVar();
+    return (0, _operatorNodeJs.mul)(0.9820, v);
+});
+const mx_gradient_scale3d = (0, _functionOverloadingNodeJs.overloadingFn)([
+    mx_gradient_scale3d_0,
+    mx_gradient_scale3d_1
+]);
+const mx_rotl32 = (0, _shaderNodeJs.tslFn)(([x_immutable, k_immutable])=>{
+    const k = (0, _shaderNodeJs.int)(k_immutable).toVar();
+    const x = (0, _shaderNodeJs.uint)(x_immutable).toVar();
+    return x.shiftLeft(k).bitOr(x.shiftRight((0, _shaderNodeJs.int)(32).sub(k)));
+});
+const mx_bjmix = (0, _shaderNodeJs.tslFn)(([a, b, c])=>{
+    a.subAssign(c);
+    a.bitXorAssign(mx_rotl32(c, (0, _shaderNodeJs.int)(4)));
+    c.addAssign(b);
+    b.subAssign(a);
+    b.bitXorAssign(mx_rotl32(a, (0, _shaderNodeJs.int)(6)));
+    a.addAssign(c);
+    c.subAssign(b);
+    c.bitXorAssign(mx_rotl32(b, (0, _shaderNodeJs.int)(8)));
+    b.addAssign(a);
+    a.subAssign(c);
+    a.bitXorAssign(mx_rotl32(c, (0, _shaderNodeJs.int)(16)));
+    c.addAssign(b);
+    b.subAssign(a);
+    b.bitXorAssign(mx_rotl32(a, (0, _shaderNodeJs.int)(19)));
+    a.addAssign(c);
+    c.subAssign(b);
+    c.bitXorAssign(mx_rotl32(b, (0, _shaderNodeJs.int)(4)));
+    b.addAssign(a);
+});
+const mx_bjfinal = (0, _shaderNodeJs.tslFn)(([a_immutable, b_immutable, c_immutable])=>{
+    const c = (0, _shaderNodeJs.uint)(c_immutable).toVar();
+    const b = (0, _shaderNodeJs.uint)(b_immutable).toVar();
+    const a = (0, _shaderNodeJs.uint)(a_immutable).toVar();
+    c.bitXorAssign(b);
+    c.subAssign(mx_rotl32(b, (0, _shaderNodeJs.int)(14)));
+    a.bitXorAssign(c);
+    a.subAssign(mx_rotl32(c, (0, _shaderNodeJs.int)(11)));
+    b.bitXorAssign(a);
+    b.subAssign(mx_rotl32(a, (0, _shaderNodeJs.int)(25)));
+    c.bitXorAssign(b);
+    c.subAssign(mx_rotl32(b, (0, _shaderNodeJs.int)(16)));
+    a.bitXorAssign(c);
+    a.subAssign(mx_rotl32(c, (0, _shaderNodeJs.int)(4)));
+    b.bitXorAssign(a);
+    b.subAssign(mx_rotl32(a, (0, _shaderNodeJs.int)(14)));
+    c.bitXorAssign(b);
+    c.subAssign(mx_rotl32(b, (0, _shaderNodeJs.int)(24)));
+    return c;
+});
+const mx_bits_to_01 = (0, _shaderNodeJs.tslFn)(([bits_immutable])=>{
+    const bits = (0, _shaderNodeJs.uint)(bits_immutable).toVar();
+    return (0, _shaderNodeJs.float)(bits).div((0, _shaderNodeJs.float)((0, _shaderNodeJs.uint)((0, _shaderNodeJs.int)(0xffffffff))));
+});
+const mx_fade = (0, _shaderNodeJs.tslFn)(([t_immutable])=>{
+    const t = (0, _shaderNodeJs.float)(t_immutable).toVar();
+    return t.mul(t.mul(t.mul(t.mul(t.mul(6.0).sub(15.0)).add(10.0))));
+});
+const mx_hash_int_0 = (0, _shaderNodeJs.tslFn)(([x_immutable])=>{
+    const x = (0, _shaderNodeJs.int)(x_immutable).toVar();
+    const len = (0, _shaderNodeJs.uint)((0, _shaderNodeJs.uint)(1)).toVar();
+    const seed = (0, _shaderNodeJs.uint)((0, _shaderNodeJs.uint)((0, _shaderNodeJs.int)(0xdeadbeef)).add(len.shiftLeft((0, _shaderNodeJs.uint)(2)).add((0, _shaderNodeJs.uint)(13)))).toVar();
+    return mx_bjfinal(seed.add((0, _shaderNodeJs.uint)(x)), seed, seed);
+});
+const mx_hash_int_1 = (0, _shaderNodeJs.tslFn)(([x_immutable, y_immutable])=>{
+    const y = (0, _shaderNodeJs.int)(y_immutable).toVar();
+    const x = (0, _shaderNodeJs.int)(x_immutable).toVar();
+    const len = (0, _shaderNodeJs.uint)((0, _shaderNodeJs.uint)(2)).toVar();
+    const a = (0, _shaderNodeJs.uint)().toVar(), b = (0, _shaderNodeJs.uint)().toVar(), c = (0, _shaderNodeJs.uint)().toVar();
+    a.assign(b.assign(c.assign((0, _shaderNodeJs.uint)((0, _shaderNodeJs.int)(0xdeadbeef)).add(len.shiftLeft((0, _shaderNodeJs.uint)(2)).add((0, _shaderNodeJs.uint)(13))))));
+    a.addAssign((0, _shaderNodeJs.uint)(x));
+    b.addAssign((0, _shaderNodeJs.uint)(y));
+    return mx_bjfinal(a, b, c);
+});
+const mx_hash_int_2 = (0, _shaderNodeJs.tslFn)(([x_immutable, y_immutable, z_immutable])=>{
+    const z = (0, _shaderNodeJs.int)(z_immutable).toVar();
+    const y = (0, _shaderNodeJs.int)(y_immutable).toVar();
+    const x = (0, _shaderNodeJs.int)(x_immutable).toVar();
+    const len = (0, _shaderNodeJs.uint)((0, _shaderNodeJs.uint)(3)).toVar();
+    const a = (0, _shaderNodeJs.uint)().toVar(), b = (0, _shaderNodeJs.uint)().toVar(), c = (0, _shaderNodeJs.uint)().toVar();
+    a.assign(b.assign(c.assign((0, _shaderNodeJs.uint)((0, _shaderNodeJs.int)(0xdeadbeef)).add(len.shiftLeft((0, _shaderNodeJs.uint)(2)).add((0, _shaderNodeJs.uint)(13))))));
+    a.addAssign((0, _shaderNodeJs.uint)(x));
+    b.addAssign((0, _shaderNodeJs.uint)(y));
+    c.addAssign((0, _shaderNodeJs.uint)(z));
+    return mx_bjfinal(a, b, c);
+});
+const mx_hash_int_3 = (0, _shaderNodeJs.tslFn)(([x_immutable, y_immutable, z_immutable, xx_immutable])=>{
+    const xx = (0, _shaderNodeJs.int)(xx_immutable).toVar();
+    const z = (0, _shaderNodeJs.int)(z_immutable).toVar();
+    const y = (0, _shaderNodeJs.int)(y_immutable).toVar();
+    const x = (0, _shaderNodeJs.int)(x_immutable).toVar();
+    const len = (0, _shaderNodeJs.uint)((0, _shaderNodeJs.uint)(4)).toVar();
+    const a = (0, _shaderNodeJs.uint)().toVar(), b = (0, _shaderNodeJs.uint)().toVar(), c = (0, _shaderNodeJs.uint)().toVar();
+    a.assign(b.assign(c.assign((0, _shaderNodeJs.uint)((0, _shaderNodeJs.int)(0xdeadbeef)).add(len.shiftLeft((0, _shaderNodeJs.uint)(2)).add((0, _shaderNodeJs.uint)(13))))));
+    a.addAssign((0, _shaderNodeJs.uint)(x));
+    b.addAssign((0, _shaderNodeJs.uint)(y));
+    c.addAssign((0, _shaderNodeJs.uint)(z));
+    mx_bjmix(a, b, c);
+    a.addAssign((0, _shaderNodeJs.uint)(xx));
+    return mx_bjfinal(a, b, c);
+});
+const mx_hash_int_4 = (0, _shaderNodeJs.tslFn)(([x_immutable, y_immutable, z_immutable, xx_immutable, yy_immutable])=>{
+    const yy = (0, _shaderNodeJs.int)(yy_immutable).toVar();
+    const xx = (0, _shaderNodeJs.int)(xx_immutable).toVar();
+    const z = (0, _shaderNodeJs.int)(z_immutable).toVar();
+    const y = (0, _shaderNodeJs.int)(y_immutable).toVar();
+    const x = (0, _shaderNodeJs.int)(x_immutable).toVar();
+    const len = (0, _shaderNodeJs.uint)((0, _shaderNodeJs.uint)(5)).toVar();
+    const a = (0, _shaderNodeJs.uint)().toVar(), b = (0, _shaderNodeJs.uint)().toVar(), c = (0, _shaderNodeJs.uint)().toVar();
+    a.assign(b.assign(c.assign((0, _shaderNodeJs.uint)((0, _shaderNodeJs.int)(0xdeadbeef)).add(len.shiftLeft((0, _shaderNodeJs.uint)(2)).add((0, _shaderNodeJs.uint)(13))))));
+    a.addAssign((0, _shaderNodeJs.uint)(x));
+    b.addAssign((0, _shaderNodeJs.uint)(y));
+    c.addAssign((0, _shaderNodeJs.uint)(z));
+    mx_bjmix(a, b, c);
+    a.addAssign((0, _shaderNodeJs.uint)(xx));
+    b.addAssign((0, _shaderNodeJs.uint)(yy));
+    return mx_bjfinal(a, b, c);
+});
+const mx_hash_int = (0, _functionOverloadingNodeJs.overloadingFn)([
+    mx_hash_int_0,
+    mx_hash_int_1,
+    mx_hash_int_2,
+    mx_hash_int_3,
+    mx_hash_int_4
+]);
+const mx_hash_vec3_0 = (0, _shaderNodeJs.tslFn)(([x_immutable, y_immutable])=>{
+    const y = (0, _shaderNodeJs.int)(y_immutable).toVar();
+    const x = (0, _shaderNodeJs.int)(x_immutable).toVar();
+    const h = (0, _shaderNodeJs.uint)(mx_hash_int(x, y)).toVar();
+    const result = (0, _shaderNodeJs.uvec3)().toVar();
+    result.x.assign(h.bitAnd((0, _shaderNodeJs.int)(0xFF)));
+    result.y.assign(h.shiftRight((0, _shaderNodeJs.int)(8)).bitAnd((0, _shaderNodeJs.int)(0xFF)));
+    result.z.assign(h.shiftRight((0, _shaderNodeJs.int)(16)).bitAnd((0, _shaderNodeJs.int)(0xFF)));
+    return result;
+});
+const mx_hash_vec3_1 = (0, _shaderNodeJs.tslFn)(([x_immutable, y_immutable, z_immutable])=>{
+    const z = (0, _shaderNodeJs.int)(z_immutable).toVar();
+    const y = (0, _shaderNodeJs.int)(y_immutable).toVar();
+    const x = (0, _shaderNodeJs.int)(x_immutable).toVar();
+    const h = (0, _shaderNodeJs.uint)(mx_hash_int(x, y, z)).toVar();
+    const result = (0, _shaderNodeJs.uvec3)().toVar();
+    result.x.assign(h.bitAnd((0, _shaderNodeJs.int)(0xFF)));
+    result.y.assign(h.shiftRight((0, _shaderNodeJs.int)(8)).bitAnd((0, _shaderNodeJs.int)(0xFF)));
+    result.z.assign(h.shiftRight((0, _shaderNodeJs.int)(16)).bitAnd((0, _shaderNodeJs.int)(0xFF)));
+    return result;
+});
+const mx_hash_vec3 = (0, _functionOverloadingNodeJs.overloadingFn)([
+    mx_hash_vec3_0,
+    mx_hash_vec3_1
+]);
+const mx_perlin_noise_float_0 = (0, _shaderNodeJs.tslFn)(([p_immutable])=>{
+    const p = (0, _shaderNodeJs.vec2)(p_immutable).toVar();
+    const X = (0, _shaderNodeJs.int)().toVar(), Y = (0, _shaderNodeJs.int)().toVar();
+    const fx = (0, _shaderNodeJs.float)(mx_floorfrac(p.x, X)).toVar();
+    const fy = (0, _shaderNodeJs.float)(mx_floorfrac(p.y, Y)).toVar();
+    const u = (0, _shaderNodeJs.float)(mx_fade(fx)).toVar();
+    const v = (0, _shaderNodeJs.float)(mx_fade(fy)).toVar();
+    const result = (0, _shaderNodeJs.float)(mx_bilerp(mx_gradient_float(mx_hash_int(X, Y), fx, fy), mx_gradient_float(mx_hash_int(X.add((0, _shaderNodeJs.int)(1)), Y), fx.sub(1.0), fy), mx_gradient_float(mx_hash_int(X, Y.add((0, _shaderNodeJs.int)(1))), fx, fy.sub(1.0)), mx_gradient_float(mx_hash_int(X.add((0, _shaderNodeJs.int)(1)), Y.add((0, _shaderNodeJs.int)(1))), fx.sub(1.0), fy.sub(1.0)), u, v)).toVar();
+    return mx_gradient_scale2d(result);
+});
+const mx_perlin_noise_float_1 = (0, _shaderNodeJs.tslFn)(([p_immutable])=>{
+    const p = (0, _shaderNodeJs.vec3)(p_immutable).toVar();
+    const X = (0, _shaderNodeJs.int)().toVar(), Y = (0, _shaderNodeJs.int)().toVar(), Z = (0, _shaderNodeJs.int)().toVar();
+    const fx = (0, _shaderNodeJs.float)(mx_floorfrac(p.x, X)).toVar();
+    const fy = (0, _shaderNodeJs.float)(mx_floorfrac(p.y, Y)).toVar();
+    const fz = (0, _shaderNodeJs.float)(mx_floorfrac(p.z, Z)).toVar();
+    const u = (0, _shaderNodeJs.float)(mx_fade(fx)).toVar();
+    const v = (0, _shaderNodeJs.float)(mx_fade(fy)).toVar();
+    const w = (0, _shaderNodeJs.float)(mx_fade(fz)).toVar();
+    const result = (0, _shaderNodeJs.float)(mx_trilerp(mx_gradient_float(mx_hash_int(X, Y, Z), fx, fy, fz), mx_gradient_float(mx_hash_int(X.add((0, _shaderNodeJs.int)(1)), Y, Z), fx.sub(1.0), fy, fz), mx_gradient_float(mx_hash_int(X, Y.add((0, _shaderNodeJs.int)(1)), Z), fx, fy.sub(1.0), fz), mx_gradient_float(mx_hash_int(X.add((0, _shaderNodeJs.int)(1)), Y.add((0, _shaderNodeJs.int)(1)), Z), fx.sub(1.0), fy.sub(1.0), fz), mx_gradient_float(mx_hash_int(X, Y, Z.add((0, _shaderNodeJs.int)(1))), fx, fy, fz.sub(1.0)), mx_gradient_float(mx_hash_int(X.add((0, _shaderNodeJs.int)(1)), Y, Z.add((0, _shaderNodeJs.int)(1))), fx.sub(1.0), fy, fz.sub(1.0)), mx_gradient_float(mx_hash_int(X, Y.add((0, _shaderNodeJs.int)(1)), Z.add((0, _shaderNodeJs.int)(1))), fx, fy.sub(1.0), fz.sub(1.0)), mx_gradient_float(mx_hash_int(X.add((0, _shaderNodeJs.int)(1)), Y.add((0, _shaderNodeJs.int)(1)), Z.add((0, _shaderNodeJs.int)(1))), fx.sub(1.0), fy.sub(1.0), fz.sub(1.0)), u, v, w)).toVar();
+    return mx_gradient_scale3d(result);
+});
+const mx_perlin_noise_float = (0, _functionOverloadingNodeJs.overloadingFn)([
+    mx_perlin_noise_float_0,
+    mx_perlin_noise_float_1
+]);
+const mx_perlin_noise_vec3_0 = (0, _shaderNodeJs.tslFn)(([p_immutable])=>{
+    const p = (0, _shaderNodeJs.vec2)(p_immutable).toVar();
+    const X = (0, _shaderNodeJs.int)().toVar(), Y = (0, _shaderNodeJs.int)().toVar();
+    const fx = (0, _shaderNodeJs.float)(mx_floorfrac(p.x, X)).toVar();
+    const fy = (0, _shaderNodeJs.float)(mx_floorfrac(p.y, Y)).toVar();
+    const u = (0, _shaderNodeJs.float)(mx_fade(fx)).toVar();
+    const v = (0, _shaderNodeJs.float)(mx_fade(fy)).toVar();
+    const result = (0, _shaderNodeJs.vec3)(mx_bilerp(mx_gradient_vec3(mx_hash_vec3(X, Y), fx, fy), mx_gradient_vec3(mx_hash_vec3(X.add((0, _shaderNodeJs.int)(1)), Y), fx.sub(1.0), fy), mx_gradient_vec3(mx_hash_vec3(X, Y.add((0, _shaderNodeJs.int)(1))), fx, fy.sub(1.0)), mx_gradient_vec3(mx_hash_vec3(X.add((0, _shaderNodeJs.int)(1)), Y.add((0, _shaderNodeJs.int)(1))), fx.sub(1.0), fy.sub(1.0)), u, v)).toVar();
+    return mx_gradient_scale2d(result);
+});
+const mx_perlin_noise_vec3_1 = (0, _shaderNodeJs.tslFn)(([p_immutable])=>{
+    const p = (0, _shaderNodeJs.vec3)(p_immutable).toVar();
+    const X = (0, _shaderNodeJs.int)().toVar(), Y = (0, _shaderNodeJs.int)().toVar(), Z = (0, _shaderNodeJs.int)().toVar();
+    const fx = (0, _shaderNodeJs.float)(mx_floorfrac(p.x, X)).toVar();
+    const fy = (0, _shaderNodeJs.float)(mx_floorfrac(p.y, Y)).toVar();
+    const fz = (0, _shaderNodeJs.float)(mx_floorfrac(p.z, Z)).toVar();
+    const u = (0, _shaderNodeJs.float)(mx_fade(fx)).toVar();
+    const v = (0, _shaderNodeJs.float)(mx_fade(fy)).toVar();
+    const w = (0, _shaderNodeJs.float)(mx_fade(fz)).toVar();
+    const result = (0, _shaderNodeJs.vec3)(mx_trilerp(mx_gradient_vec3(mx_hash_vec3(X, Y, Z), fx, fy, fz), mx_gradient_vec3(mx_hash_vec3(X.add((0, _shaderNodeJs.int)(1)), Y, Z), fx.sub(1.0), fy, fz), mx_gradient_vec3(mx_hash_vec3(X, Y.add((0, _shaderNodeJs.int)(1)), Z), fx, fy.sub(1.0), fz), mx_gradient_vec3(mx_hash_vec3(X.add((0, _shaderNodeJs.int)(1)), Y.add((0, _shaderNodeJs.int)(1)), Z), fx.sub(1.0), fy.sub(1.0), fz), mx_gradient_vec3(mx_hash_vec3(X, Y, Z.add((0, _shaderNodeJs.int)(1))), fx, fy, fz.sub(1.0)), mx_gradient_vec3(mx_hash_vec3(X.add((0, _shaderNodeJs.int)(1)), Y, Z.add((0, _shaderNodeJs.int)(1))), fx.sub(1.0), fy, fz.sub(1.0)), mx_gradient_vec3(mx_hash_vec3(X, Y.add((0, _shaderNodeJs.int)(1)), Z.add((0, _shaderNodeJs.int)(1))), fx, fy.sub(1.0), fz.sub(1.0)), mx_gradient_vec3(mx_hash_vec3(X.add((0, _shaderNodeJs.int)(1)), Y.add((0, _shaderNodeJs.int)(1)), Z.add((0, _shaderNodeJs.int)(1))), fx.sub(1.0), fy.sub(1.0), fz.sub(1.0)), u, v, w)).toVar();
+    return mx_gradient_scale3d(result);
+});
+const mx_perlin_noise_vec3 = (0, _functionOverloadingNodeJs.overloadingFn)([
+    mx_perlin_noise_vec3_0,
+    mx_perlin_noise_vec3_1
+]);
+const mx_cell_noise_float_0 = (0, _shaderNodeJs.tslFn)(([p_immutable])=>{
+    const p = (0, _shaderNodeJs.float)(p_immutable).toVar();
+    const ix = (0, _shaderNodeJs.int)(mx_floor(p)).toVar();
+    return mx_bits_to_01(mx_hash_int(ix));
+});
+const mx_cell_noise_float_1 = (0, _shaderNodeJs.tslFn)(([p_immutable])=>{
+    const p = (0, _shaderNodeJs.vec2)(p_immutable).toVar();
+    const ix = (0, _shaderNodeJs.int)(mx_floor(p.x)).toVar();
+    const iy = (0, _shaderNodeJs.int)(mx_floor(p.y)).toVar();
+    return mx_bits_to_01(mx_hash_int(ix, iy));
+});
+const mx_cell_noise_float_2 = (0, _shaderNodeJs.tslFn)(([p_immutable])=>{
+    const p = (0, _shaderNodeJs.vec3)(p_immutable).toVar();
+    const ix = (0, _shaderNodeJs.int)(mx_floor(p.x)).toVar();
+    const iy = (0, _shaderNodeJs.int)(mx_floor(p.y)).toVar();
+    const iz = (0, _shaderNodeJs.int)(mx_floor(p.z)).toVar();
+    return mx_bits_to_01(mx_hash_int(ix, iy, iz));
+});
+const mx_cell_noise_float_3 = (0, _shaderNodeJs.tslFn)(([p_immutable])=>{
+    const p = (0, _shaderNodeJs.vec4)(p_immutable).toVar();
+    const ix = (0, _shaderNodeJs.int)(mx_floor(p.x)).toVar();
+    const iy = (0, _shaderNodeJs.int)(mx_floor(p.y)).toVar();
+    const iz = (0, _shaderNodeJs.int)(mx_floor(p.z)).toVar();
+    const iw = (0, _shaderNodeJs.int)(mx_floor(p.w)).toVar();
+    return mx_bits_to_01(mx_hash_int(ix, iy, iz, iw));
+});
+const mx_cell_noise_float = (0, _functionOverloadingNodeJs.overloadingFn)([
+    mx_cell_noise_float_0,
+    mx_cell_noise_float_1,
+    mx_cell_noise_float_2,
+    mx_cell_noise_float_3
+]);
+const mx_cell_noise_vec3_0 = (0, _shaderNodeJs.tslFn)(([p_immutable])=>{
+    const p = (0, _shaderNodeJs.float)(p_immutable).toVar();
+    const ix = (0, _shaderNodeJs.int)(mx_floor(p)).toVar();
+    return (0, _shaderNodeJs.vec3)(mx_bits_to_01(mx_hash_int(ix, (0, _shaderNodeJs.int)(0))), mx_bits_to_01(mx_hash_int(ix, (0, _shaderNodeJs.int)(1))), mx_bits_to_01(mx_hash_int(ix, (0, _shaderNodeJs.int)(2))));
+});
+const mx_cell_noise_vec3_1 = (0, _shaderNodeJs.tslFn)(([p_immutable])=>{
+    const p = (0, _shaderNodeJs.vec2)(p_immutable).toVar();
+    const ix = (0, _shaderNodeJs.int)(mx_floor(p.x)).toVar();
+    const iy = (0, _shaderNodeJs.int)(mx_floor(p.y)).toVar();
+    return (0, _shaderNodeJs.vec3)(mx_bits_to_01(mx_hash_int(ix, iy, (0, _shaderNodeJs.int)(0))), mx_bits_to_01(mx_hash_int(ix, iy, (0, _shaderNodeJs.int)(1))), mx_bits_to_01(mx_hash_int(ix, iy, (0, _shaderNodeJs.int)(2))));
+});
+const mx_cell_noise_vec3_2 = (0, _shaderNodeJs.tslFn)(([p_immutable])=>{
+    const p = (0, _shaderNodeJs.vec3)(p_immutable).toVar();
+    const ix = (0, _shaderNodeJs.int)(mx_floor(p.x)).toVar();
+    const iy = (0, _shaderNodeJs.int)(mx_floor(p.y)).toVar();
+    const iz = (0, _shaderNodeJs.int)(mx_floor(p.z)).toVar();
+    return (0, _shaderNodeJs.vec3)(mx_bits_to_01(mx_hash_int(ix, iy, iz, (0, _shaderNodeJs.int)(0))), mx_bits_to_01(mx_hash_int(ix, iy, iz, (0, _shaderNodeJs.int)(1))), mx_bits_to_01(mx_hash_int(ix, iy, iz, (0, _shaderNodeJs.int)(2))));
+});
+const mx_cell_noise_vec3_3 = (0, _shaderNodeJs.tslFn)(([p_immutable])=>{
+    const p = (0, _shaderNodeJs.vec4)(p_immutable).toVar();
+    const ix = (0, _shaderNodeJs.int)(mx_floor(p.x)).toVar();
+    const iy = (0, _shaderNodeJs.int)(mx_floor(p.y)).toVar();
+    const iz = (0, _shaderNodeJs.int)(mx_floor(p.z)).toVar();
+    const iw = (0, _shaderNodeJs.int)(mx_floor(p.w)).toVar();
+    return (0, _shaderNodeJs.vec3)(mx_bits_to_01(mx_hash_int(ix, iy, iz, iw, (0, _shaderNodeJs.int)(0))), mx_bits_to_01(mx_hash_int(ix, iy, iz, iw, (0, _shaderNodeJs.int)(1))), mx_bits_to_01(mx_hash_int(ix, iy, iz, iw, (0, _shaderNodeJs.int)(2))));
+});
+const mx_cell_noise_vec3 = (0, _functionOverloadingNodeJs.overloadingFn)([
+    mx_cell_noise_vec3_0,
+    mx_cell_noise_vec3_1,
+    mx_cell_noise_vec3_2,
+    mx_cell_noise_vec3_3
+]);
+const mx_fractal_noise_float = (0, _shaderNodeJs.tslFn)(([p_immutable, octaves_immutable, lacunarity_immutable, diminish_immutable])=>{
+    const diminish = (0, _shaderNodeJs.float)(diminish_immutable).toVar();
+    const lacunarity = (0, _shaderNodeJs.float)(lacunarity_immutable).toVar();
+    const octaves = (0, _shaderNodeJs.int)(octaves_immutable).toVar();
+    const p = (0, _shaderNodeJs.vec3)(p_immutable).toVar();
+    const result = (0, _shaderNodeJs.float)(0.0).toVar();
+    const amplitude = (0, _shaderNodeJs.float)(1.0).toVar();
+    (0, _loopNodeJs.loop)({
+        start: (0, _shaderNodeJs.int)(0),
+        end: octaves
+    }, ({ i })=>{
+        result.addAssign(amplitude.mul(mx_perlin_noise_float(p)));
+        amplitude.mulAssign(diminish);
+        p.mulAssign(lacunarity);
+    });
+    return result;
+});
+const mx_fractal_noise_vec3 = (0, _shaderNodeJs.tslFn)(([p_immutable, octaves_immutable, lacunarity_immutable, diminish_immutable])=>{
+    const diminish = (0, _shaderNodeJs.float)(diminish_immutable).toVar();
+    const lacunarity = (0, _shaderNodeJs.float)(lacunarity_immutable).toVar();
+    const octaves = (0, _shaderNodeJs.int)(octaves_immutable).toVar();
+    const p = (0, _shaderNodeJs.vec3)(p_immutable).toVar();
+    const result = (0, _shaderNodeJs.vec3)(0.0).toVar();
+    const amplitude = (0, _shaderNodeJs.float)(1.0).toVar();
+    (0, _loopNodeJs.loop)({
+        start: (0, _shaderNodeJs.int)(0),
+        end: octaves
+    }, ({ i })=>{
+        result.addAssign(amplitude.mul(mx_perlin_noise_vec3(p)));
+        amplitude.mulAssign(diminish);
+        p.mulAssign(lacunarity);
+    });
+    return result;
+});
+const mx_fractal_noise_vec2 = (0, _shaderNodeJs.tslFn)(([p_immutable, octaves_immutable, lacunarity_immutable, diminish_immutable])=>{
+    const diminish = (0, _shaderNodeJs.float)(diminish_immutable).toVar();
+    const lacunarity = (0, _shaderNodeJs.float)(lacunarity_immutable).toVar();
+    const octaves = (0, _shaderNodeJs.int)(octaves_immutable).toVar();
+    const p = (0, _shaderNodeJs.vec3)(p_immutable).toVar();
+    return (0, _shaderNodeJs.vec2)(mx_fractal_noise_float(p, octaves, lacunarity, diminish), mx_fractal_noise_float(p.add((0, _shaderNodeJs.vec3)((0, _shaderNodeJs.int)(19), (0, _shaderNodeJs.int)(193), (0, _shaderNodeJs.int)(17))), octaves, lacunarity, diminish));
+});
+const mx_fractal_noise_vec4 = (0, _shaderNodeJs.tslFn)(([p_immutable, octaves_immutable, lacunarity_immutable, diminish_immutable])=>{
+    const diminish = (0, _shaderNodeJs.float)(diminish_immutable).toVar();
+    const lacunarity = (0, _shaderNodeJs.float)(lacunarity_immutable).toVar();
+    const octaves = (0, _shaderNodeJs.int)(octaves_immutable).toVar();
+    const p = (0, _shaderNodeJs.vec3)(p_immutable).toVar();
+    const c = (0, _shaderNodeJs.vec3)(mx_fractal_noise_vec3(p, octaves, lacunarity, diminish)).toVar();
+    const f = (0, _shaderNodeJs.float)(mx_fractal_noise_float(p.add((0, _shaderNodeJs.vec3)((0, _shaderNodeJs.int)(19), (0, _shaderNodeJs.int)(193), (0, _shaderNodeJs.int)(17))), octaves, lacunarity, diminish)).toVar();
+    return (0, _shaderNodeJs.vec4)(c, f);
+});
+const mx_worley_distance_0 = (0, _shaderNodeJs.tslFn)(([p_immutable, x_immutable, y_immutable, xoff_immutable, yoff_immutable, jitter_immutable, metric_immutable])=>{
+    const metric = (0, _shaderNodeJs.int)(metric_immutable).toVar();
+    const jitter = (0, _shaderNodeJs.float)(jitter_immutable).toVar();
+    const yoff = (0, _shaderNodeJs.int)(yoff_immutable).toVar();
+    const xoff = (0, _shaderNodeJs.int)(xoff_immutable).toVar();
+    const y = (0, _shaderNodeJs.int)(y_immutable).toVar();
+    const x = (0, _shaderNodeJs.int)(x_immutable).toVar();
+    const p = (0, _shaderNodeJs.vec2)(p_immutable).toVar();
+    const tmp = (0, _shaderNodeJs.vec3)(mx_cell_noise_vec3((0, _shaderNodeJs.vec2)(x.add(xoff), y.add(yoff)))).toVar();
+    const off = (0, _shaderNodeJs.vec2)(tmp.x, tmp.y).toVar();
+    off.subAssign(0.5);
+    off.mulAssign(jitter);
+    off.addAssign(0.5);
+    const cellpos = (0, _shaderNodeJs.vec2)((0, _shaderNodeJs.vec2)((0, _shaderNodeJs.float)(x), (0, _shaderNodeJs.float)(y)).add(off)).toVar();
+    const diff = (0, _shaderNodeJs.vec2)(cellpos.sub(p)).toVar();
+    (0, _shaderNodeJs.If)(metric.equal((0, _shaderNodeJs.int)(2)), ()=>{
+        return (0, _mathNodeJs.abs)(diff.x).add((0, _mathNodeJs.abs)(diff.y));
+    });
+    (0, _shaderNodeJs.If)(metric.equal((0, _shaderNodeJs.int)(3)), ()=>{
+        return (0, _mathNodeJs.max)((0, _mathNodeJs.abs)(diff.x), (0, _mathNodeJs.abs)(diff.y));
+    });
+    return (0, _mathNodeJs.dot)(diff, diff);
+});
+const mx_worley_distance_1 = (0, _shaderNodeJs.tslFn)(([p_immutable, x_immutable, y_immutable, z_immutable, xoff_immutable, yoff_immutable, zoff_immutable, jitter_immutable, metric_immutable])=>{
+    const metric = (0, _shaderNodeJs.int)(metric_immutable).toVar();
+    const jitter = (0, _shaderNodeJs.float)(jitter_immutable).toVar();
+    const zoff = (0, _shaderNodeJs.int)(zoff_immutable).toVar();
+    const yoff = (0, _shaderNodeJs.int)(yoff_immutable).toVar();
+    const xoff = (0, _shaderNodeJs.int)(xoff_immutable).toVar();
+    const z = (0, _shaderNodeJs.int)(z_immutable).toVar();
+    const y = (0, _shaderNodeJs.int)(y_immutable).toVar();
+    const x = (0, _shaderNodeJs.int)(x_immutable).toVar();
+    const p = (0, _shaderNodeJs.vec3)(p_immutable).toVar();
+    const off = (0, _shaderNodeJs.vec3)(mx_cell_noise_vec3((0, _shaderNodeJs.vec3)(x.add(xoff), y.add(yoff), z.add(zoff)))).toVar();
+    off.subAssign(0.5);
+    off.mulAssign(jitter);
+    off.addAssign(0.5);
+    const cellpos = (0, _shaderNodeJs.vec3)((0, _shaderNodeJs.vec3)((0, _shaderNodeJs.float)(x), (0, _shaderNodeJs.float)(y), (0, _shaderNodeJs.float)(z)).add(off)).toVar();
+    const diff = (0, _shaderNodeJs.vec3)(cellpos.sub(p)).toVar();
+    (0, _shaderNodeJs.If)(metric.equal((0, _shaderNodeJs.int)(2)), ()=>{
+        return (0, _mathNodeJs.abs)(diff.x).add((0, _mathNodeJs.abs)(diff.y).add((0, _mathNodeJs.abs)(diff.z)));
+    });
+    (0, _shaderNodeJs.If)(metric.equal((0, _shaderNodeJs.int)(3)), ()=>{
+        return (0, _mathNodeJs.max)((0, _mathNodeJs.max)((0, _mathNodeJs.abs)(diff.x), (0, _mathNodeJs.abs)(diff.y)), (0, _mathNodeJs.abs)(diff.z));
+    });
+    return (0, _mathNodeJs.dot)(diff, diff);
+});
+const mx_worley_distance = (0, _functionOverloadingNodeJs.overloadingFn)([
+    mx_worley_distance_0,
+    mx_worley_distance_1
+]);
+const mx_worley_noise_float_0 = (0, _shaderNodeJs.tslFn)(([p_immutable, jitter_immutable, metric_immutable])=>{
+    const metric = (0, _shaderNodeJs.int)(metric_immutable).toVar();
+    const jitter = (0, _shaderNodeJs.float)(jitter_immutable).toVar();
+    const p = (0, _shaderNodeJs.vec2)(p_immutable).toVar();
+    const X = (0, _shaderNodeJs.int)().toVar(), Y = (0, _shaderNodeJs.int)().toVar();
+    const localpos = (0, _shaderNodeJs.vec2)(mx_floorfrac(p.x, X), mx_floorfrac(p.y, Y)).toVar();
+    const sqdist = (0, _shaderNodeJs.float)(1e6).toVar();
+    (0, _loopNodeJs.loop)({
+        start: -1,
+        end: (0, _shaderNodeJs.int)(1),
+        name: "x",
+        condition: "<="
+    }, ({ x })=>{
+        (0, _loopNodeJs.loop)({
+            start: -1,
+            end: (0, _shaderNodeJs.int)(1),
+            name: "y",
+            condition: "<="
+        }, ({ y })=>{
+            const dist = (0, _shaderNodeJs.float)(mx_worley_distance(localpos, x, y, X, Y, jitter, metric)).toVar();
+            sqdist.assign((0, _mathNodeJs.min)(sqdist, dist));
+        });
+    });
+    (0, _shaderNodeJs.If)(metric.equal((0, _shaderNodeJs.int)(0)), ()=>{
+        sqdist.assign((0, _mathNodeJs.sqrt)(sqdist));
+    });
+    return sqdist;
+});
+const mx_worley_noise_vec2_0 = (0, _shaderNodeJs.tslFn)(([p_immutable, jitter_immutable, metric_immutable])=>{
+    const metric = (0, _shaderNodeJs.int)(metric_immutable).toVar();
+    const jitter = (0, _shaderNodeJs.float)(jitter_immutable).toVar();
+    const p = (0, _shaderNodeJs.vec2)(p_immutable).toVar();
+    const X = (0, _shaderNodeJs.int)().toVar(), Y = (0, _shaderNodeJs.int)().toVar();
+    const localpos = (0, _shaderNodeJs.vec2)(mx_floorfrac(p.x, X), mx_floorfrac(p.y, Y)).toVar();
+    const sqdist = (0, _shaderNodeJs.vec2)(1e6, 1e6).toVar();
+    (0, _loopNodeJs.loop)({
+        start: -1,
+        end: (0, _shaderNodeJs.int)(1),
+        name: "x",
+        condition: "<="
+    }, ({ x })=>{
+        (0, _loopNodeJs.loop)({
+            start: -1,
+            end: (0, _shaderNodeJs.int)(1),
+            name: "y",
+            condition: "<="
+        }, ({ y })=>{
+            const dist = (0, _shaderNodeJs.float)(mx_worley_distance(localpos, x, y, X, Y, jitter, metric)).toVar();
+            (0, _shaderNodeJs.If)(dist.lessThan(sqdist.x), ()=>{
+                sqdist.y.assign(sqdist.x);
+                sqdist.x.assign(dist);
+            }).elseif(dist.lessThan(sqdist.y), ()=>{
+                sqdist.y.assign(dist);
+            });
+        });
+    });
+    (0, _shaderNodeJs.If)(metric.equal((0, _shaderNodeJs.int)(0)), ()=>{
+        sqdist.assign((0, _mathNodeJs.sqrt)(sqdist));
+    });
+    return sqdist;
+});
+const mx_worley_noise_vec3_0 = (0, _shaderNodeJs.tslFn)(([p_immutable, jitter_immutable, metric_immutable])=>{
+    const metric = (0, _shaderNodeJs.int)(metric_immutable).toVar();
+    const jitter = (0, _shaderNodeJs.float)(jitter_immutable).toVar();
+    const p = (0, _shaderNodeJs.vec2)(p_immutable).toVar();
+    const X = (0, _shaderNodeJs.int)().toVar(), Y = (0, _shaderNodeJs.int)().toVar();
+    const localpos = (0, _shaderNodeJs.vec2)(mx_floorfrac(p.x, X), mx_floorfrac(p.y, Y)).toVar();
+    const sqdist = (0, _shaderNodeJs.vec3)(1e6, 1e6, 1e6).toVar();
+    (0, _loopNodeJs.loop)({
+        start: -1,
+        end: (0, _shaderNodeJs.int)(1),
+        name: "x",
+        condition: "<="
+    }, ({ x })=>{
+        (0, _loopNodeJs.loop)({
+            start: -1,
+            end: (0, _shaderNodeJs.int)(1),
+            name: "y",
+            condition: "<="
+        }, ({ y })=>{
+            const dist = (0, _shaderNodeJs.float)(mx_worley_distance(localpos, x, y, X, Y, jitter, metric)).toVar();
+            (0, _shaderNodeJs.If)(dist.lessThan(sqdist.x), ()=>{
+                sqdist.z.assign(sqdist.y);
+                sqdist.y.assign(sqdist.x);
+                sqdist.x.assign(dist);
+            }).elseif(dist.lessThan(sqdist.y), ()=>{
+                sqdist.z.assign(sqdist.y);
+                sqdist.y.assign(dist);
+            }).elseif(dist.lessThan(sqdist.z), ()=>{
+                sqdist.z.assign(dist);
+            });
+        });
+    });
+    (0, _shaderNodeJs.If)(metric.equal((0, _shaderNodeJs.int)(0)), ()=>{
+        sqdist.assign((0, _mathNodeJs.sqrt)(sqdist));
+    });
+    return sqdist;
+});
+const mx_worley_noise_float_1 = (0, _shaderNodeJs.tslFn)(([p_immutable, jitter_immutable, metric_immutable])=>{
+    const metric = (0, _shaderNodeJs.int)(metric_immutable).toVar();
+    const jitter = (0, _shaderNodeJs.float)(jitter_immutable).toVar();
+    const p = (0, _shaderNodeJs.vec3)(p_immutable).toVar();
+    const X = (0, _shaderNodeJs.int)().toVar(), Y = (0, _shaderNodeJs.int)().toVar(), Z = (0, _shaderNodeJs.int)().toVar();
+    const localpos = (0, _shaderNodeJs.vec3)(mx_floorfrac(p.x, X), mx_floorfrac(p.y, Y), mx_floorfrac(p.z, Z)).toVar();
+    const sqdist = (0, _shaderNodeJs.float)(1e6).toVar();
+    (0, _loopNodeJs.loop)({
+        start: -1,
+        end: (0, _shaderNodeJs.int)(1),
+        name: "x",
+        condition: "<="
+    }, ({ x })=>{
+        (0, _loopNodeJs.loop)({
+            start: -1,
+            end: (0, _shaderNodeJs.int)(1),
+            name: "y",
+            condition: "<="
+        }, ({ y })=>{
+            (0, _loopNodeJs.loop)({
+                start: -1,
+                end: (0, _shaderNodeJs.int)(1),
+                name: "z",
+                condition: "<="
+            }, ({ z })=>{
+                const dist = (0, _shaderNodeJs.float)(mx_worley_distance(localpos, x, y, z, X, Y, Z, jitter, metric)).toVar();
+                sqdist.assign((0, _mathNodeJs.min)(sqdist, dist));
+            });
+        });
+    });
+    (0, _shaderNodeJs.If)(metric.equal((0, _shaderNodeJs.int)(0)), ()=>{
+        sqdist.assign((0, _mathNodeJs.sqrt)(sqdist));
+    });
+    return sqdist;
+});
+const mx_worley_noise_float = (0, _functionOverloadingNodeJs.overloadingFn)([
+    mx_worley_noise_float_0,
+    mx_worley_noise_float_1
+]);
+const mx_worley_noise_vec2_1 = (0, _shaderNodeJs.tslFn)(([p_immutable, jitter_immutable, metric_immutable])=>{
+    const metric = (0, _shaderNodeJs.int)(metric_immutable).toVar();
+    const jitter = (0, _shaderNodeJs.float)(jitter_immutable).toVar();
+    const p = (0, _shaderNodeJs.vec3)(p_immutable).toVar();
+    const X = (0, _shaderNodeJs.int)().toVar(), Y = (0, _shaderNodeJs.int)().toVar(), Z = (0, _shaderNodeJs.int)().toVar();
+    const localpos = (0, _shaderNodeJs.vec3)(mx_floorfrac(p.x, X), mx_floorfrac(p.y, Y), mx_floorfrac(p.z, Z)).toVar();
+    const sqdist = (0, _shaderNodeJs.vec2)(1e6, 1e6).toVar();
+    (0, _loopNodeJs.loop)({
+        start: -1,
+        end: (0, _shaderNodeJs.int)(1),
+        name: "x",
+        condition: "<="
+    }, ({ x })=>{
+        (0, _loopNodeJs.loop)({
+            start: -1,
+            end: (0, _shaderNodeJs.int)(1),
+            name: "y",
+            condition: "<="
+        }, ({ y })=>{
+            (0, _loopNodeJs.loop)({
+                start: -1,
+                end: (0, _shaderNodeJs.int)(1),
+                name: "z",
+                condition: "<="
+            }, ({ z })=>{
+                const dist = (0, _shaderNodeJs.float)(mx_worley_distance(localpos, x, y, z, X, Y, Z, jitter, metric)).toVar();
+                (0, _shaderNodeJs.If)(dist.lessThan(sqdist.x), ()=>{
+                    sqdist.y.assign(sqdist.x);
+                    sqdist.x.assign(dist);
+                }).elseif(dist.lessThan(sqdist.y), ()=>{
+                    sqdist.y.assign(dist);
+                });
+            });
+        });
+    });
+    (0, _shaderNodeJs.If)(metric.equal((0, _shaderNodeJs.int)(0)), ()=>{
+        sqdist.assign((0, _mathNodeJs.sqrt)(sqdist));
+    });
+    return sqdist;
+});
+const mx_worley_noise_vec2 = (0, _functionOverloadingNodeJs.overloadingFn)([
+    mx_worley_noise_vec2_0,
+    mx_worley_noise_vec2_1
+]);
+const mx_worley_noise_vec3_1 = (0, _shaderNodeJs.tslFn)(([p_immutable, jitter_immutable, metric_immutable])=>{
+    const metric = (0, _shaderNodeJs.int)(metric_immutable).toVar();
+    const jitter = (0, _shaderNodeJs.float)(jitter_immutable).toVar();
+    const p = (0, _shaderNodeJs.vec3)(p_immutable).toVar();
+    const X = (0, _shaderNodeJs.int)().toVar(), Y = (0, _shaderNodeJs.int)().toVar(), Z = (0, _shaderNodeJs.int)().toVar();
+    const localpos = (0, _shaderNodeJs.vec3)(mx_floorfrac(p.x, X), mx_floorfrac(p.y, Y), mx_floorfrac(p.z, Z)).toVar();
+    const sqdist = (0, _shaderNodeJs.vec3)(1e6, 1e6, 1e6).toVar();
+    (0, _loopNodeJs.loop)({
+        start: -1,
+        end: (0, _shaderNodeJs.int)(1),
+        name: "x",
+        condition: "<="
+    }, ({ x })=>{
+        (0, _loopNodeJs.loop)({
+            start: -1,
+            end: (0, _shaderNodeJs.int)(1),
+            name: "y",
+            condition: "<="
+        }, ({ y })=>{
+            (0, _loopNodeJs.loop)({
+                start: -1,
+                end: (0, _shaderNodeJs.int)(1),
+                name: "z",
+                condition: "<="
+            }, ({ z })=>{
+                const dist = (0, _shaderNodeJs.float)(mx_worley_distance(localpos, x, y, z, X, Y, Z, jitter, metric)).toVar();
+                (0, _shaderNodeJs.If)(dist.lessThan(sqdist.x), ()=>{
+                    sqdist.z.assign(sqdist.y);
+                    sqdist.y.assign(sqdist.x);
+                    sqdist.x.assign(dist);
+                }).elseif(dist.lessThan(sqdist.y), ()=>{
+                    sqdist.z.assign(sqdist.y);
+                    sqdist.y.assign(dist);
+                }).elseif(dist.lessThan(sqdist.z), ()=>{
+                    sqdist.z.assign(dist);
+                });
+            });
+        });
+    });
+    (0, _shaderNodeJs.If)(metric.equal((0, _shaderNodeJs.int)(0)), ()=>{
+        sqdist.assign((0, _mathNodeJs.sqrt)(sqdist));
+    });
+    return sqdist;
+});
+const mx_worley_noise_vec3 = (0, _functionOverloadingNodeJs.overloadingFn)([
+    mx_worley_noise_vec3_0,
+    mx_worley_noise_vec3_1
+]);
+// layouts
+mx_select.setLayout({
+    name: "mx_select",
+    type: "float",
+    inputs: [
+        {
+            name: "b",
+            type: "bool"
+        },
+        {
+            name: "t",
+            type: "float"
+        },
+        {
+            name: "f",
+            type: "float"
+        }
+    ]
+});
+mx_negate_if.setLayout({
+    name: "mx_negate_if",
+    type: "float",
+    inputs: [
+        {
+            name: "val",
+            type: "float"
+        },
+        {
+            name: "b",
+            type: "bool"
+        }
+    ]
+});
+mx_floor.setLayout({
+    name: "mx_floor",
+    type: "int",
+    inputs: [
+        {
+            name: "x",
+            type: "float"
+        }
+    ]
+});
+mx_bilerp_0.setLayout({
+    name: "mx_bilerp_0",
+    type: "float",
+    inputs: [
+        {
+            name: "v0",
+            type: "float"
+        },
+        {
+            name: "v1",
+            type: "float"
+        },
+        {
+            name: "v2",
+            type: "float"
+        },
+        {
+            name: "v3",
+            type: "float"
+        },
+        {
+            name: "s",
+            type: "float"
+        },
+        {
+            name: "t",
+            type: "float"
+        }
+    ]
+});
+mx_bilerp_1.setLayout({
+    name: "mx_bilerp_1",
+    type: "vec3",
+    inputs: [
+        {
+            name: "v0",
+            type: "vec3"
+        },
+        {
+            name: "v1",
+            type: "vec3"
+        },
+        {
+            name: "v2",
+            type: "vec3"
+        },
+        {
+            name: "v3",
+            type: "vec3"
+        },
+        {
+            name: "s",
+            type: "float"
+        },
+        {
+            name: "t",
+            type: "float"
+        }
+    ]
+});
+mx_trilerp_0.setLayout({
+    name: "mx_trilerp_0",
+    type: "float",
+    inputs: [
+        {
+            name: "v0",
+            type: "float"
+        },
+        {
+            name: "v1",
+            type: "float"
+        },
+        {
+            name: "v2",
+            type: "float"
+        },
+        {
+            name: "v3",
+            type: "float"
+        },
+        {
+            name: "v4",
+            type: "float"
+        },
+        {
+            name: "v5",
+            type: "float"
+        },
+        {
+            name: "v6",
+            type: "float"
+        },
+        {
+            name: "v7",
+            type: "float"
+        },
+        {
+            name: "s",
+            type: "float"
+        },
+        {
+            name: "t",
+            type: "float"
+        },
+        {
+            name: "r",
+            type: "float"
+        }
+    ]
+});
+mx_trilerp_1.setLayout({
+    name: "mx_trilerp_1",
+    type: "vec3",
+    inputs: [
+        {
+            name: "v0",
+            type: "vec3"
+        },
+        {
+            name: "v1",
+            type: "vec3"
+        },
+        {
+            name: "v2",
+            type: "vec3"
+        },
+        {
+            name: "v3",
+            type: "vec3"
+        },
+        {
+            name: "v4",
+            type: "vec3"
+        },
+        {
+            name: "v5",
+            type: "vec3"
+        },
+        {
+            name: "v6",
+            type: "vec3"
+        },
+        {
+            name: "v7",
+            type: "vec3"
+        },
+        {
+            name: "s",
+            type: "float"
+        },
+        {
+            name: "t",
+            type: "float"
+        },
+        {
+            name: "r",
+            type: "float"
+        }
+    ]
+});
+mx_gradient_float_0.setLayout({
+    name: "mx_gradient_float_0",
+    type: "float",
+    inputs: [
+        {
+            name: "hash",
+            type: "uint"
+        },
+        {
+            name: "x",
+            type: "float"
+        },
+        {
+            name: "y",
+            type: "float"
+        }
+    ]
+});
+mx_gradient_float_1.setLayout({
+    name: "mx_gradient_float_1",
+    type: "float",
+    inputs: [
+        {
+            name: "hash",
+            type: "uint"
+        },
+        {
+            name: "x",
+            type: "float"
+        },
+        {
+            name: "y",
+            type: "float"
+        },
+        {
+            name: "z",
+            type: "float"
+        }
+    ]
+});
+mx_gradient_vec3_0.setLayout({
+    name: "mx_gradient_vec3_0",
+    type: "vec3",
+    inputs: [
+        {
+            name: "hash",
+            type: "uvec3"
+        },
+        {
+            name: "x",
+            type: "float"
+        },
+        {
+            name: "y",
+            type: "float"
+        }
+    ]
+});
+mx_gradient_vec3_1.setLayout({
+    name: "mx_gradient_vec3_1",
+    type: "vec3",
+    inputs: [
+        {
+            name: "hash",
+            type: "uvec3"
+        },
+        {
+            name: "x",
+            type: "float"
+        },
+        {
+            name: "y",
+            type: "float"
+        },
+        {
+            name: "z",
+            type: "float"
+        }
+    ]
+});
+mx_gradient_scale2d_0.setLayout({
+    name: "mx_gradient_scale2d_0",
+    type: "float",
+    inputs: [
+        {
+            name: "v",
+            type: "float"
+        }
+    ]
+});
+mx_gradient_scale3d_0.setLayout({
+    name: "mx_gradient_scale3d_0",
+    type: "float",
+    inputs: [
+        {
+            name: "v",
+            type: "float"
+        }
+    ]
+});
+mx_gradient_scale2d_1.setLayout({
+    name: "mx_gradient_scale2d_1",
+    type: "vec3",
+    inputs: [
+        {
+            name: "v",
+            type: "vec3"
+        }
+    ]
+});
+mx_gradient_scale3d_1.setLayout({
+    name: "mx_gradient_scale3d_1",
+    type: "vec3",
+    inputs: [
+        {
+            name: "v",
+            type: "vec3"
+        }
+    ]
+});
+mx_rotl32.setLayout({
+    name: "mx_rotl32",
+    type: "uint",
+    inputs: [
+        {
+            name: "x",
+            type: "uint"
+        },
+        {
+            name: "k",
+            type: "int"
+        }
+    ]
+});
+mx_bjfinal.setLayout({
+    name: "mx_bjfinal",
+    type: "uint",
+    inputs: [
+        {
+            name: "a",
+            type: "uint"
+        },
+        {
+            name: "b",
+            type: "uint"
+        },
+        {
+            name: "c",
+            type: "uint"
+        }
+    ]
+});
+mx_bits_to_01.setLayout({
+    name: "mx_bits_to_01",
+    type: "float",
+    inputs: [
+        {
+            name: "bits",
+            type: "uint"
+        }
+    ]
+});
+mx_fade.setLayout({
+    name: "mx_fade",
+    type: "float",
+    inputs: [
+        {
+            name: "t",
+            type: "float"
+        }
+    ]
+});
+mx_hash_int_0.setLayout({
+    name: "mx_hash_int_0",
+    type: "uint",
+    inputs: [
+        {
+            name: "x",
+            type: "int"
+        }
+    ]
+});
+mx_hash_int_1.setLayout({
+    name: "mx_hash_int_1",
+    type: "uint",
+    inputs: [
+        {
+            name: "x",
+            type: "int"
+        },
+        {
+            name: "y",
+            type: "int"
+        }
+    ]
+});
+mx_hash_int_2.setLayout({
+    name: "mx_hash_int_2",
+    type: "uint",
+    inputs: [
+        {
+            name: "x",
+            type: "int"
+        },
+        {
+            name: "y",
+            type: "int"
+        },
+        {
+            name: "z",
+            type: "int"
+        }
+    ]
+});
+mx_hash_int_3.setLayout({
+    name: "mx_hash_int_3",
+    type: "uint",
+    inputs: [
+        {
+            name: "x",
+            type: "int"
+        },
+        {
+            name: "y",
+            type: "int"
+        },
+        {
+            name: "z",
+            type: "int"
+        },
+        {
+            name: "xx",
+            type: "int"
+        }
+    ]
+});
+mx_hash_int_4.setLayout({
+    name: "mx_hash_int_4",
+    type: "uint",
+    inputs: [
+        {
+            name: "x",
+            type: "int"
+        },
+        {
+            name: "y",
+            type: "int"
+        },
+        {
+            name: "z",
+            type: "int"
+        },
+        {
+            name: "xx",
+            type: "int"
+        },
+        {
+            name: "yy",
+            type: "int"
+        }
+    ]
+});
+mx_hash_vec3_0.setLayout({
+    name: "mx_hash_vec3_0",
+    type: "uvec3",
+    inputs: [
+        {
+            name: "x",
+            type: "int"
+        },
+        {
+            name: "y",
+            type: "int"
+        }
+    ]
+});
+mx_hash_vec3_1.setLayout({
+    name: "mx_hash_vec3_1",
+    type: "uvec3",
+    inputs: [
+        {
+            name: "x",
+            type: "int"
+        },
+        {
+            name: "y",
+            type: "int"
+        },
+        {
+            name: "z",
+            type: "int"
+        }
+    ]
+});
+mx_perlin_noise_float_0.setLayout({
+    name: "mx_perlin_noise_float_0",
+    type: "float",
+    inputs: [
+        {
+            name: "p",
+            type: "vec2"
+        }
+    ]
+});
+mx_perlin_noise_float_1.setLayout({
+    name: "mx_perlin_noise_float_1",
+    type: "float",
+    inputs: [
+        {
+            name: "p",
+            type: "vec3"
+        }
+    ]
+});
+mx_perlin_noise_vec3_0.setLayout({
+    name: "mx_perlin_noise_vec3_0",
+    type: "vec3",
+    inputs: [
+        {
+            name: "p",
+            type: "vec2"
+        }
+    ]
+});
+mx_perlin_noise_vec3_1.setLayout({
+    name: "mx_perlin_noise_vec3_1",
+    type: "vec3",
+    inputs: [
+        {
+            name: "p",
+            type: "vec3"
+        }
+    ]
+});
+mx_cell_noise_float_0.setLayout({
+    name: "mx_cell_noise_float_0",
+    type: "float",
+    inputs: [
+        {
+            name: "p",
+            type: "float"
+        }
+    ]
+});
+mx_cell_noise_float_1.setLayout({
+    name: "mx_cell_noise_float_1",
+    type: "float",
+    inputs: [
+        {
+            name: "p",
+            type: "vec2"
+        }
+    ]
+});
+mx_cell_noise_float_2.setLayout({
+    name: "mx_cell_noise_float_2",
+    type: "float",
+    inputs: [
+        {
+            name: "p",
+            type: "vec3"
+        }
+    ]
+});
+mx_cell_noise_float_3.setLayout({
+    name: "mx_cell_noise_float_3",
+    type: "float",
+    inputs: [
+        {
+            name: "p",
+            type: "vec4"
+        }
+    ]
+});
+mx_cell_noise_vec3_0.setLayout({
+    name: "mx_cell_noise_vec3_0",
+    type: "vec3",
+    inputs: [
+        {
+            name: "p",
+            type: "float"
+        }
+    ]
+});
+mx_cell_noise_vec3_1.setLayout({
+    name: "mx_cell_noise_vec3_1",
+    type: "vec3",
+    inputs: [
+        {
+            name: "p",
+            type: "vec2"
+        }
+    ]
+});
+mx_cell_noise_vec3_2.setLayout({
+    name: "mx_cell_noise_vec3_2",
+    type: "vec3",
+    inputs: [
+        {
+            name: "p",
+            type: "vec3"
+        }
+    ]
+});
+mx_cell_noise_vec3_3.setLayout({
+    name: "mx_cell_noise_vec3_3",
+    type: "vec3",
+    inputs: [
+        {
+            name: "p",
+            type: "vec4"
+        }
+    ]
+});
+mx_fractal_noise_float.setLayout({
+    name: "mx_fractal_noise_float",
+    type: "float",
+    inputs: [
+        {
+            name: "p",
+            type: "vec3"
+        },
+        {
+            name: "octaves",
+            type: "int"
+        },
+        {
+            name: "lacunarity",
+            type: "float"
+        },
+        {
+            name: "diminish",
+            type: "float"
+        }
+    ]
+});
+mx_fractal_noise_vec3.setLayout({
+    name: "mx_fractal_noise_vec3",
+    type: "vec3",
+    inputs: [
+        {
+            name: "p",
+            type: "vec3"
+        },
+        {
+            name: "octaves",
+            type: "int"
+        },
+        {
+            name: "lacunarity",
+            type: "float"
+        },
+        {
+            name: "diminish",
+            type: "float"
+        }
+    ]
+});
+mx_fractal_noise_vec2.setLayout({
+    name: "mx_fractal_noise_vec2",
+    type: "vec2",
+    inputs: [
+        {
+            name: "p",
+            type: "vec3"
+        },
+        {
+            name: "octaves",
+            type: "int"
+        },
+        {
+            name: "lacunarity",
+            type: "float"
+        },
+        {
+            name: "diminish",
+            type: "float"
+        }
+    ]
+});
+mx_fractal_noise_vec4.setLayout({
+    name: "mx_fractal_noise_vec4",
+    type: "vec4",
+    inputs: [
+        {
+            name: "p",
+            type: "vec3"
+        },
+        {
+            name: "octaves",
+            type: "int"
+        },
+        {
+            name: "lacunarity",
+            type: "float"
+        },
+        {
+            name: "diminish",
+            type: "float"
+        }
+    ]
+});
+mx_worley_distance_0.setLayout({
+    name: "mx_worley_distance_0",
+    type: "float",
+    inputs: [
+        {
+            name: "p",
+            type: "vec2"
+        },
+        {
+            name: "x",
+            type: "int"
+        },
+        {
+            name: "y",
+            type: "int"
+        },
+        {
+            name: "xoff",
+            type: "int"
+        },
+        {
+            name: "yoff",
+            type: "int"
+        },
+        {
+            name: "jitter",
+            type: "float"
+        },
+        {
+            name: "metric",
+            type: "int"
+        }
+    ]
+});
+mx_worley_distance_1.setLayout({
+    name: "mx_worley_distance_1",
+    type: "float",
+    inputs: [
+        {
+            name: "p",
+            type: "vec3"
+        },
+        {
+            name: "x",
+            type: "int"
+        },
+        {
+            name: "y",
+            type: "int"
+        },
+        {
+            name: "z",
+            type: "int"
+        },
+        {
+            name: "xoff",
+            type: "int"
+        },
+        {
+            name: "yoff",
+            type: "int"
+        },
+        {
+            name: "zoff",
+            type: "int"
+        },
+        {
+            name: "jitter",
+            type: "float"
+        },
+        {
+            name: "metric",
+            type: "int"
+        }
+    ]
+});
+mx_worley_noise_float_0.setLayout({
+    name: "mx_worley_noise_float_0",
+    type: "float",
+    inputs: [
+        {
+            name: "p",
+            type: "vec2"
+        },
+        {
+            name: "jitter",
+            type: "float"
+        },
+        {
+            name: "metric",
+            type: "int"
+        }
+    ]
+});
+mx_worley_noise_vec2_0.setLayout({
+    name: "mx_worley_noise_vec2_0",
+    type: "vec2",
+    inputs: [
+        {
+            name: "p",
+            type: "vec2"
+        },
+        {
+            name: "jitter",
+            type: "float"
+        },
+        {
+            name: "metric",
+            type: "int"
+        }
+    ]
+});
+mx_worley_noise_vec3_0.setLayout({
+    name: "mx_worley_noise_vec3_0",
+    type: "vec3",
+    inputs: [
+        {
+            name: "p",
+            type: "vec2"
+        },
+        {
+            name: "jitter",
+            type: "float"
+        },
+        {
+            name: "metric",
+            type: "int"
+        }
+    ]
+});
+mx_worley_noise_float_1.setLayout({
+    name: "mx_worley_noise_float_1",
+    type: "float",
+    inputs: [
+        {
+            name: "p",
+            type: "vec3"
+        },
+        {
+            name: "jitter",
+            type: "float"
+        },
+        {
+            name: "metric",
+            type: "int"
+        }
+    ]
+});
+mx_worley_noise_vec2_1.setLayout({
+    name: "mx_worley_noise_vec2_1",
+    type: "vec2",
+    inputs: [
+        {
+            name: "p",
+            type: "vec3"
+        },
+        {
+            name: "jitter",
+            type: "float"
+        },
+        {
+            name: "metric",
+            type: "int"
+        }
+    ]
+});
+mx_worley_noise_vec3_1.setLayout({
+    name: "mx_worley_noise_vec3_1",
+    type: "vec3",
+    inputs: [
+        {
+            name: "p",
+            type: "vec3"
+        },
+        {
+            name: "jitter",
+            type: "float"
+        },
+        {
+            name: "metric",
+            type: "int"
+        }
+    ]
+});
+
+},{"../../shadernode/ShaderNode.js":"8Xgcj","../../math/CondNode.js":"k5xIS","../../math/OperatorNode.js":"hCYI5","../../math/MathNode.js":"84OFe","../../utils/FunctionOverloadingNode.js":"kmU0b","../../utils/LoopNode.js":"g3yUg","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"7mBPF":[function(require,module,exports) {
+// Three.js Transpiler
+// https://github.com/AcademySoftwareFoundation/MaterialX/blob/main/libraries/stdlib/genglsl/lib/mx_hsv.glsl
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "mx_hsvtorgb", ()=>mx_hsvtorgb);
+parcelHelpers.export(exports, "mx_rgbtohsv", ()=>mx_rgbtohsv);
+var _shaderNodeJs = require("../../shadernode/ShaderNode.js");
+var _operatorNodeJs = require("../../math/OperatorNode.js");
+var _mathNodeJs = require("../../math/MathNode.js");
+const mx_hsvtorgb = (0, _shaderNodeJs.tslFn)(([hsv_immutable])=>{
+    const hsv = (0, _shaderNodeJs.vec3)(hsv_immutable).toVar();
+    const h = (0, _shaderNodeJs.float)(hsv.x).toVar();
+    const s = (0, _shaderNodeJs.float)(hsv.y).toVar();
+    const v = (0, _shaderNodeJs.float)(hsv.z).toVar();
+    (0, _shaderNodeJs.If)(s.lessThan(0.0001), ()=>{
+        return (0, _shaderNodeJs.vec3)(v, v, v);
+    }).else(()=>{
+        h.assign((0, _operatorNodeJs.mul)(6.0, h.sub((0, _mathNodeJs.floor)(h))));
+        const hi = (0, _shaderNodeJs.int)((0, _mathNodeJs.trunc)(h)).toVar();
+        const f = (0, _shaderNodeJs.float)(h.sub((0, _shaderNodeJs.float)(hi))).toVar();
+        const p = (0, _shaderNodeJs.float)(v.mul((0, _operatorNodeJs.sub)(1.0, s))).toVar();
+        const q = (0, _shaderNodeJs.float)(v.mul((0, _operatorNodeJs.sub)(1.0, s.mul(f)))).toVar();
+        const t = (0, _shaderNodeJs.float)(v.mul((0, _operatorNodeJs.sub)(1.0, s.mul((0, _operatorNodeJs.sub)(1.0, f))))).toVar();
+        (0, _shaderNodeJs.If)(hi.equal((0, _shaderNodeJs.int)(0)), ()=>{
+            return (0, _shaderNodeJs.vec3)(v, t, p);
+        }).elseif(hi.equal((0, _shaderNodeJs.int)(1)), ()=>{
+            return (0, _shaderNodeJs.vec3)(q, v, p);
+        }).elseif(hi.equal((0, _shaderNodeJs.int)(2)), ()=>{
+            return (0, _shaderNodeJs.vec3)(p, v, t);
+        }).elseif(hi.equal((0, _shaderNodeJs.int)(3)), ()=>{
+            return (0, _shaderNodeJs.vec3)(p, q, v);
+        }).elseif(hi.equal((0, _shaderNodeJs.int)(4)), ()=>{
+            return (0, _shaderNodeJs.vec3)(t, p, v);
+        });
+        return (0, _shaderNodeJs.vec3)(v, p, q);
+    });
+});
+const mx_rgbtohsv = (0, _shaderNodeJs.tslFn)(([c_immutable])=>{
+    const c = (0, _shaderNodeJs.vec3)(c_immutable).toVar();
+    const r = (0, _shaderNodeJs.float)(c.x).toVar();
+    const g = (0, _shaderNodeJs.float)(c.y).toVar();
+    const b = (0, _shaderNodeJs.float)(c.z).toVar();
+    const mincomp = (0, _shaderNodeJs.float)((0, _mathNodeJs.min)(r, (0, _mathNodeJs.min)(g, b))).toVar();
+    const maxcomp = (0, _shaderNodeJs.float)((0, _mathNodeJs.max)(r, (0, _mathNodeJs.max)(g, b))).toVar();
+    const delta = (0, _shaderNodeJs.float)(maxcomp.sub(mincomp)).toVar();
+    const h = (0, _shaderNodeJs.float)().toVar(), s = (0, _shaderNodeJs.float)().toVar(), v = (0, _shaderNodeJs.float)().toVar();
+    v.assign(maxcomp);
+    (0, _shaderNodeJs.If)(maxcomp.greaterThan(0.0), ()=>{
+        s.assign(delta.div(maxcomp));
+    }).else(()=>{
+        s.assign(0.0);
+    });
+    (0, _shaderNodeJs.If)(s.lessThanEqual(0.0), ()=>{
+        h.assign(0.0);
+    }).else(()=>{
+        (0, _shaderNodeJs.If)(r.greaterThanEqual(maxcomp), ()=>{
+            h.assign(g.sub(b).div(delta));
+        }).elseif(g.greaterThanEqual(maxcomp), ()=>{
+            h.assign((0, _operatorNodeJs.add)(2.0, b.sub(r).div(delta)));
+        }).else(()=>{
+            h.assign((0, _operatorNodeJs.add)(4.0, r.sub(g).div(delta)));
+        });
+        h.mulAssign(1.0 / 6.0);
+        (0, _shaderNodeJs.If)(h.lessThan(0.0), ()=>{
+            h.addAssign(1.0);
+        });
+    });
+    return (0, _shaderNodeJs.vec3)(h, s, v);
+});
+// layouts
+mx_hsvtorgb.setLayout({
+    name: "mx_hsvtorgb",
+    type: "vec3",
+    inputs: [
+        {
+            name: "hsv",
+            type: "vec3"
+        }
+    ]
+});
+mx_rgbtohsv.setLayout({
+    name: "mx_rgbtohsv",
+    type: "vec3",
+    inputs: [
+        {
+            name: "c",
+            type: "vec3"
+        }
+    ]
+});
+
+},{"../../shadernode/ShaderNode.js":"8Xgcj","../../math/OperatorNode.js":"hCYI5","../../math/MathNode.js":"84OFe","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"hAP4j":[function(require,module,exports) {
+// Three.js Transpiler
+// https://github.com/AcademySoftwareFoundation/MaterialX/blob/main/libraries/stdlib/genglsl/lib/mx_transform_color.glsl
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "mx_srgb_texture_to_lin_rec709", ()=>mx_srgb_texture_to_lin_rec709);
+var _shaderNodeJs = require("../../shadernode/ShaderNode.js");
+var _operatorNodeJs = require("../../math/OperatorNode.js");
+var _mathNodeJs = require("../../math/MathNode.js");
+const mx_srgb_texture_to_lin_rec709 = (0, _shaderNodeJs.tslFn)(([color_immutable])=>{
+    const color = (0, _shaderNodeJs.vec3)(color_immutable).toVar();
+    const isAbove = (0, _shaderNodeJs.bvec3)((0, _operatorNodeJs.greaterThan)(color, (0, _shaderNodeJs.vec3)(0.04045))).toVar();
+    const linSeg = (0, _shaderNodeJs.vec3)(color.div(12.92)).toVar();
+    const powSeg = (0, _shaderNodeJs.vec3)((0, _mathNodeJs.pow)((0, _mathNodeJs.max)(color.add((0, _shaderNodeJs.vec3)(0.055)), (0, _shaderNodeJs.vec3)(0.0)).div(1.055), (0, _shaderNodeJs.vec3)(2.4))).toVar();
+    return (0, _mathNodeJs.mix)(linSeg, powSeg, isAbove);
+});
+// layouts
+mx_srgb_texture_to_lin_rec709.setLayout({
+    name: "mx_srgb_texture_to_lin_rec709",
+    type: "vec3",
+    inputs: [
+        {
+            name: "color",
+            type: "vec3"
+        }
+    ]
+});
+
+},{"../../shadernode/ShaderNode.js":"8Xgcj","../../math/OperatorNode.js":"hCYI5","../../math/MathNode.js":"84OFe","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["46PTB","goJYj"], "goJYj", "parcelRequire6fcf")
 
 //# sourceMappingURL=index.64a4978e.js.map

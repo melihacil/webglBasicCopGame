@@ -7,3 +7,4 @@ node_modules
 .parcel-cache/d0d4aa4a0c5416be-AssetGraph-0
 .parcel-cache/7f973df67467291d-AssetGraph-0
 .parcel-cache/5350436211165b0b-BundleGraph-0
+/.parcel-cache

@@ -80,15 +80,15 @@ export default class SceneInit {
       }
     });
 
-    camControl.keys = {
-      LEFT: 'KeyA',
-      UP: 'KeyW',
-      BOTTOM: 'KeyS',
-      RIGHT: 'KeyD',
-    };
+    // camControl.keys = {
+    //   LEFT: 'KeyA',
+    //   UP: 'KeyW',
+    //   BOTTOM: 'KeyS',
+    //   RIGHT: 'KeyD',
+    // };
 
-    camControl.listenToKeyEvents(window);
-    camControl.keyPanSpeed = 20;
+    // camControl.listenToKeyEvents(window);
+    // camControl.keyPanSpeed = 20;
   }
 
   animate() {

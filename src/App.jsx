@@ -8,7 +8,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 import SceneInit from './lib/SceneInit';
 import { camera, init } from './scripts/CameraControls';
-
+import { CharacterControls } from './lib/CharacterControls';
 
 function App() {
   useEffect(() => {
@@ -23,6 +23,10 @@ function App() {
     // const boxMesh = new THREE.Mesh(boxGeometry, boxMaterial);
     // test.scene.add(boxMesh);
 
+
+
+
+
     let loadedModel;
     const glftLoader = new GLTFLoader();
     glftLoader.load('./assets/shiba/scene.gltf', (gltfScene) => {
@@ -34,15 +38,11 @@ function App() {
       gltfScene.scene.scale.set(10, 10, 10);
       test.scene.add(gltfScene.scene);
 
-      const gltfAnimations = gltf.animations;
-      const mixer = new THREE.AnimationMixer(model);
-      const animationsMap = new Map()
-      gltfAnimations.filter(a => a.name != 'TPose').forEach((a) => {
-        animationsMap.set(a.name, mixer.clipAction(a))
-      })
 
-      characterControls = new CharacterControls(model, mixer, animationsMap, orbitControls, camera, 'Idle')
     });
+
+
+
 
     const soldierModel = new GLTFLoader();
     soldierModel.load('./assets/soldier/Soldier.glb', (gltfScene) => {
@@ -52,6 +52,16 @@ function App() {
       });
       test.scene.add(model);
 
+
+      const gltfAnimations = gltfScene.animations;
+      const mixer = new THREE.AnimationMixer(loadedModel);
+      const animationsMap = new Map()
+      gltfAnimations.filter(a => a.name != 'TPose').forEach((a) => {
+        animationsMap.set(a.name, mixer.clipAction(a))
+      })
+
+      characterControls = new CharacterControls(soldierModel, mixer, animationsMap, orbitControls, camera, 'Idle')
+
     })
 
     const gridHelper = new THREE.GridHelper(12, 12);
@@ -60,6 +70,11 @@ function App() {
     // Sets the x, y, and z axes with each having a length of 4
     const axesHelper = new THREE.AxesHelper(12);
     test.scene.add(axesHelper);
+
+
+
+
+
     const animate = () => {
       if (loadedModel) {
         loadedModel.scene.rotation.x += 0.01;

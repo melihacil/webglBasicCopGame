@@ -2,14 +2,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { log } from 'three/examples/jsm/nodes/Nodes.js';
 
-export const camera = new THREE.PerspectiveCamera(
-  45,
-  window.innerWidth / window.innerHeight,
-  0.1,
-  1000
-);
-
-export function init(renderer, scene) {
+export function init(camera, renderer, scene) {
   // Sets orbit control to move the camera around
   const camControl = new OrbitControls(camera, renderer.domElement);
   // camControl.panSpeed = 2;
@@ -69,7 +62,7 @@ export function init(renderer, scene) {
 
     camControl.update();
     //console.log(camera.rotation);
-    renderer.render(scene, camera);
+    //renderer.render(scene, camera);
   }
 
   renderer.setAnimationLoop(animate);

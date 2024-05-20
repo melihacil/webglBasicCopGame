@@ -7,14 +7,18 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 import SceneInit from './lib/SceneInit';
-import { camera, init } from './scripts/CameraControls';
-import { CharacterControls } from './lib/CharacterControls';
+import { init } from './scripts/CameraControls';
+import CharacterControllerDemo from './lib/CharacterControls';
+import UserInput from './UserInputs.js';
+
 
 function App() {
+  let input = new UserInput();
+
   useEffect(() => {
 
 
-    const test = new SceneInit('myThreeJsCanvas');
+    const test = new SceneInit('myThreeJsCanvas', input);
     test.initialize();
     test.animate();
 
@@ -22,7 +26,6 @@ function App() {
     // const boxMaterial = new THREE.MeshNormalMaterial();
     // const boxMesh = new THREE.Mesh(boxGeometry, boxMaterial);
     // test.scene.add(boxMesh);
-
 
 
 
@@ -60,7 +63,7 @@ function App() {
         animationsMap.set(a.name, mixer.clipAction(a))
       })
 
-      characterControls = new CharacterControls(soldierModel, mixer, animationsMap, orbitControls, camera, 'Idle')
+      //characterControls = new CharacterControls(soldierModel, mixer, animationsMap, orbitControls, camera, 'Idle')
 
     })
 
@@ -72,7 +75,7 @@ function App() {
     test.scene.add(axesHelper);
 
 
-
+    //let CharacterControls = new CharacterControllerDemo(test.camera, test.scene);
 
 
     const animate = () => {
@@ -85,6 +88,9 @@ function App() {
     };
     animate();
   }, []);
+
+
+
 
   return (
     <div>

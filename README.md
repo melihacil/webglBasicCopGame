@@ -1,5 +1,4 @@
-![Thumbnail video tutorial](https://user-images.githubusercontent.com/6551176/235012644-06fa0beb-1c72-419b-911a-5ff902bdfc58.jpg)
+# webglBasicCopGame
+A basic game made with three.js (webgl) for CENG495 Computer Graphics Project
 
-[Video tutorial](https://youtu.be/OpYtwrtpePY)
-
-[Starter pack](https://github.com/wass08/r3f-vite-starter)
+Run the app from a local server by typing this command to the terminal: npm install for the modules, npm run dev for the app to start

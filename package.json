@@ -1,19 +1,26 @@
 {
-  "name": "00-setup-guide",
+  "name": "r3f-loading-animations",
   "private": true,
   "version": "0.0.0",
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "three": "^0.138.3"
+    "@react-three/fiber": "^8.11.5",
+    "@react-three/rapier": "^0.15.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "three": "^0.150.1"
   },
   "devDependencies": {
-    "@vitejs/plugin-react": "^1.0.7",
-    "vite": "^2.8.0"
+    "@react-three/drei": "^9.105.6",
+    "@types/react": "^18.0.27",
+    "@types/react-dom": "^18.0.10",
+    "@vitejs/plugin-react": "^3.1.0",
+    "r3f-perf": "^7.2.1",
+    "vite": "^4.1.0"
   }
 }

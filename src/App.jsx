@@ -6,6 +6,7 @@ import { Experience } from "./components/Experience";
 import { UI } from "./components/UI";
 import { Stats } from '@react-three/drei'
 import { Perf } from "r3f-perf";
+import LightControl from "./components/DirectionalLightControls";
 
 
 export const Controls = {
@@ -28,6 +29,7 @@ function App() {
     []
   );
 
+  const lightRef = useRef();
 
   // useEffect(() =>
 
@@ -42,7 +44,7 @@ function App() {
         <color attach="background" args={["#ececec"]} />
         <Suspense>
           <Physics debug>
-            <Experience />
+            <Experience light={lightRef} />
           </Physics>
         </Suspense>
         <axesHelper args={[15]} position={[0, 0, 0]} />
@@ -50,6 +52,7 @@ function App() {
         <Stats />
         <Perf position="bottom-left" />
       </Canvas>
+      <LightControl lightRef={lightRef} />
     </KeyboardControls>
 
   </>

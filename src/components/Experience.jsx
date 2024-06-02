@@ -7,12 +7,11 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js"
 import * as THREE from "three";
 import DraggableBox from "./DraggableBox";
 
-export const Experience = () => {
+export const Experience = ({ light }) => {
 
 
   // const shiba = useLoader(GLTFLoader, "../assets/shiba/scene.gltf");
   const shiba = useGLTF("/assets/shiba/scene.gltf");
-
   const shibaRef = useRef();
   const [hover, setHover] = useState(false);
   const [isDragging, setDragging] = useState(false);
@@ -84,7 +83,7 @@ export const Experience = () => {
   return (
     <>
       <ambientLight intensity={0.5} />
-      <directionalLight position={[-10, 10, 0]} intensity={0.4} />
+      <directionalLight ref={light} position={[-10, 10, 0]} intensity={0.4} />
       {!isDragging && <OrbitControls />}
 
 
@@ -148,7 +147,6 @@ export const Experience = () => {
           <meshStandardMaterial color="green" />
         </Box>
       </RigidBody>
-
     </>
   );
 };

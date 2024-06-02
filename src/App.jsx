@@ -1,7 +1,7 @@
 import { KeyboardControls } from "@react-three/drei";
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
-import { Suspense, useEffect, useMemo } from "react";
+import { Suspense, useEffect, useMemo, useRef } from "react";
 import { Experience } from "./components/Experience";
 import { UI } from "./components/UI";
 import { Stats } from '@react-three/drei'
@@ -29,10 +29,7 @@ function App() {
   );
 
 
-  // useEffect(() => {
-
-
-
+  // useEffect(() =>
 
 
 

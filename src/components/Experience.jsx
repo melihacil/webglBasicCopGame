@@ -1,13 +1,13 @@
 import { Box, OrbitControls, Sphere, Torus, useGLTF, useKeyboardControls } from "@react-three/drei";
-import { useFrame, useLoader } from "@react-three/fiber";
+import { useFrame, useLoader, useThree } from "@react-three/fiber";
 import { RigidBody, quat } from "@react-three/rapier";
 import { useRef, useState } from "react";
 import { Controls } from "../App";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js"
 import * as THREE from "three";
+import DraggableBox from "./DraggableBox";
 
 export const Experience = () => {
-
 
 
   // const shiba = useLoader(GLTFLoader, "../assets/shiba/scene.gltf");
@@ -15,6 +15,7 @@ export const Experience = () => {
 
   const shibaRef = useRef();
   const [hover, setHover] = useState(false);
+  const [isDragging, setDragging] = useState(false);
   const cube = useRef();
   const isOnFloor = useRef(true);
   const kicker = useRef();
@@ -26,6 +27,9 @@ export const Experience = () => {
   const forwardPressed = useKeyboardControls(
     (state) => state[Controls.forward]
   );
+
+
+
 
   const speed = useRef(5);
   const handleMovement = () => {
@@ -70,30 +74,32 @@ export const Experience = () => {
   });
 
   const jump = () => {
-    if (isOnFloor.current) {
-      cube.current.applyImpulse({ x: 0, y: 5, z: 0 });
-      isOnFloor.current = false;
-    }
+    //if (isOnFloor.current) {
+    cube.current.applyImpulse({ x: 0, y: 1, z: 0 });
+    //cube.current.addForce({ x: 0, y: 5, z: 0 });
+    isOnFloor.current = false;
+    //}
   };
 
   return (
     <>
       <ambientLight intensity={0.5} />
       <directionalLight position={[-10, 10, 0]} intensity={0.4} />
-      <OrbitControls />
+      {!isDragging && <OrbitControls />}
+
 
       <RigidBody position={[-2, 5, 0]} colliders={"ball"}>
         <Sphere >
           <meshStandardMaterial color="pink" />
         </Sphere>
       </RigidBody>
+      <DraggableBox startDragging={setDragging} />
 
-
-      <RigidBody>
+      {/* <RigidBody>
         <Torus position={[1, 2, 0]}>
           <meshStandardMaterial color="yellow" />
         </Torus>
-      </RigidBody>
+      </RigidBody> */}
       <RigidBody
         ref={cube}
       >
@@ -101,7 +107,7 @@ export const Experience = () => {
         <primitive object={shiba.scene} ref={shibaRef} scale={1.0} position={[4, 4, 4]} />
       </RigidBody>
       <Box
-        position={[3, 5, 0]}
+        position={[2, 3, 0]}
         onPointerEnter={() => setHover(true)}
         onPointerLeave={() => setHover(false)}
         onClick={() => jump()}

@@ -1,7 +1,7 @@
 import { KeyboardControls } from "@react-three/drei";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
-import { Suspense, useEffect, useMemo, useRef } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Experience } from "./components/Experience";
 import { UI } from "./components/UI";
 import { Stats } from '@react-three/drei'
@@ -30,9 +30,14 @@ function App() {
   );
 
   const lightRef = useRef();
+  const [showAmbient, setAmbient] = useState(true);
 
   // useEffect(() =>
 
+
+  const changeAmbient = () => {
+    setAmbient(prev => !prev);
+  }
 
 
   // }, [])
@@ -44,7 +49,7 @@ function App() {
         <color attach="background" args={["#ececec"]} />
         <Suspense>
           <Physics debug>
-            <Experience light={lightRef} />
+            <Experience light={lightRef} ambient={showAmbient} />
           </Physics>
         </Suspense>
         <axesHelper args={[15]} position={[0, 0, 0]} />
@@ -52,7 +57,7 @@ function App() {
         <Stats />
         <Perf position="bottom-left" />
       </Canvas>
-      <LightControl lightRef={lightRef} />
+      <LightControl lightRef={lightRef} ambientRef={changeAmbient} />
     </KeyboardControls>
 
   </>

@@ -6,8 +6,9 @@ import { Controls } from "../App";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js"
 import * as THREE from "three";
 import DraggableBox from "./DraggableBox";
+import CityScene from "./CityScene";
 
-export const Experience = ({ light }) => {
+export const Experience = ({ light, ambient }) => {
 
 
   // const shiba = useLoader(GLTFLoader, "../assets/shiba/scene.gltf");
@@ -82,9 +83,21 @@ export const Experience = ({ light }) => {
 
   return (
     <>
-      <ambientLight intensity={0.5} />
-      <directionalLight ref={light} position={[-10, 10, 0]} intensity={0.4} />
+      {/* Camera Controlling Part */}
+      {ambient && <ambientLight intensity={0.5} />}
+      <directionalLight ref={light} position={[-10, 10, 0]} intensity={0.4}
+        castShadow
+        shadow-mapSize-width={1024}
+        shadow-mapSize-height={1024}
+        shadow-camera-far={50}
+        shadow-camera-left={-10}
+        shadow-camera-right={10}
+        shadow-camera-top={10}
+        shadow-camera-bottom={-10} />
       {!isDragging && <OrbitControls />}
+
+      {/* City, Roads, Cars Will Go here */}
+      <CityScene />
 
 
       <RigidBody position={[-2, 5, 0]} colliders={"ball"}>
@@ -105,12 +118,14 @@ export const Experience = ({ light }) => {
 
         <primitive object={shiba.scene} ref={shibaRef} scale={1.0} position={[4, 4, 4]} />
       </RigidBody>
+      {/* <primitive object={city.scene} ref={shibaRef} scale={1.0} position={[0, -1, 0]} /> */}
       <Box
         position={[2, 3, 0]}
         onPointerEnter={() => setHover(true)}
         onPointerLeave={() => setHover(false)}
         onClick={() => jump()}
-        ref={shibaRef}>
+        ref={shibaRef}
+        castShadow>
         <meshStandardMaterial color={hover ? "hotpink" : "royalblue"} />
       </Box>
       <RigidBody
@@ -135,7 +150,7 @@ export const Experience = ({ light }) => {
 
       <RigidBody type="kinematicPosition" position={[0, 0.75, 0]} ref={kicker}>
         <group position={[3, 3, 3]}>
-          <Box args={[5, 0.5, 0.5]}>
+          <Box args={[5, 0.5, 0.5]} castShadow>
             <meshStandardMaterial color="peachpuff" />
           </Box>
         </group>
@@ -143,8 +158,11 @@ export const Experience = ({ light }) => {
 
 
       <RigidBody type="fixed" name="floor" restitution={1}>
-        <Box position={[0, 0, 0]} args={[100, 1, 100]}>
+        <Box position={[0, 0, 0]} args={[100, 2, 100]}>
           <meshStandardMaterial color="green" />
+          <mesh
+            receiveShadow
+          />
         </Box>
       </RigidBody>
     </>

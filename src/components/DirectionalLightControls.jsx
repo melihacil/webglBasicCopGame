@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Slider, Box as MuiBox, Typography } from '@mui/material';
+import { Slider, Box as MuiBox, Typography, Checkbox } from '@mui/material';
 
-export default function LightControl({ lightRef }) {
+export default function LightControl({ lightRef, ambientRef }) {
     const [intensity, setIntensity] = useState(0.4);
     const [position, setPosition] = useState([-10, 10, 0]);
 
@@ -22,7 +22,7 @@ export default function LightControl({ lightRef }) {
     };
 
     return (
-        <MuiBox sx={{ position: 'absolute', top: 20, left: 20, zIndex: 1, backgroundColor: 'white', padding: 2, borderRadius: 1 }}>
+        <MuiBox sx={{ position: 'absolute', top: 50, left: 10, zIndex: 1, backgroundColor: 'white', padding: 2, borderRadius: 1 }}>
             <Typography variant="h6">Light Control</Typography>
             <Typography variant="body1">Intensity</Typography>
             <Slider value={intensity} onChange={handleIntensityChange} min={0} max={2} step={0.1} />
@@ -32,6 +32,8 @@ export default function LightControl({ lightRef }) {
             <Slider value={position[1]} onChange={(e, val) => handlePositionChange(1, val)} min={-20} max={20} step={0.1} />
             <Typography variant="body1">Position Z</Typography>
             <Slider value={position[2]} onChange={(e, val) => handlePositionChange(2, val)} min={-20} max={20} step={0.1} />
+            <Typography variant="body1">Ambient Lighting</Typography>
+            <Checkbox defaultChecked onChange={ambientRef} />
         </MuiBox>
     );
 }

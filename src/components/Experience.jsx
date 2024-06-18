@@ -2,18 +2,17 @@ import { Box, OrbitControls, Torus, useGLTF, useKeyboardControls } from "@react-
 import { useFrame, useLoader, useThree } from "@react-three/fiber";
 import { RigidBody, quat } from "@react-three/rapier";
 import { useRef, useState } from "react";
-import { Controls } from "../App";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js"
 import * as THREE from "three";
 
 import CityScene from "./CityScene";
+import Player from "./Player";
 
 
 export const Experience = ({ light, ambient }) => {
 
 
   // const shiba = useLoader(GLTFLoader, "../assets/shiba/scene.gltf");
-  const shiba = useGLTF("/assets/police/scene.gltf");
 
   const carModel = useGLTF("/assets/car/policeCarV1.glb").scene;
 
@@ -23,87 +22,10 @@ export const Experience = ({ light, ambient }) => {
   const { camera } = useThree();
   // USE REDUX FOR COMPONENT FORWARDING LATER ON
   const [isDragging, setDragging] = useState(false);
-  const cube = useRef();
-  const isOnFloor = useRef(true);
+
   const kicker = useRef();
 
 
-
-  const direction = new THREE.Vector3();
-  const right = new THREE.Vector3();
-  const forward = new THREE.Vector3();
-
-  camera.getWorldDirection(direction);
-  right.setFromMatrixColumn(camera.matrix, 0);
-  right.crossVectors(camera.up, direction);
-  forward.copy(direction);
-
-  forward.y = 0;
-  forward.normalize();
-  right.y = 0;
-  right.normalize();
-
-  const jumpPressed = useKeyboardControls((state) => state[Controls.jump]);
-  const leftPressed = useKeyboardControls((state) => state[Controls.left]);
-  const rightPressed = useKeyboardControls((state) => state[Controls.right]);
-  const backPressed = useKeyboardControls((state) => state[Controls.back]);
-  const forwardPressed = useKeyboardControls(
-    (state) => state[Controls.forward]
-  );
-
-  const speed = useRef(5);
-  const handleMovement = () => {
-    // if (!isOnFloor.current) {
-    //   return;
-    // }
-    if (rightPressed) {
-      //cube.current.applyImpulse({ x: 0.5, y: 0, z: 0 });
-      cube.current.applyImpulse(right.multiplyScalar(-0.5));
-    }
-    if (leftPressed) {
-      // cube.current.applyImpulse({ x: -0.5, y: 0, z: 0 });
-      cube.current.applyImpulse(right.multiplyScalar(0.5));
-
-    }
-
-    if (forwardPressed) {
-      // cube.current.applyImpulse({ x: 0, y: 0, z: -0.5 });
-      cube.current.applyImpulse(forward.multiplyScalar(0.5));
-
-    }
-    if (backPressed) {
-      // cube.current.applyImpulse({ x: 0, y: 0, z: 0.5 });
-      cube.current.applyImpulse(forward.multiplyScalar(-0.5));
-
-    }
-  };
-  useFrame((_state, delta) => {
-    if (jumpPressed) {
-      jump();
-      console.log("Player Jumping");
-    }
-    handleMovement();
-    if (isOnFloor.current) {
-      console.log("Hey, I'm executing every frame!")
-    }
-    // const curRotation = quat(kicker.current.rotation());
-    // const incrementRotation = new THREE.Quaternion().setFromAxisAngle(
-    //   new THREE.Vector3(0, 1, 0),
-    //   delta * speed.current
-    // );
-    // curRotation.multiply(incrementRotation);
-    // kicker.current.setNextKinematicRotation(curRotation);
-
-    speed.current += delta;
-  });
-
-  const jump = () => {
-    //if (isOnFloor.current) {
-    cube.current.applyImpulse({ x: 0, y: 1, z: 0 });
-    //cube.current.addForce({ x: 0, y: 5, z: 0 });
-    isOnFloor.current = false;
-    //}
-  };
 
   return (
     <>
@@ -123,7 +45,7 @@ export const Experience = ({ light, ambient }) => {
       {/* City, Roads, Cars Will Go here */}
       <CityScene setDragging={setDragging} />
 
-
+      <Player />
 
 
       {/* <PoliceCar /> */}
@@ -132,12 +54,7 @@ export const Experience = ({ light, ambient }) => {
           <meshStandardMaterial color="yellow" />
         </Torus>
       </RigidBody> */}
-      <RigidBody
-        ref={cube}
-      >
 
-        <primitive object={shiba.scene} ref={shibaRef} scale={1.0} position={[4, 4, 4]} />
-      </RigidBody>
 
 
       {/* <RigidBody>

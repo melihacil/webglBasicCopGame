@@ -13,7 +13,7 @@ export const Experience = ({ light, ambient }) => {
 
 
   // const shiba = useLoader(GLTFLoader, "../assets/shiba/scene.gltf");
-  const shiba = useGLTF("/assets/shiba/scene.gltf");
+  const shiba = useGLTF("/assets/police/scene.gltf");
 
   const carModel = useGLTF("/assets/car/policeCarV1.glb").scene;
 
@@ -57,17 +57,24 @@ export const Experience = ({ light, ambient }) => {
     //   return;
     // }
     if (rightPressed) {
-      cube.current.applyImpulse({ x: 0.5, y: 0, z: 0 });
+      //cube.current.applyImpulse({ x: 0.5, y: 0, z: 0 });
+      cube.current.applyImpulse(right.multiplyScalar(-0.5));
     }
     if (leftPressed) {
-      cube.current.applyImpulse({ x: -0.5, y: 0, z: 0 });
+      // cube.current.applyImpulse({ x: -0.5, y: 0, z: 0 });
+      cube.current.applyImpulse(right.multiplyScalar(0.5));
+
     }
 
     if (forwardPressed) {
-      cube.current.applyImpulse({ x: 0, y: 0, z: -0.5 });
+      // cube.current.applyImpulse({ x: 0, y: 0, z: -0.5 });
+      cube.current.applyImpulse(forward.multiplyScalar(0.5));
+
     }
     if (backPressed) {
-      cube.current.applyImpulse({ x: 0, y: 0, z: 0.5 });
+      // cube.current.applyImpulse({ x: 0, y: 0, z: 0.5 });
+      cube.current.applyImpulse(forward.multiplyScalar(-0.5));
+
     }
   };
   useFrame((_state, delta) => {

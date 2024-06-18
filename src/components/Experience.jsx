@@ -20,12 +20,28 @@ export const Experience = ({ light, ambient }) => {
   const toyotaCar = useGLTF("/assets/car/toyota.glb");
   const shibaRef = useRef();
   const [hover, setHover] = useState(false);
-
+  const { camera } = useThree();
   // USE REDUX FOR COMPONENT FORWARDING LATER ON
   const [isDragging, setDragging] = useState(false);
   const cube = useRef();
   const isOnFloor = useRef(true);
   const kicker = useRef();
+
+
+
+  const direction = new THREE.Vector3();
+  const right = new THREE.Vector3();
+  const forward = new THREE.Vector3();
+
+  camera.getWorldDirection(direction);
+  right.setFromMatrixColumn(camera.matrix, 0);
+  right.crossVectors(camera.up, direction);
+  forward.copy(direction);
+
+  forward.y = 0;
+  forward.normalize();
+  right.y = 0;
+  right.normalize();
 
   const jumpPressed = useKeyboardControls((state) => state[Controls.jump]);
   const leftPressed = useKeyboardControls((state) => state[Controls.left]);

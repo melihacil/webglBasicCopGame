@@ -7,7 +7,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js"
 import * as THREE from "three";
 import DraggableBox from "./DraggableBox";
 import CityScene from "./CityScene";
-import DraggableCar from "./DraggableCar";
+import DraggableObject from "./DraggableObject";
 import { PoliceCar } from "./Car";
 
 export const Experience = ({ light, ambient }) => {
@@ -107,8 +107,10 @@ export const Experience = ({ light, ambient }) => {
       </RigidBody>
       <DraggableBox startDragging={setDragging} />
 
-      <PoliceCar />
-      {/* <DraggableCar startDragging={setDragging} modelLocation="/assets/car/policeCarV1.glb" modelPosition={[0, 2, -20]} /> */}
+      {/* <PoliceCar /> */}
+      <DraggableObject startDragging={setDragging} modelLocation="/assets/car/policeCarV1.glb" initialPosition={[0, 2, 20]} />
+      <DraggableObject startDragging={setDragging} modelLocation="/assets/car/toyota.glb" initialPosition={[10, 2, 10]} scale={1.0} />
+
       {/* <RigidBody>
         <Torus position={[1, 2, 0]}>
           <meshStandardMaterial color="yellow" />

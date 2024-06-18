@@ -4,32 +4,25 @@ import { RigidBody } from '@react-three/rapier';
 
 const Car = forwardRef(({ modelLocation, modelPosition, ...props }, ref) => {
     const car = useGLTF(modelLocation);
-    const carRef = useRef();
+    const internalRef = useRef();
 
     useEffect(() => {
-        if (carRef.current) {
-            carRef.current.traverse((child) => {
+        const currentRef = ref || internalRef;
+        if (currentRef.current) {
+            currentRef.current.traverse((child) => {
                 if (child.isMesh) {
                     child.castShadow = true;
                     child.receiveShadow = true;
                 }
             });
         }
-    }, [carRef]);
-
-    // Combine refs: forwarded ref and local ref
-    const combinedRef = (node) => {
-        if (ref) {
-            ref.current = node;
-        }
-        carRef.current = node;
-    };
+    }, [ref]);
 
     return (
         <RigidBody>
             <primitive
                 object={car.scene}
-                ref={combinedRef}
+                ref={ref || internalRef}
                 scale={4.0}
                 position={modelPosition}
                 {...props}
@@ -41,5 +34,5 @@ const Car = forwardRef(({ modelLocation, modelPosition, ...props }, ref) => {
 export default Car;
 
 export function PoliceCar() {
-    return <Car modelLocation="/assets/car/policeCarV1.glb" modelPosition={[0, 2, -30]} />;
+    return <Car modelLocation="/assets/car/policeCarV1.glb" modelPosition={[0, 3, -30]} />;
 }

@@ -9,49 +9,54 @@ import DraggableBox from "./DraggableBox";
 import CityScene from "./CityScene";
 
 export const Experience = ({ light, ambient }) => {
-
-
-  // const shiba = useLoader(GLTFLoader, "../assets/shiba/scene.gltf");
-  const shiba = useGLTF("/assets/shiba/scene.gltf");
+  const shiba = useGLTF("/assets/police/scene.gltf");
   const shibaRef = useRef();
   const [hover, setHover] = useState(false);
   const [isDragging, setDragging] = useState(false);
   const cube = useRef();
   const isOnFloor = useRef(true);
   const kicker = useRef();
+  const { camera } = useThree();
 
   const jumpPressed = useKeyboardControls((state) => state[Controls.jump]);
   const leftPressed = useKeyboardControls((state) => state[Controls.left]);
   const rightPressed = useKeyboardControls((state) => state[Controls.right]);
   const backPressed = useKeyboardControls((state) => state[Controls.back]);
-  const forwardPressed = useKeyboardControls(
-    (state) => state[Controls.forward]
-  );
-
-
-
+  const forwardPressed = useKeyboardControls((state) => state[Controls.forward]);
 
   const speed = useRef(5);
+
   const handleMovement = () => {
-    // if (!isOnFloor.current) {
-    //   return;
-    // }
+    const direction = new THREE.Vector3();
+    const right = new THREE.Vector3();
+    const forward = new THREE.Vector3();
+    
+    camera.getWorldDirection(direction);
+    right.setFromMatrixColumn(camera.matrix, 0);
+    right.crossVectors(camera.up, direction);
+    forward.copy(direction);
+
+    forward.y = 0;
+    forward.normalize();
+    right.y = 0;
+    right.normalize();
+
     if (rightPressed) {
-      cube.current.applyImpulse({ x: 0.5, y: 0, z: 0 });
+      cube.current.applyImpulse(right.multiplyScalar(-0.5));
     }
     if (leftPressed) {
-      cube.current.applyImpulse({ x: -0.5, y: 0, z: 0 });
+      cube.current.applyImpulse(right.multiplyScalar(0.5));
     }
-
     if (forwardPressed) {
-      cube.current.applyImpulse({ x: 0, y: 0, z: -0.5 });
+      cube.current.applyImpulse(forward.multiplyScalar(0.5));
     }
     if (backPressed) {
-      cube.current.applyImpulse({ x: 0, y: 0, z: 0.5 });
+      cube.current.applyImpulse(forward.multiplyScalar(-0.5));
     }
   };
+
   useFrame((_state, delta) => {
-    if (jumpPressed) {
+    if (jumpPressed && isOnFloor.current) {
       jump();
       console.log("Player Jumping");
     }
@@ -62,28 +67,17 @@ export const Experience = ({ light, ambient }) => {
     shibaRef.current.rotateX += 0.1;
     shibaRef.current.rotateY += 0.1;
     shibaRef.current.rotateZ += 0.1;
-    // const curRotation = quat(kicker.current.rotation());
-    // const incrementRotation = new THREE.Quaternion().setFromAxisAngle(
-    //   new THREE.Vector3(0, 1, 0),
-    //   delta * speed.current
-    // );
-    // curRotation.multiply(incrementRotation);
-    // kicker.current.setNextKinematicRotation(curRotation);
 
     speed.current += delta;
   });
 
   const jump = () => {
-    //if (isOnFloor.current) {
     cube.current.applyImpulse({ x: 0, y: 1, z: 0 });
-    //cube.current.addForce({ x: 0, y: 5, z: 0 });
     isOnFloor.current = false;
-    //}
   };
 
   return (
     <>
-      {/* Camera Controlling Part */}
       {ambient && <ambientLight intensity={0.5} />}
       <directionalLight ref={light} position={[-10, 10, 0]} intensity={0.4}
         castShadow
@@ -96,9 +90,7 @@ export const Experience = ({ light, ambient }) => {
         shadow-camera-bottom={-10} />
       {!isDragging && <OrbitControls />}
 
-      {/* City, Roads, Cars Will Go here */}
       <CityScene />
-
 
       <RigidBody position={[-2, 5, 0]} colliders={"ball"}>
         <Sphere >
@@ -107,18 +99,9 @@ export const Experience = ({ light, ambient }) => {
       </RigidBody>
       <DraggableBox startDragging={setDragging} />
 
-      {/* <RigidBody>
-        <Torus position={[1, 2, 0]}>
-          <meshStandardMaterial color="yellow" />
-        </Torus>
-      </RigidBody> */}
-      <RigidBody
-        ref={cube}
-      >
-
+      <RigidBody ref={cube}>
         <primitive object={shiba.scene} ref={shibaRef} scale={1.0} position={[4, 4, 4]} />
       </RigidBody>
-      {/* <primitive object={city.scene} ref={shibaRef} scale={1.0} position={[0, -1, 0]} /> */}
       <Box
         position={[2, 3, 0]}
         onPointerEnter={() => setHover(true)}
@@ -156,13 +139,10 @@ export const Experience = ({ light, ambient }) => {
         </group>
       </RigidBody>
 
-
       <RigidBody type="fixed" name="floor" restitution={1}>
         <Box position={[0, 0, 0]} args={[100, 2, 100]}>
           <meshStandardMaterial color="green" />
-          <mesh
-            receiveShadow
-          />
+          <mesh receiveShadow />
         </Box>
       </RigidBody>
     </>

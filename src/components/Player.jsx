@@ -24,7 +24,7 @@ export default function Player() {
     const forwardPressed = useKeyboardControls((state) => state[Controls.forward]);
 
     const speed = useRef(5);
-    const maxSpeed = 10;
+    const maxSpeed = 100;
 
     const jump = () => {
         if (isOnFloor.current) {
@@ -32,6 +32,11 @@ export default function Player() {
             isOnFloor.current = false;
         }
     };
+
+
+    // cube.current.canSleep(false);
+    // cube.current.can_Sleep(false);
+    // cube.current.can_sleep(false);
 
     const handleMovement = () => {
         camera.getWorldDirection(direction);
@@ -47,6 +52,7 @@ export default function Player() {
         velocity.set(0, 0, 0);
 
         if (rightPressed) {
+            cube.current.wakeUp();
             velocity.add(right.negate());
         }
         if (leftPressed) {
@@ -62,7 +68,7 @@ export default function Player() {
 
         if (velocity.length() > 0) {
             velocity.normalize().multiplyScalar(speed.current);
-            cube.current.applyImpulse(velocity.multiplyScalar(0.1));
+            cube.current.applyImpulse(velocity.multiplyScalar(2));
         }
     };
 
@@ -97,8 +103,8 @@ export default function Player() {
 
     return (
         <>
-            <RigidBody ref={cube}>
-                <primitive object={playerModel.scene} scale={1.0} position={[4, 4, 4]} />
+            <RigidBody ref={cube} setCanSleep={false} lockRotations >
+                <primitive object={playerModel.scene} scale={6.0} position={[8, 6, 8]} />
             </RigidBody>
         </>
     );

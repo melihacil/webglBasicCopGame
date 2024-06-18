@@ -7,12 +7,15 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js"
 import * as THREE from "three";
 import DraggableBox from "./DraggableBox";
 import CityScene from "./CityScene";
+import DraggableCar from "./DraggableCar";
+import { PoliceCar } from "./Car";
 
 export const Experience = ({ light, ambient }) => {
 
 
   // const shiba = useLoader(GLTFLoader, "../assets/shiba/scene.gltf");
   const shiba = useGLTF("/assets/shiba/scene.gltf");
+  const toyotaCar = useGLTF("/assets/car/toyota.glb");
   const shibaRef = useRef();
   const [hover, setHover] = useState(false);
   const [isDragging, setDragging] = useState(false);
@@ -59,9 +62,6 @@ export const Experience = ({ light, ambient }) => {
     if (isOnFloor.current) {
       console.log("Hey, I'm executing every frame!")
     }
-    shibaRef.current.rotateX += 0.1;
-    shibaRef.current.rotateY += 0.1;
-    shibaRef.current.rotateZ += 0.1;
     // const curRotation = quat(kicker.current.rotation());
     // const incrementRotation = new THREE.Quaternion().setFromAxisAngle(
     //   new THREE.Vector3(0, 1, 0),
@@ -107,6 +107,8 @@ export const Experience = ({ light, ambient }) => {
       </RigidBody>
       <DraggableBox startDragging={setDragging} />
 
+      <PoliceCar />
+      {/* <DraggableCar startDragging={setDragging} modelLocation="/assets/car/policeCarV1.glb" modelPosition={[0, 2, -20]} /> */}
       {/* <RigidBody>
         <Torus position={[1, 2, 0]}>
           <meshStandardMaterial color="yellow" />
@@ -118,6 +120,14 @@ export const Experience = ({ light, ambient }) => {
 
         <primitive object={shiba.scene} ref={shibaRef} scale={1.0} position={[4, 4, 4]} />
       </RigidBody>
+
+
+      {/* <RigidBody>
+
+        <primitive object={toyotaCar.scene} scale={1.0} position={[4, 4, 4]} />
+      </RigidBody> */}
+
+
       {/* <primitive object={city.scene} ref={shibaRef} scale={1.0} position={[0, -1, 0]} /> */}
       <Box
         position={[2, 3, 0]}

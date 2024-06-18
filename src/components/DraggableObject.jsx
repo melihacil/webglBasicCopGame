@@ -17,6 +17,7 @@ export default function DraggableObject({ modelLocation, initialPosition, startD
     const handlePointerDown = (event) => {
         event.stopPropagation();
         setDragging(true);
+        startDragging(true);
 
         // Calculate mouse position in normalized device coordinates (-1 to +1)
         mouse.current.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -109,7 +110,7 @@ export default function DraggableObject({ modelLocation, initialPosition, startD
             scale={scale || 4.0}
             position={initialPosition}
             onPointerEnter={() => setHover(true)}
-            onPointerLeave={() => { setHover(false); setDragging(false); }}
+            onPointerLeave={() => { setHover(false); setDragging(false); startDragging(false); }}
             onPointerDown={handlePointerDown}
         />
     );

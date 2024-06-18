@@ -1,23 +1,27 @@
-import { Box, OrbitControls, Sphere, Torus, useGLTF, useKeyboardControls } from "@react-three/drei";
+import { Box, OrbitControls, Torus, useGLTF, useKeyboardControls } from "@react-three/drei";
 import { useFrame, useLoader, useThree } from "@react-three/fiber";
 import { RigidBody, quat } from "@react-three/rapier";
 import { useRef, useState } from "react";
 import { Controls } from "../App";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js"
 import * as THREE from "three";
-import DraggableBox from "./DraggableBox";
+
 import CityScene from "./CityScene";
-import DraggableObject from "./DraggableObject";
-import { PoliceCar } from "./Car";
+
 
 export const Experience = ({ light, ambient }) => {
 
 
   // const shiba = useLoader(GLTFLoader, "../assets/shiba/scene.gltf");
   const shiba = useGLTF("/assets/shiba/scene.gltf");
+
+  const carModel = useGLTF("/assets/car/policeCarV1.glb").scene;
+
   const toyotaCar = useGLTF("/assets/car/toyota.glb");
   const shibaRef = useRef();
   const [hover, setHover] = useState(false);
+
+  // USE REDUX FOR COMPONENT FORWARDING LATER ON
   const [isDragging, setDragging] = useState(false);
   const cube = useRef();
   const isOnFloor = useRef(true);
@@ -30,9 +34,6 @@ export const Experience = ({ light, ambient }) => {
   const forwardPressed = useKeyboardControls(
     (state) => state[Controls.forward]
   );
-
-
-
 
   const speed = useRef(5);
   const handleMovement = () => {
@@ -97,20 +98,12 @@ export const Experience = ({ light, ambient }) => {
       {!isDragging && <OrbitControls />}
 
       {/* City, Roads, Cars Will Go here */}
-      <CityScene />
+      <CityScene setDragging={setDragging} />
 
 
-      <RigidBody position={[-2, 5, 0]} colliders={"ball"}>
-        <Sphere >
-          <meshStandardMaterial color="pink" />
-        </Sphere>
-      </RigidBody>
-      <DraggableBox startDragging={setDragging} />
+
 
       {/* <PoliceCar /> */}
-      <DraggableObject startDragging={setDragging} modelLocation="/assets/car/policeCarV1.glb" initialPosition={[0, 2, 20]} />
-      <DraggableObject startDragging={setDragging} modelLocation="/assets/car/toyota.glb" initialPosition={[10, 2, 10]} scale={1.0} />
-
       {/* <RigidBody>
         <Torus position={[1, 2, 0]}>
           <meshStandardMaterial color="yellow" />
@@ -169,14 +162,7 @@ export const Experience = ({ light, ambient }) => {
       </RigidBody>
 
 
-      <RigidBody type="fixed" name="floor" restitution={1}>
-        <Box position={[0, 0, 0]} args={[100, 2, 100]}>
-          <meshStandardMaterial color="green" />
-          <mesh
-            receiveShadow
-          />
-        </Box>
-      </RigidBody>
+
     </>
   );
 };

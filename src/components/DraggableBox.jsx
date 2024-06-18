@@ -16,7 +16,7 @@ export default function DraggableBox({ startDragging }) {
     const handlePointerDown = (event) => {
         event.stopPropagation();
         setDragging(true);
-
+        startDragging(true);
         // Calculate mouse position in normalized device coordinates (-1 to +1)
         mouse.current.x = (event.clientX / window.innerWidth) * 2 - 1;
         mouse.current.y = - (event.clientY / window.innerHeight) * 2 + 1;
@@ -95,7 +95,7 @@ export default function DraggableBox({ startDragging }) {
             ref={boxRef}
             position={[3, 5, 0]}
             onPointerEnter={() => setHover(true)}
-            onPointerLeave={() => { setHover(false); setDragging(false); }}
+            onPointerLeave={() => { setHover(false); setDragging(false); startDragging(false); }}
             onPointerDown={handlePointerDown}
         >
             <meshStandardMaterial color={hover ? 'hotpink' : 'royalblue'} />

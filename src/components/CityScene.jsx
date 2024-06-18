@@ -14,6 +14,8 @@ export default function CityScene() {
                 if (child.isMesh) {
                     // Set up any additional properties or behaviors for the mesh collider
                     // For example, you can set the material or modify geometry here
+                    child.castShadow = true;
+                    child.receiveShadow = true;
                 }
             });
         }

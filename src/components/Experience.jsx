@@ -32,7 +32,7 @@ export const Experience = ({ light, ambient }) => {
       {/* Camera Controlling Part */}
       {ambient && <ambientLight intensity={0.5} />}
       <directionalLight ref={light} position={[-10, 10, 0]} intensity={0.4}
-        castShadow
+        castShadow={true}
         shadow-mapSize-width={1024}
         shadow-mapSize-height={1024}
         shadow-camera-far={50}

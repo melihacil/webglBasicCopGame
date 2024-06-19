@@ -1,9 +1,10 @@
 import { useGLTF, useKeyboardControls } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import { RigidBody } from "@react-three/rapier";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import * as THREE from "three";
 import { Controls } from "../App";
+import Coin from "./Coin";
 
 export default function Player() {
     const playerModel = useGLTF("/assets/police/scene.gltf");
@@ -24,13 +25,20 @@ export default function Player() {
     const forwardPressed = useKeyboardControls((state) => state[Controls.forward]);
 
     const speed = useRef(5);
-    const maxSpeed = 100;
+    const maxSpeed = 10;
+
+    const [coins, setCoins] = useState([{ id: 1, position: [5, 10, 5] }, { id: 2, position: [-5, 10, -5] }]); // Example coins
+
+
+
 
     const jump = () => {
-        if (isOnFloor.current) {
-            cube.current.applyImpulse({ x: 0, y: 5, z: 0 });
-            isOnFloor.current = false;
-        }
+        // if (isOnFloor.current) {
+        cube.current.wakeUp();
+
+        cube.current.applyImpulse({ x: 0, y: 150, z: 0 });
+        isOnFloor.current = false;
+        // }
     };
 
 
@@ -56,13 +64,16 @@ export default function Player() {
             velocity.add(right.negate());
         }
         if (leftPressed) {
+            cube.current.wakeUp();
             velocity.add(right);
         }
 
         if (forwardPressed) {
+            cube.current.wakeUp();
             velocity.add(forward);
         }
         if (backPressed) {
+            cube.current.wakeUp();
             velocity.add(forward.negate());
         }
 
@@ -71,6 +82,12 @@ export default function Player() {
             cube.current.applyImpulse(velocity.multiplyScalar(2));
         }
     };
+
+    const handleCoinCollect = (coinId) => {
+        setCoins((prevCoins) => prevCoins.filter((coin) => coin.id !== coinId));
+        console.log(`Coin ${coinId} collected!`);
+    };
+
 
     useFrame((_state, delta) => {
         if (jumpPressed) {
@@ -103,9 +120,14 @@ export default function Player() {
 
     return (
         <>
-            <RigidBody ref={cube} setCanSleep={false} lockRotations >
-                <primitive object={playerModel.scene} scale={6.0} position={[8, 6, 8]} />
+            <RigidBody ref={cube} setCanSleep={false} lockRotations name="player" >
+                <primitive object={playerModel.scene} name="player" scale={5.0} position={[8, 6, 8]} />
             </RigidBody>
+
+
+            {coins.map((coin) => (
+                <Coin key={coin.id} position={coin.position} onCollect={() => handleCoinCollect(coin.id)} />
+            ))}
         </>
     );
 }

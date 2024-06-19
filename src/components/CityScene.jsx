@@ -35,7 +35,7 @@ export default function CityScene({ setDragging }) {
         <DraggableBox startDragging={setDragging} />
 
         {/* <DraggableObject startDragging={setDragging} modelLocation="/assets/car/policeCarV1.glb" initialPosition={[0, 2, 20]} /> */}
-        <DraggableObject startDragging={setDragging} modelLocation="/assets/car/toyota.glb" initialPosition={[10, 2, 10]} scale={1.0} />
+        <DraggableObject startDragging={setDragging} modelLocation="/assets/car/toyota.glb" initialPosition={[30, 0.8, -65]} scale={1.0} />
         <DraggablePhysicsObj
             modelLocation="/assets/car/policeCarV2.glb"
             initialPosition={[6, 5, 6]}
@@ -57,7 +57,7 @@ export default function CityScene({ setDragging }) {
 
 
         <RigidBody type="fixed" name="floor" restitution={1}>
-            <Box position={[0, 0, 0]} args={[100, 2, 100]}>
+            <Box position={[1, 0, -5]} args={[100, 2, 100]}>
                 <meshStandardMaterial color="green" />
                 <mesh
                     receiveShadow

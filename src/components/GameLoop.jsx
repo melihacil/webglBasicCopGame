@@ -6,8 +6,7 @@ import Spawner from "./Spawner";
 import * as THREE from "three";
 
 
-export default function GameLoop({ light, ambient, setScore }) {
-
+export default function GameLoop({ light, ambient, setScore, sHelper }) {
 
   // const shiba = useLoader(GLTFLoader, "../assets/shiba/scene.gltf");
   // USE REDUX FOR COMPONENT FORWARDING LATER ON
@@ -15,16 +14,10 @@ export default function GameLoop({ light, ambient, setScore }) {
 
   const shadowCameraRef = useRef();
 
-  // const light1 = new THREE.DirectionalLight(0xffffff);
-  // light1.position.set(1, 1, 1);
-  // light1.castShadow = true;
-  // light1.shadow.camera.near = 0.01; // same as the camera
-  // light1.shadow.camera.far = 1000; // same as the camera
-  // light1.shadow.camera.fov = 50; // same as the camera
-  // light1.shadow.mapSize.width = 2048;
-  // light1.shadow.mapSize.height = 2048;
-  useHelper(light, THREE.DirectionalLightHelper);
-  useHelper(shadowCameraRef, THREE.CameraHelper);
+  // Will remove 
+  const lightHelper = useHelper(light, THREE.DirectionalLightHelper);
+  const shadowHelper = useHelper(shadowCameraRef, THREE.CameraHelper);
+
 
   return (
     <>
@@ -47,13 +40,8 @@ export default function GameLoop({ light, ambient, setScore }) {
 
       {/* City, Roads, Cars Will Go here */}
       <CityScene setDragging={setDragging} />
-
       <Player />
-
       <Spawner setScore={setScore} />
-
-
-
     </>
   );
 };

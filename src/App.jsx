@@ -33,6 +33,8 @@ function App() {
   const [isPlaying, setIsPlaying] = useState(false);
 
 
+  const [sHelper, setSHelper] = useState(false);
+
   const lightRef = useRef();
   const [showAmbient, setAmbient] = useState(true);
 
@@ -52,8 +54,8 @@ function App() {
       <Canvas shadows camera={{ position: [10, 10, 10], fov: 60 }}>
         <color attach="background" args={["#ececec"]} />
         <Suspense>
-          <Physics>
-            <GameLoop light={lightRef} ambient={showAmbient} setScore={setScore} />
+          <Physics debug>
+            <GameLoop light={lightRef} ambient={showAmbient} setScore={setScore} sHelper={sHelper} />
           </Physics>
         </Suspense>
         {/* <axesHelper args={[15]} position={[0, 0, 0]} />
@@ -61,7 +63,7 @@ function App() {
         <Stats />
         <Perf position="bottom-left" />
       </Canvas>
-      <LightControl lightRef={lightRef} ambientRef={changeAmbient} />
+      <LightControl lightRef={lightRef} ambientRef={changeAmbient} shadowHelper={setSHelper} />
       <GameUI score={score} setIsPlaying={setIsPlaying} />
       <CountdownTimer isPlaying={isPlaying} setIsPlaying={setIsPlaying} />
     </KeyboardControls>

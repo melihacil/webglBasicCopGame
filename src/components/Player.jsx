@@ -1,12 +1,14 @@
 import { useGLTF, useKeyboardControls } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import { RigidBody } from "@react-three/rapier";
-import { useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { Controls } from "../App";
 
+
 export default function Player() {
     const playerModel = useGLTF("/assets/police/scene.gltf");
+    useLayoutEffect(() => playerModel.scene.traverse(o => o.isMesh && (o.castShadow = o.receiveShadow = true)), [])
 
     const direction = new THREE.Vector3();
     const right = new THREE.Vector3();

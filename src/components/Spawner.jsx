@@ -1,6 +1,7 @@
-import Coin from "./Coin";
+import { useState } from "react";
+import Coin from "./Spawnables/Coin.jsx";
 
-export default function Spawner() {
+export default function Spawner({ setScore }) {
 
 
 
@@ -9,6 +10,7 @@ export default function Spawner() {
     const handleCoinCollect = (coinId) => {
         setCoins((prevCoins) => prevCoins.filter((coin) => coin.id !== coinId));
         console.log(`Coin ${coinId} collected!`);
+        setScore(prev => prev + 1);
     };
 
 

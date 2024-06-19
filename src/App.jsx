@@ -5,8 +5,9 @@ import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import GameLoop from "./components/GameLoop";
 import { Stats } from '@react-three/drei'
 import { Perf } from "r3f-perf";
-import LightControl from "./components/DirectionalLightControls";
-import GameUI from "./components/GameUI";
+import LightControl from "./components/UI/DirectionalLightControls.jsx";
+import GameUI from "./components/UI/GameUI.jsx";
+import CountdownTimer from "./components/UI/Countdown.jsx";
 
 export const Controls = {
   forward: "forward",
@@ -51,17 +52,18 @@ function App() {
       <Canvas shadows camera={{ position: [10, 10, 10], fov: 60 }}>
         <color attach="background" args={["#ececec"]} />
         <Suspense>
-          <Physics debug>
-            <GameLoop light={lightRef} ambient={showAmbient} />
+          <Physics>
+            <GameLoop light={lightRef} ambient={showAmbient} setScore={setScore} />
           </Physics>
         </Suspense>
-        <axesHelper args={[15]} position={[0, 0, 0]} />
-        <gridHelper args={[20]} />
+        {/* <axesHelper args={[15]} position={[0, 0, 0]} />
+        <gridHelper args={[20]} /> */}
         <Stats />
         <Perf position="bottom-left" />
       </Canvas>
       <LightControl lightRef={lightRef} ambientRef={changeAmbient} />
       <GameUI score={score} setIsPlaying={setIsPlaying} />
+      <CountdownTimer isPlaying={isPlaying} setIsPlaying={setIsPlaying} />
     </KeyboardControls>
 
   </>

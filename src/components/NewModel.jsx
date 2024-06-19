@@ -2,6 +2,7 @@ import { useGLTF } from "@react-three/drei";
 
 const LoadNewModel = (modelLocation) => {
     const model = useGLTF(modelLocation);
+    // const model = useGLTF(modelLocation).scene.clone();
 
     if (modelLocation) {
         console.log(modelLocation);

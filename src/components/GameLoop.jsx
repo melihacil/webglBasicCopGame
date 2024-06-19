@@ -1,42 +1,56 @@
-import { Box, OrbitControls, Torus, useGLTF, useKeyboardControls } from "@react-three/drei";
-import { useFrame, useLoader, useThree } from "@react-three/fiber";
-import { RigidBody, quat } from "@react-three/rapier";
+import { OrbitControls, useHelper } from "@react-three/drei";
 import { useRef, useState } from "react";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js"
-import * as THREE from "three";
-
 import CityScene from "./CityScene";
 import Player from "./Player";
+import Spawner from "./Spawner";
+import * as THREE from "three";
 
 
-export default function GameLoop({ light, ambient }) {
+export default function GameLoop({ light, ambient, setScore }) {
 
 
   // const shiba = useLoader(GLTFLoader, "../assets/shiba/scene.gltf");
   // USE REDUX FOR COMPONENT FORWARDING LATER ON
   const [isDragging, setDragging] = useState(false);
 
+  const shadowCameraRef = useRef();
+
+  // const light1 = new THREE.DirectionalLight(0xffffff);
+  // light1.position.set(1, 1, 1);
+  // light1.castShadow = true;
+  // light1.shadow.camera.near = 0.01; // same as the camera
+  // light1.shadow.camera.far = 1000; // same as the camera
+  // light1.shadow.camera.fov = 50; // same as the camera
+  // light1.shadow.mapSize.width = 2048;
+  // light1.shadow.mapSize.height = 2048;
+  useHelper(light, THREE.DirectionalLightHelper);
+  useHelper(shadowCameraRef, THREE.CameraHelper);
+
   return (
     <>
       {/* Camera Controlling Part */}
       {ambient && <ambientLight intensity={0.5} />}
-      <directionalLight ref={light} position={[-10, 10, 0]} intensity={0.4}
+      <directionalLight ref={light} position={[-10, 1000, 5]} intensity={0.4}
         castShadow={true}
-        shadow-mapSize-width={1024}
-        shadow-mapSize-height={1024}
-        shadow-camera-far={50}
-        shadow-camera-left={-10}
-        shadow-camera-right={10}
-        shadow-camera-top={10}
-        shadow-camera-bottom={-10} />
+        shadow-mapSize-width={2048}
+        shadow-mapSize-height={2048}
+        shadow-camera-near={0.01}
+        shadow-camera-far={1000}
+        shadow-camera-fov={50}
+
+
+      >
+        <perspectiveCamera ref={shadowCameraRef} attach="shadow-camera" />
+      </directionalLight>
       {!isDragging && <OrbitControls />}
+
 
       {/* City, Roads, Cars Will Go here */}
       <CityScene setDragging={setDragging} />
 
       <Player />
 
-
+      <Spawner setScore={setScore} />
 
 
 
@@ -45,7 +59,17 @@ export default function GameLoop({ light, ambient }) {
 };
 
 //Unnecessary code
-{/* <RigidBody
+{/* 
+
+shadow-mapSize-height={1024}
+        shadow-camera-far={50}
+        shadow-camera-left={-10}
+        shadow-camera-right={10}
+        shadow-camera-top={10}
+        shadow-camera-bottom={-10}
+
+
+<RigidBody
         onCollisionEnter={({ other }) => {
           if (other.rigidBodyObject.name === "floor") {
             isOnFloor.current = true;

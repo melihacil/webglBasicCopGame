@@ -1,14 +1,13 @@
 import React, { useEffect, useRef } from 'react';
 import { Sphere, Box, useGLTF } from '@react-three/drei';
 import { RigidBody } from '@react-three/rapier';
-import DraggableObject from "./DraggableObject";
-import { PoliceCar } from "./Car";
-import DraggablePhysicsObj from "./DraggablePhysicsObj";
-import DraggableBox from "./DraggableBox";
+import DraggableObject from "./Spawnables/DraggableObject.jsx";
+// import { PoliceCar } from "./Spawnables/Car.jsx";
+import DraggablePhysicsObj from "./Spawnables/DraggablePhysicsObj.jsx";
+import DraggableBox from "./Spawnables/DraggableBox.jsx";
 
 export default function CityScene({ setDragging }) {
-    const city = useGLTF("/assets/City/test.glb");
-
+    //const city = useGLTF("/assets/City/test.glb");
     const { scene } = useGLTF('/assets/City/test.glb');
     const cityRef = useRef();
 
@@ -54,16 +53,25 @@ export default function CityScene({ setDragging }) {
                 <meshStandardMaterial color="pink" />
             </Sphere>
         </RigidBody>
+        {/* <mesh position={[0, 3, 0]} size={[100, 2, 100]} receiveShadow>
 
+            <shadowMaterial transparent opacity={0.2} />
+        </mesh> */}
 
         <RigidBody type="fixed" name="floor" restitution={1}>
-            <Box position={[1, 0, -5]} args={[100, 2, 100]}>
+            <mesh receiveShadow castShadow rotation={[- Math.PI / 2, 0, 0]}>
+                {/* Plane geometry with custom arguments for flat floor */}
+                <planeGeometry args={[100, 100]} />
                 <meshStandardMaterial color="green" />
-                <mesh
-                    receiveShadow
-                />
-            </Box>
+            </mesh>
         </RigidBody>
+
+        {/* <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 1, 0]} receiveShadow>
+            <meshStandardMaterial color="pink" />
+
+            <planeGeometry args={[100, 100]} />
+            <shadowMaterial transparent opacity={0.4} />
+        </mesh> */}
     </>
     );
 }

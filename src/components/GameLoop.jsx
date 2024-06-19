@@ -30,13 +30,13 @@ export default function GameLoop({ light, ambient, setScore }) {
     <>
       {/* Camera Controlling Part */}
       {ambient && <ambientLight intensity={0.5} />}
-      <directionalLight ref={light} position={[-10, 1000, 5]} intensity={0.4}
+      <directionalLight ref={light} position={[-100, 50, 0]} intensity={1}
         castShadow={true}
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
-        shadow-camera-near={0.01}
-        shadow-camera-far={1000}
-        shadow-camera-fov={50}
+        shadow-camera-near={0.1}
+        shadow-camera-far={500}
+        shadow-camera-fov={70}
 
 
       >

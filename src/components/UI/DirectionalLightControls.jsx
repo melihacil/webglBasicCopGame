@@ -27,11 +27,11 @@ export default function LightControl({ lightRef, ambientRef }) {
             <Typography variant="body1">Intensity</Typography>
             <Slider value={intensity} onChange={handleIntensityChange} min={0} max={2} step={0.1} />
             <Typography variant="body1">Position X</Typography>
-            <Slider value={position[0]} onChange={(e, val) => handlePositionChange(0, val)} min={-20} max={20} step={0.1} />
+            <Slider value={position[0]} onChange={(e, val) => handlePositionChange(0, val)} min={-200} max={200} step={0.1} />
             <Typography variant="body1">Position Y</Typography>
-            <Slider value={position[1]} onChange={(e, val) => handlePositionChange(1, val)} min={-20} max={20} step={0.1} />
+            <Slider value={position[1]} onChange={(e, val) => handlePositionChange(1, val)} min={-200} max={200} step={0.1} />
             <Typography variant="body1">Position Z</Typography>
-            <Slider value={position[2]} onChange={(e, val) => handlePositionChange(2, val)} min={-20} max={20} step={0.1} />
+            <Slider value={position[2]} onChange={(e, val) => handlePositionChange(2, val)} min={-200} max={200} step={0.1} />
             <Typography variant="body1">Ambient Lighting</Typography>
             <Checkbox defaultChecked onChange={ambientRef} />
         </MuiBox>

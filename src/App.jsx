@@ -7,7 +7,7 @@ import { UI } from "./components/UI";
 import { Stats } from '@react-three/drei'
 import { Perf } from "r3f-perf";
 import LightControl from "./components/DirectionalLightControls";
-
+import GameUI from "./components/GameUI";
 
 export const Controls = {
   forward: "forward",
@@ -58,6 +58,7 @@ function App() {
         <Perf position="bottom-left" />
       </Canvas>
       <LightControl lightRef={lightRef} ambientRef={changeAmbient} />
+      <GameUI />
     </KeyboardControls>
 
   </>

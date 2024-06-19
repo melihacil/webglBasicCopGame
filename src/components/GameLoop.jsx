@@ -9,23 +9,12 @@ import CityScene from "./CityScene";
 import Player from "./Player";
 
 
-export const Experience = ({ light, ambient }) => {
+export default function GameLoop({ light, ambient }) {
 
 
   // const shiba = useLoader(GLTFLoader, "../assets/shiba/scene.gltf");
-
-  const carModel = useGLTF("/assets/car/policeCarV1.glb").scene;
-
-  const toyotaCar = useGLTF("/assets/car/toyota.glb");
-  const shibaRef = useRef();
-  const [hover, setHover] = useState(false);
-  const { camera } = useThree();
   // USE REDUX FOR COMPONENT FORWARDING LATER ON
   const [isDragging, setDragging] = useState(false);
-
-  const kicker = useRef();
-
-
 
   return (
     <>
@@ -48,32 +37,15 @@ export const Experience = ({ light, ambient }) => {
       <Player />
 
 
-      {/* <PoliceCar /> */}
-      {/* <RigidBody>
-        <Torus position={[1, 2, 0]}>
-          <meshStandardMaterial color="yellow" />
-        </Torus>
-      </RigidBody> */}
 
 
 
-      {/* <RigidBody>
+    </>
+  );
+};
 
-        <primitive object={toyotaCar.scene} scale={1.0} position={[4, 4, 4]} />
-      </RigidBody> */}
-
-
-      {/* <primitive object={city.scene} ref={shibaRef} scale={1.0} position={[0, -1, 0]} /> */}
-      <Box
-        position={[2, 3, 0]}
-        onPointerEnter={() => setHover(true)}
-        onPointerLeave={() => setHover(false)}
-        onClick={() => jump()}
-        ref={shibaRef}
-        castShadow>
-        <meshStandardMaterial color={hover ? "hotpink" : "royalblue"} />
-      </Box>
-      <RigidBody
+//Unnecessary code
+{/* <RigidBody
         onCollisionEnter={({ other }) => {
           if (other.rigidBodyObject.name === "floor") {
             isOnFloor.current = true;
@@ -91,7 +63,17 @@ export const Experience = ({ light, ambient }) => {
           onClick={() => jump()}>
           <meshStandardMaterial color={hover ? "hotpink" : "royalblue"} />
         </Box>
-      </RigidBody>
+      </RigidBody> 
+          <Box
+        position={[2, 3, 0]}
+        onPointerEnter={() => setHover(true)}
+        onPointerLeave={() => setHover(false)}
+        onClick={() => jump()}
+        ref={shibaRef}
+        castShadow>
+        <meshStandardMaterial color={hover ? "hotpink" : "royalblue"} />
+      </Box>
+
 
       <RigidBody type="kinematicPosition" position={[0, 0.75, 0]} ref={kicker}>
         <group position={[3, 3, 3]}>
@@ -100,9 +82,8 @@ export const Experience = ({ light, ambient }) => {
           </Box>
         </group>
       </RigidBody>
-
-
-
-    </>
-  );
-};
+    
+    
+    
+    
+    */}

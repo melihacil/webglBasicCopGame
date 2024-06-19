@@ -2,8 +2,7 @@ import { KeyboardControls } from "@react-three/drei";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
-import { Experience } from "./components/Experience";
-import { UI } from "./components/UI";
+import GameLoop from "./components/GameLoop";
 import { Stats } from '@react-three/drei'
 import { Perf } from "r3f-perf";
 import LightControl from "./components/DirectionalLightControls";
@@ -29,6 +28,10 @@ function App() {
     []
   );
 
+  const [score, setScore] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+
   const lightRef = useRef();
   const [showAmbient, setAmbient] = useState(true);
 
@@ -49,7 +52,7 @@ function App() {
         <color attach="background" args={["#ececec"]} />
         <Suspense>
           <Physics debug>
-            <Experience light={lightRef} ambient={showAmbient} />
+            <GameLoop light={lightRef} ambient={showAmbient} />
           </Physics>
         </Suspense>
         <axesHelper args={[15]} position={[0, 0, 0]} />
@@ -58,7 +61,7 @@ function App() {
         <Perf position="bottom-left" />
       </Canvas>
       <LightControl lightRef={lightRef} ambientRef={changeAmbient} />
-      <GameUI />
+      <GameUI score={score} setIsPlaying={setIsPlaying} />
     </KeyboardControls>
 
   </>

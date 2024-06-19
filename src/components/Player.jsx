@@ -4,7 +4,6 @@ import { RigidBody } from "@react-three/rapier";
 import { useRef, useState } from "react";
 import * as THREE from "three";
 import { Controls } from "../App";
-import Coin from "./Coin";
 
 export default function Player() {
     const playerModel = useGLTF("/assets/police/scene.gltf");
@@ -26,12 +25,6 @@ export default function Player() {
 
     const speed = useRef(5);
     const maxSpeed = 10;
-
-    const [coins, setCoins] = useState([{ id: 1, position: [5, 10, 5] }, { id: 2, position: [-5, 10, -5] }]); // Example coins
-
-
-
-
     const jump = () => {
         // if (isOnFloor.current) {
         cube.current.wakeUp();
@@ -40,7 +33,6 @@ export default function Player() {
         isOnFloor.current = false;
         // }
     };
-
 
     // cube.current.canSleep(false);
     // cube.current.can_Sleep(false);
@@ -83,10 +75,6 @@ export default function Player() {
         }
     };
 
-    const handleCoinCollect = (coinId) => {
-        setCoins((prevCoins) => prevCoins.filter((coin) => coin.id !== coinId));
-        console.log(`Coin ${coinId} collected!`);
-    };
 
 
     useFrame((_state, delta) => {
@@ -125,9 +113,7 @@ export default function Player() {
             </RigidBody>
 
 
-            {coins.map((coin) => (
-                <Coin key={coin.id} position={coin.position} onCollect={() => handleCoinCollect(coin.id)} />
-            ))}
+
         </>
     );
 }

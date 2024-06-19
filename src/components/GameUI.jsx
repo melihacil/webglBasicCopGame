@@ -1,7 +1,9 @@
 import React, { useState } from "react";
-import { Slider, Box as MuiBox, Typography, Checkbox } from "@mui/material";
+import { Slider, Box as MuiBox, Typography, Checkbox, Button } from "@mui/material";
 
-export default function GameUI({ lightRef, ambientRef }) {
+
+
+export default function GameUI({ score, setIsPlaying }) {
   return (
     <MuiBox
       sx={{
@@ -20,15 +22,25 @@ export default function GameUI({ lightRef, ambientRef }) {
         zIndex: 1,
       }}
     >
-      <Typography variant="h6">CENG 492 Project 201180077 191180049</Typography>
-      <Typography variant="body1">Intensity</Typography>
-      <Slider
-        value={1}
-        min={0}
-        max={2}
-        step={0.1}
-      />
-      <Checkbox />
+      <Typography variant="h6" style={{ fontSize: '12px', wordWrap: "break-word" }}>CENG 492 Project 201180077-191180049</Typography>
+
+      {/* <Typography variant="body1">Intensity</Typography> */}
+      <Button
+        variant="outlined"
+
+        onClick={() => {
+          //alert('clicked');
+          //setIsPlaying(true);
+        }}
+        color="success"
+        size="large"
+        style={{ fontSize: '32px' }}
+      >
+        PLAY!
+      </Button>
+      <Typography> Score:{score}</Typography>
+
+
     </MuiBox>
   );
 }

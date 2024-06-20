@@ -5,7 +5,6 @@ import { useLayoutEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { Controls } from "../App";
 
-
 export default function Player() {
     const playerModel = useGLTF("/assets/police/scene.gltf");
     useLayoutEffect(() => playerModel.scene.traverse(o => o.isMesh && (o.castShadow = o.receiveShadow = true)), [])
@@ -28,17 +27,10 @@ export default function Player() {
     const speed = useRef(5);
     const maxSpeed = 10;
     const jump = () => {
-        // if (isOnFloor.current) {
         cube.current.wakeUp();
-
         cube.current.applyImpulse({ x: 0, y: 150, z: 0 });
         isOnFloor.current = false;
-        // }
     };
-
-    // cube.current.canSleep(false);
-    // cube.current.can_Sleep(false);
-    // cube.current.can_sleep(false);
 
     const handleMovement = () => {
         camera.getWorldDirection(direction);
@@ -77,8 +69,6 @@ export default function Player() {
         }
     };
 
-
-
     useFrame((_state, delta) => {
         if (jumpPressed) {
             jump();
@@ -103,6 +93,24 @@ export default function Player() {
             });
         }
 
+        if (velocity.length() > 0) {
+            // Update player rotation to face movement direction
+            const lookAtPos = new THREE.Vector3(
+                cube.current.translation().x - velocity.x,
+                cube.current.translation().y,
+                cube.current.translation().z - velocity.z
+            );
+
+            const lookAtMatrix = new THREE.Matrix4().lookAt(
+                cube.current.translation(),
+                lookAtPos,
+                new THREE.Vector3(0, 1, 0)
+            );
+
+            const rotationQuaternion = new THREE.Quaternion().setFromRotationMatrix(lookAtMatrix);
+            cube.current.setRotation(rotationQuaternion);
+        }
+
         if (isOnFloor.current) {
             console.log("Hey, I'm executing every frame!");
         }
@@ -110,12 +118,9 @@ export default function Player() {
 
     return (
         <>
-            <RigidBody ref={cube} setCanSleep={false} lockRotations name="player" >
+            <RigidBody ref={cube} setCanSleep={false} lockRotations name="player">
                 <primitive object={playerModel.scene} name="player" scale={5.0} position={[8, 6, 8]} />
             </RigidBody>
-
-
-
         </>
     );
 }

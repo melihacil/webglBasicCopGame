@@ -4,7 +4,7 @@ import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 import * as THREE from 'three';
 import { RigidBody } from '@react-three/rapier';
 
-const Enemy = ({ modelPath, animationPath, startPosition = [0, 0, 0], radius = 5, speed = 0.01 }) => {
+const Enemy = ({ modelPath, animationPath, startPosition = [0, 0, 0], targetPosition = [10, 0, 10], speed = 0.1, onCollect }) => {
     const group = useRef();
     const rbgroup = useRef();
 
@@ -13,8 +13,10 @@ const Enemy = ({ modelPath, animationPath, startPosition = [0, 0, 0], radius = 5
 
     const animation = useLoader(FBXLoader, animationPath);
     const mixer = useRef();
+    let velocity;
 
-    const [angle, setAngle] = useState(0);
+
+    const [movingToTarget, setMovingToTarget] = useState(true);
 
     useEffect(() => {
         if (model && animation) {
@@ -28,40 +30,79 @@ const Enemy = ({ modelPath, animationPath, startPosition = [0, 0, 0], radius = 5
     useFrame((state, delta) => {
         if (mixer.current) mixer.current.update(delta);
 
-        // Calculate the new position for the circular path
-        const x = startPosition[0] + radius * Math.cos(angle);
-        const z = startPosition[2] + radius * Math.sin(angle);
+        // Current position
+        const currentPosition = rbgroup.current.translation();
+        const currentPos = new THREE.Vector3(currentPosition.x, currentPosition.y, currentPosition.z);
 
-        // Update the position of the group (which indirectly updates the RigidBody position)
-        group.current.position.set(x, startPosition[1], z);
+        // Determine target based on the direction
+        const targetPos = movingToTarget ? new THREE.Vector3(...targetPosition) : new THREE.Vector3(...startPosition);
+
+        // Calculate direction
+        const direction = new THREE.Vector3().subVectors(targetPos, currentPos).normalize();
+
+        // Calculate new position
+        const newPosition = currentPos.add(direction.multiplyScalar(speed));
+
+        // Apply translation directly
+        rbgroup.current.setTranslation({ x: newPosition.x, y: newPosition.y, z: newPosition.z }, true);
+
+        // Calculate rotation to face the direction of movement
+        const lookAt = new THREE.Vector3().copy(direction).normalize();
+        // const quaternion = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 0, 1), lookAt);
 
 
+        velocity = rbgroup.current.linvel();
 
+        console.log(rbgroup.current.linvel())
+        const angle = Math.atan2(velocity.x, velocity.z);
 
-        // const prevX = rbgroup.current.translation().x;
-        // const prevZ = rbgroup.current.translation().z;
-
-        // // const nx = startPosition[0] + radius * Math.cos(angle);
-        // // const nz = startPosition[2] + radius * Math.sin(angle);
-
-        // // Update the position of the RigidBody
-        // rbgroup.current.setTranslation(startPosition[0], startPosition[1], startPosition[0]);
-        // Calculate the direction vector
-        const direction = new THREE.Vector3(x - startPosition[0], 0, z - startPosition[2]).normalize();
-
-        // Create a quaternion to represent the rotation
-        const quaternion = new THREE.Quaternion();
-        quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), direction);
-
-        // Update the rotation of the group (which indirectly updates the RigidBody rotation)
+        // // Create a quaternion to represent the rotation
+        const quaternion = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), angle);
+        // Apply the rotation to the group
         group.current.setRotationFromQuaternion(quaternion);
 
-        // Update the angle for the next frame
-        setAngle(prevAngle => prevAngle + speed);
+
+
+
+        // // Set the rotation of the player model
+        // playerRef.current.quaternion.slerp(quaternion, 0.1);
+
+
+
+
+        // Update rotation of the primitive object (assuming it's the first child of group)
+        if (group.current.children.length > 0) {
+            const primitiveObject = group.current.children[0];
+            primitiveObject.rotation.setFromQuaternion(quaternion);
+        }
+
+        // Check if the enemy has reached the target position
+        if (currentPos.distanceTo(targetPos) < 0.1) {
+            setMovingToTarget(!movingToTarget); // Toggle direction
+        }
     });
 
+
+    const handleCollision = ({ other }) => {
+        const colliderName = other.rigidBodyObject?.name; // Optional chaining to handle undefined object
+        console.log("Collider name:", colliderName);
+        if (colliderName === 'player') {
+            onCollect();
+        }
+        else {
+            console.log("NOT COLLECTED");
+        }
+    };
     return (
-        <RigidBody type="kinematicPosition" position={startPosition} scale={0.04} ref={rbgroup}>
+        <RigidBody
+            type="dynamic"
+            position={startPosition}
+            lockRotations={true}
+            scale={0.04}
+            ref={rbgroup}
+            onCollisionEnter={handleCollision}
+
+        >
             <group ref={group}>
                 {/* Other components or meshes related to the enemy can be added here */}
                 {model && <primitive object={model} />}
@@ -71,32 +112,3 @@ const Enemy = ({ modelPath, animationPath, startPosition = [0, 0, 0], radius = 5
 };
 
 export default Enemy;
-// useFrame((_state, delta) => {
-// //     if (mixer.current) mixer.current.update(delta);
-
-// //     // Calculate the new position for the circular path
-// //     const prevX = group.current.translation().x;
-// //     const prevZ = group.current.translation().z;
-
-// //     const x = startPosition[0] + radius * Math.cos(angle);
-// //     const z = startPosition[2] + radius * Math.sin(angle);
-
-// //     // Update the position of the RigidBody
-// //     group.current.setTranslation(x, startPosition[1], z);
-
-// //     // Calculate the direction vector
-// //     const direction = new THREE.Vector3(x - prevX, 0, z - prevZ).normalize();
-
-// //     // Calculate the rotation angle (in radians) from the direction vector
-// //     const rotationAngle = Math.atan2(direction.x, direction.z);
-
-// //     // Update the rotation of the RigidBody to face the moving direction
-// //     group.current.setRotation({
-// //         x: 0,
-// //         y: rotationAngle,
-// //         z: 0
-// //     });
-
-// //     // Update the angle for the next frame
-// //     setAngle(prevAngle => prevAngle + speed);
-// // });

@@ -21,6 +21,7 @@ export default function Spawner({ setScore }) {
             <Coin key={coin.id} position={coin.position} onCollect={() => handleCoinCollect(coin.id)} />
         ))}
 
-        <Enemy modelPath={"/assets/ninja/ninja.fbx"} animationPath="/assets/ninja/ninjarun.fbx" startPosition={[1, 10, 1]} targetPosition={[12, 10, 12]} />
+        <Enemy modelPath={"/assets/ninja/ninja.fbx"} animationPath="/assets/ninja/ninjarun.fbx" startPosition={[3, 2, 3]} targetPosition={[-8, 2, -3]} onCollect={() => handleCoinCollect(12)} />
+
     </>)
 }

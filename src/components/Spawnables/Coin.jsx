@@ -60,32 +60,4 @@ export default function CoinPickup({ position, onCollect }) {
 
 
 
-// // useFrame((_state, delta) => {
-// //     if (mixer.current) mixer.current.update(delta);
-
-// //     // Calculate the new position for the circular path
-// //     const prevX = group.current.translation().x;
-// //     const prevZ = group.current.translation().z;
-
-// //     const x = startPosition[0] + radius * Math.cos(angle);
-// //     const z = startPosition[2] + radius * Math.sin(angle);
-
-// //     // Update the position of the RigidBody
-// //     group.current.setTranslation(x, startPosition[1], z);
-
-// //     // Calculate the direction vector
-// //     const direction = new THREE.Vector3(x - prevX, 0, z - prevZ).normalize();
-
-// //     // Calculate the rotation angle (in radians) from the direction vector
-// //     const rotationAngle = Math.atan2(direction.x, direction.z);
-
-// //     // Update the rotation of the RigidBody to face the moving direction
-// //     group.current.setRotation({
-// //         x: 0,
-// //         y: rotationAngle,
-// //         z: 0
-// //     });
-
-// //     // Update the angle for the next frame
-// //     setAngle(prevAngle => prevAngle + speed);
-// // });
+// 

@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useCallback, useLayoutEffect } from 'react';
+import React, { useRef, useState, useEffect, useCallback, useLayoutEffect, useMemo } from 'react';
 import { useThree, useFrame } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
 import { RigidBody } from '@react-three/rapier';
@@ -6,7 +6,9 @@ import * as THREE from 'three';
 
 export default function DraggablePhysicsObj({ modelLocation, initialPosition, startDragging, scale = 2.0, yAxisLocked }) {
     const scene = useGLTF(modelLocation).scene;
-    useLayoutEffect(() => scene.traverse(o => o.isMesh && (o.castShadow = o.receiveShadow = true)), []);
+    const copiedScene = useMemo(() => scene.clone(), [scene])
+
+    useLayoutEffect(() => copiedScene.traverse(o => o.isMesh && (o.castShadow = o.receiveShadow = true)), []);
 
     const carRef = useRef();
     const objRef = useRef();
@@ -93,6 +95,7 @@ export default function DraggablePhysicsObj({ modelLocation, initialPosition, st
         }
 
         return () => {
+            startDragging(false);
             window.removeEventListener('pointermove', handlePointerMove);
             window.removeEventListener('pointerup', handlePointerUp);
         };
@@ -100,9 +103,9 @@ export default function DraggablePhysicsObj({ modelLocation, initialPosition, st
 
     useEffect(() => {
         if (carRef.current) {
-            carRef.current.body = scene; // Assuming scene contains the physics body
+            carRef.current.body = copiedScene; // Assuming scene contains the physics body
         }
-    }, [scene]);
+    }, [copiedScene]);
 
     useFrame(() => {
         if (dragging) {
@@ -125,7 +128,7 @@ export default function DraggablePhysicsObj({ modelLocation, initialPosition, st
             onPointerDown={handlePointerDown}
             scale={scale}
         >
-            <primitive object={scene} />
+            <primitive object={copiedScene} />
         </RigidBody>
     );
 }

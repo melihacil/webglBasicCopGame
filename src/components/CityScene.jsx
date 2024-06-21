@@ -65,7 +65,7 @@ export default function CityScene({ setDragging, yAxisLocked }) {
             modelLocation="/assets/car/car2.glb"
             initialPosition={[50, 5, 26]}
             startDragging={setDragging}
-            scale={6}
+            scale={8}
             yAxisLocked={yAxisLocked}
 
         />
@@ -104,9 +104,93 @@ export default function CityScene({ setDragging, yAxisLocked }) {
 
         />
         <DraggablePhysicsObj
+            modelLocation="/assets/shiba/scene.gltf"
+            initialPosition={[30, 8, 9]}
+            startDragging={setDragging}
+            scale={6}
+            yAxisLocked={yAxisLocked}
+
+        />
+        <DraggablePhysicsObj
+            modelLocation="/assets/shiba/scene.gltf"
+            initialPosition={[40, 8, 9]}
+            startDragging={setDragging}
+            scale={4}
+            yAxisLocked={yAxisLocked}
+
+        />
+        <DraggablePhysicsObj
+            modelLocation="/assets/shiba/scene.gltf"
+            initialPosition={[-30, 8, -9]}
+            startDragging={setDragging}
+            scale={7}
+            yAxisLocked={yAxisLocked}
+
+        />
+        <DraggablePhysicsObj
+            modelLocation="/assets/shiba/scene.gltf"
+            initialPosition={[-35, 8, -25]}
+            startDragging={setDragging}
+            scale={2}
+            yAxisLocked={yAxisLocked}
+
+        />
+        <DraggablePhysicsObj
+            modelLocation="/assets/shiba/scene.gltf"
+            initialPosition={[-40, 8, -25]}
+            startDragging={setDragging}
+            scale={9}
+            yAxisLocked={yAxisLocked}
+
+        />
+        <DraggablePhysicsObj
+            modelLocation="/assets/shiba/scene.gltf"
+            initialPosition={[-44, 8, -30]}
+            startDragging={setDragging}
+            scale={6}
+            yAxisLocked={yAxisLocked}
+
+        />
+        <DraggablePhysicsObj
             modelLocation="/assets/car/policeCarV1.glb"
             initialPosition={[12, 5, 6]}
             startDragging={setDragging}
+            yAxisLocked={yAxisLocked}
+
+        />
+        <DraggablePhysicsObj
+            modelLocation="/assets/car/policeCarV1.glb"
+            initialPosition={[40, 9, -20]}
+            startDragging={setDragging}
+            yAxisLocked={yAxisLocked}
+
+        />
+        <DraggablePhysicsObj
+            modelLocation="/assets/car/policeCarV1.glb"
+            initialPosition={[45, 7, -20]}
+            startDragging={setDragging}
+            yAxisLocked={yAxisLocked}
+
+        />
+        <DraggablePhysicsObj
+            modelLocation="/assets/car/policeCarV1.glb"
+            initialPosition={[45, 12, -20]}
+            startDragging={setDragging}
+            yAxisLocked={yAxisLocked}
+
+        />
+        <DraggablePhysicsObj
+            modelLocation="/assets/car/policeCarV1.glb"
+            initialPosition={[45, 14, -20]}
+            startDragging={setDragging}
+            yAxisLocked={yAxisLocked}
+
+        />
+        <DraggablePhysicsObj
+            modelLocation="/assets/car/car4.glb"
+            initialPosition={[41, 14, -25]}
+            startDragging={setDragging}
+            scale={12}
             yAxisLocked={yAxisLocked}
 
         />
@@ -144,6 +228,7 @@ useGLTF.preload('/assets/City/citySurrounding1.glb');
 
 useGLTF.preload('/assets/car/policeCarV2.glb');
 useGLTF.preload('/assets/car/policeCarV1.glb');
+
 useGLTF.preload('/assets/car/car1.glb');
 useGLTF.preload('/assets/car/car2.glb');
 useGLTF.preload('/assets/car/car3.glb');

@@ -28,26 +28,18 @@ function App() {
     ],
     []
   );
-  const [yAxisLocked, setYAxisLocked] = useState(true); // State to lock movement along the y-axis
 
+  const [yAxisLocked, setYAxisLocked] = useState(true); // Lock movement along the y-axis for draggable objects
   const [score, setScore] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-
-
   const [sHelper, setSHelper] = useState(false);
-
-  const lightRef = useRef();
   const [showAmbient, setAmbient] = useState(true);
 
-  // useEffect(() =>
-
+  const lightRef = useRef();
 
   const changeAmbient = () => {
     setAmbient(prev => !prev);
   }
-
-
-  // }, [])
 
   return (<>
 
@@ -55,8 +47,8 @@ function App() {
       <Canvas shadows camera={{ position: [10, 10, 10], fov: 60 }}>
         <color attach="background" args={["#ececec"]} />
         <Suspense>
-          <Physics debug>
-            <GameLoop light={lightRef} ambient={showAmbient} setScore={setScore} sHelper={sHelper} yAxisLocked={yAxisLocked} />
+          <Physics>
+            <GameLoop light={lightRef} ambient={showAmbient} setScore={setScore} sHelper={sHelper} yAxisLocked={yAxisLocked} isPlaying={isPlaying} />
           </Physics>
         </Suspense>
         {/* <axesHelper args={[15]} position={[0, 0, 0]} />

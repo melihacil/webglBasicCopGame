@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Box, Typography } from '@mui/material';
 
 function CountdownTimer({ isPlaying, setIsPlaying }) {
-    const [timeLeft, setTimeLeft] = useState(10);
+    const [timeLeft, setTimeLeft] = useState(60);
 
     useEffect(() => {
         let timerId;

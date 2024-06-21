@@ -1,16 +1,12 @@
 import React, { useRef, useState, useEffect, useCallback, useLayoutEffect } from 'react';
-import { useThree, useFrame, useLoader } from '@react-three/fiber';
+import { useThree, useFrame } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { RigidBody } from '@react-three/rapier';
 import * as THREE from 'three';
 
-
-export default function DraggablePhysicsObj({ modelLocation, initialPosition, startDragging }) {
-    // const gltf = useLoader(GLTFLoader, modelLocation);
-    // const scene = gltf.scene.clone();
+export default function DraggablePhysicsObj({ modelLocation, initialPosition, startDragging, scale = 2.0, yAxisLocked }) {
     const scene = useGLTF(modelLocation).scene;
-    useLayoutEffect(() => scene.traverse(o => o.isMesh && (o.castShadow = o.receiveShadow = true)), [])
+    useLayoutEffect(() => scene.traverse(o => o.isMesh && (o.castShadow = o.receiveShadow = true)), []);
 
     const carRef = useRef();
     const objRef = useRef();
@@ -31,19 +27,15 @@ export default function DraggablePhysicsObj({ modelLocation, initialPosition, st
 
         raycaster.current.setFromCamera(mouse.current, camera);
 
-
-        // Check if carRef.current is defined before accessing .body
         if (carRef.current && carRef.current.body) {
             const intersects = raycaster.current.intersectObjects([carRef.current.body]);
 
             if (intersects.length > 0) {
                 const intersectionPoint = intersects[0].point;
                 const currentPosition = carRef.current.translation();
-                console.log(currentPosition)
                 setOffset(new THREE.Vector3().copy(intersectionPoint).sub(currentPosition));
             }
         }
-
     };
 
     const handlePointerMove = useCallback((event) => {
@@ -55,23 +47,31 @@ export default function DraggablePhysicsObj({ modelLocation, initialPosition, st
             mouse.current.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
             raycaster.current.setFromCamera(mouse.current, camera);
-            // Check if carRef.current is defined before accessing .body
+
             if (carRef.current && carRef.current.body) {
-                raycaster.current.setFromCamera(mouse.current, camera);
                 const intersects = raycaster.current.intersectObjects([carRef.current.body]);
 
                 if (intersects.length > 0) {
                     const intersectionPoint = intersects[0].point;
                     const [offsetX, offsetY, offsetZ] = offset;
-                    carRef.current.setTranslation({
+
+                    let newPosition = {
                         x: intersectionPoint.x - offsetX,
-                        y: intersectionPoint.y - offsetY,
                         z: intersectionPoint.z - offsetZ,
-                    });
+                    };
+
+                    // Lock the y-axis movement if yAxisLocked is true
+                    if (!yAxisLocked) {
+                        newPosition.y = intersectionPoint.y - offsetY;
+                    } else {
+                        newPosition.y = carRef.current.translation().y; // Maintain current y position
+                    }
+
+                    carRef.current.setTranslation(newPosition);
                 }
             }
         }
-    }, [dragging, offset, camera]);
+    }, [dragging, offset, yAxisLocked, camera]);
 
     const handlePointerUp = useCallback((event) => {
         event.stopPropagation();
@@ -81,9 +81,13 @@ export default function DraggablePhysicsObj({ modelLocation, initialPosition, st
 
     useEffect(() => {
         if (dragging) {
+            startDragging(true);
+
             window.addEventListener('pointermove', handlePointerMove);
             window.addEventListener('pointerup', handlePointerUp);
         } else {
+            startDragging(false);
+
             window.removeEventListener('pointermove', handlePointerMove);
             window.removeEventListener('pointerup', handlePointerUp);
         }
@@ -94,12 +98,12 @@ export default function DraggablePhysicsObj({ modelLocation, initialPosition, st
         };
     }, [dragging, handlePointerMove, handlePointerUp]);
 
-
     useEffect(() => {
         if (carRef.current) {
             carRef.current.body = scene; // Assuming scene contains the physics body
         }
-    }, []);
+    }, [scene]);
+
     useFrame(() => {
         if (dragging) {
             startDragging(true);
@@ -119,9 +123,13 @@ export default function DraggablePhysicsObj({ modelLocation, initialPosition, st
             onPointerEnter={() => setHover(true)}
             onPointerLeave={() => { setHover(false); setDragging(false); }}
             onPointerDown={handlePointerDown}
-            scale={2.0}
+            scale={scale}
         >
             <primitive object={scene} />
-        </RigidBody >
+        </RigidBody>
     );
 }
+
+
+
+

@@ -59,5 +59,5 @@ export default function CoinPickup({ position, onCollect }) {
 }
 
 
-
+useGLTF.preload('/assets/coin/stylized_coin.glb');
 // 

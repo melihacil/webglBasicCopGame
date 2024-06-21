@@ -105,7 +105,6 @@ export default function Player() {
         }
 
         if (isOnFloor.current) {
-            console.log("Hey, I'm executing every frame!");
         }
     });
 

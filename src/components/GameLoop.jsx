@@ -6,7 +6,7 @@ import Spawner from "./Spawner";
 import * as THREE from "three";
 
 
-export default function GameLoop({ light, ambient, setScore, sHelper }) {
+export default function GameLoop({ light, ambient, setScore, sHelper, yAxisLocked }) {
 
   // const shiba = useLoader(GLTFLoader, "../assets/shiba/scene.gltf");
   // USE REDUX FOR COMPONENT FORWARDING LATER ON
@@ -39,7 +39,7 @@ export default function GameLoop({ light, ambient, setScore, sHelper }) {
 
 
       {/* City, Roads, Cars Will Go here */}
-      <CityScene setDragging={setDragging} />
+      <CityScene setDragging={setDragging} yAxisLocked={yAxisLocked} />
       <Player />
       <Spawner setScore={setScore} />
     </>

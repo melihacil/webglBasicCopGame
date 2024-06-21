@@ -1,13 +1,13 @@
 import { useGLTF, useKeyboardControls } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import { RigidBody } from "@react-three/rapier";
-import { useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef } from "react";
 import * as THREE from "three";
 import { Controls } from "../App";
 
 export default function Player() {
     const playerModel = useGLTF("/assets/police/scene.gltf");
-    useLayoutEffect(() => playerModel.scene.traverse(o => o.isMesh && (o.castShadow = o.receiveShadow = true)), [])
+    useLayoutEffect(() => playerModel.scene.traverse(o => o.isMesh && (o.castShadow = o.receiveShadow = true)), []);
 
     const direction = new THREE.Vector3();
     const right = new THREE.Vector3();
@@ -15,6 +15,7 @@ export default function Player() {
     const velocity = new THREE.Vector3();
     const isOnFloor = useRef(true);
     const cube = useRef();
+    const playerRef = useRef();
 
     const { camera } = useThree();
 
@@ -26,6 +27,7 @@ export default function Player() {
 
     const speed = useRef(5);
     const maxSpeed = 10;
+
     const jump = () => {
         cube.current.wakeUp();
         cube.current.applyImpulse({ x: 0, y: 150, z: 0 });
@@ -66,6 +68,15 @@ export default function Player() {
         if (velocity.length() > 0) {
             velocity.normalize().multiplyScalar(speed.current);
             cube.current.applyImpulse(velocity.multiplyScalar(2));
+
+            // Calculate the rotation angle
+            const angle = Math.atan2(velocity.x, velocity.z);
+
+            // Create a quaternion to represent the rotation
+            const quaternion = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), angle);
+
+            // Set the rotation of the player model
+            playerRef.current.quaternion.slerp(quaternion, 0.1);
         }
     };
 
@@ -93,33 +104,14 @@ export default function Player() {
             });
         }
 
-        if (velocity.length() > 0) {
-            // Update player rotation to face movement direction
-            const lookAtPos = new THREE.Vector3(
-                cube.current.translation().x - velocity.x,
-                cube.current.translation().y,
-                cube.current.translation().z - velocity.z
-            );
-
-            const lookAtMatrix = new THREE.Matrix4().lookAt(
-                cube.current.translation(),
-                lookAtPos,
-                new THREE.Vector3(0, 1, 0)
-            );
-
-            const rotationQuaternion = new THREE.Quaternion().setFromRotationMatrix(lookAtMatrix);
-            cube.current.setRotation(rotationQuaternion);
-        }
-
         if (isOnFloor.current) {
-            console.log("Hey, I'm executing every frame!");
         }
     });
 
     return (
         <>
-            <RigidBody ref={cube} setCanSleep={false} lockRotations name="player">
-                <primitive object={playerModel.scene} name="player" scale={5.0} position={[8, 6, 8]} />
+            <RigidBody ref={cube} type="dynamic" setCanSleep={false} lockRotations={true} name="player">
+                <primitive ref={playerRef} object={playerModel.scene} name="player" scale={5.0} position={[8, 6, 8]} />
             </RigidBody>
         </>
     );

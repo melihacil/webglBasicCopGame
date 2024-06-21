@@ -28,6 +28,7 @@ function App() {
     ],
     []
   );
+  const [yAxisLocked, setYAxisLocked] = useState(true); // State to lock movement along the y-axis
 
   const [score, setScore] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -55,7 +56,7 @@ function App() {
         <color attach="background" args={["#ececec"]} />
         <Suspense>
           <Physics debug>
-            <GameLoop light={lightRef} ambient={showAmbient} setScore={setScore} sHelper={sHelper} />
+            <GameLoop light={lightRef} ambient={showAmbient} setScore={setScore} sHelper={sHelper} yAxisLocked={yAxisLocked} />
           </Physics>
         </Suspense>
         {/* <axesHelper args={[15]} position={[0, 0, 0]} />
@@ -63,7 +64,7 @@ function App() {
         <Stats />
         <Perf position="bottom-left" />
       </Canvas>
-      <LightControl lightRef={lightRef} ambientRef={changeAmbient} shadowHelper={setSHelper} />
+      <LightControl lightRef={lightRef} ambientRef={changeAmbient} shadowHelper={setSHelper} lockYAxis={setYAxisLocked} />
       <GameUI score={score} setIsPlaying={setIsPlaying} />
       <CountdownTimer isPlaying={isPlaying} setIsPlaying={setIsPlaying} />
     </KeyboardControls>

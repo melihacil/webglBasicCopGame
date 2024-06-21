@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Slider, Box as MuiBox, Typography, Checkbox } from '@mui/material';
 
-export default function LightControl({ lightRef, ambientRef, shadowHelper }) {
+export default function LightControl({ lightRef, ambientRef, shadowHelper, lockYAxis }) {
     const [intensity, setIntensity] = useState(0.4);
     const [position, setPosition] = useState([-10, 10, 0]);
 
@@ -34,8 +34,8 @@ export default function LightControl({ lightRef, ambientRef, shadowHelper }) {
             <Slider value={position[2]} onChange={(e, val) => handlePositionChange(2, val)} min={-200} max={200} step={0.1} />
             <Typography variant="body1">Ambient Lighting</Typography>
             <Checkbox defaultChecked onChange={ambientRef} />
-            <Typography variant="body1">Shadow Helper</Typography>
-            <Checkbox defaultChecked onChange={() => shadowHelper(prev => !prev)} />
+            <Typography variant="body1">Lock Y axis for draggables</Typography>
+            <Checkbox defaultChecked onChange={() => lockYAxis(prev => !prev)} />
 
         </MuiBox>
     );

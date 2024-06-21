@@ -22,23 +22,33 @@ export default function GameUI({ score, setIsPlaying }) {
         zIndex: 1,
       }}
     >
-      <Typography variant="h6" style={{ fontSize: '12px', wordWrap: "break-word" }}>CENG 492 Project 201180077-191180049</Typography>
+      <Typography variant="h6" style={{ fontSize: '12px', wordWrap: "break-word" }}>
+        CENG 492 Project 201180077-191180049 <br />
 
-      {/* <Typography variant="body1">Intensity</Typography> */}
-      <Button
-        variant="outlined"
+        {/* <Typography variant="body1">Intensity</Typography> */}
+        <Button
+          variant="outlined"
 
-        onClick={() => {
-          //alert('clicked');
-          setIsPlaying(true);
-        }}
-        color="success"
-        size="large"
-        style={{ fontSize: '32px' }}
-      >
-        PLAY!
-      </Button>
-      <Typography> Score:{score}</Typography>
+          onClick={() => {
+            //alert('clicked');
+            setIsPlaying(true);
+          }}
+          color="success"
+          size="medium"
+          style={{ fontSize: '18px' }}
+        >
+          --PLAY!--
+        </Button>
+        <Button
+          variant="outlined"
+          color="success"
+          size="medium"
+          style={{ fontSize: '18px' }}
+        >
+          Score:{score}
+
+        </Button>
+      </Typography>
 
 
     </MuiBox>

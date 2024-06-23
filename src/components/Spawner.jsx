@@ -51,6 +51,15 @@ export default function Spawner({ setScore, isPlaying }) {
                 targetPosition={[-8, 2, -3]}
                 onCollect={() => handleCoinCollect(12)}
             />
+            
+            
+            <EnemyFBX
+                modelPath={"/assets/ninja/ninja.fbx"}
+                animationPath={"/assets/ninja/ninjarun.fbx"}
+                startPosition={[15, 2, 3]}
+                targetPosition={[12, 2, 3]}
+                onCollect={() => handleCoinCollect(12)}
+            />            
             <EnemyGLB
                 modelPath={"/assets/knight/knight.glb"}
                 startPosition={[0, 2, 0]}

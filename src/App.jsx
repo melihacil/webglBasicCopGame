@@ -47,7 +47,7 @@ function App() {
       <Canvas shadows camera={{ position: [10, 10, 10], fov: 60 }}>
         <color attach="background" args={["#ececec"]} />
         <Suspense>
-          <Physics>
+          <Physics debug>
             <GameLoop light={lightRef} ambient={showAmbient} setScore={setScore} sHelper={sHelper} yAxisLocked={yAxisLocked} isPlaying={isPlaying} />
           </Physics>
         </Suspense>

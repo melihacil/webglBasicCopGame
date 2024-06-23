@@ -65,7 +65,7 @@ const EnemyGLB = ({ modelPath, startPosition = [0, 0, 0], targetPosition = [10, 
             type="dynamic"
             position={startPosition}
             lockRotations={true}
-            scale={0.04}
+            scale={1}
             ref={rbgroup}
             onCollisionEnter={handleCollision}
         >

@@ -5,11 +5,17 @@ import * as THREE from 'three';
 import { RigidBody } from '@react-three/rapier';
 import { useFBX } from '@react-three/drei';
 
+import * as SkeletonUtils from 'three/addons/utils/SkeletonUtils.js';
+
 const EnemyFBX = ({ modelPath, animationPath, startPosition = [0, 0, 0], targetPosition = [10, 0, 10], speed = 0.1, onCollect }) => {
     const group = useRef();
     const rbgroup = useRef();
 
-    const model = useLoader(FBXLoader, modelPath);
+    const mainModel = useFBX(modelPath);
+
+
+    const model = SkeletonUtils.clone( mainModel );
+
     useLayoutEffect(() => model.traverse(o => o.isMesh && (o.castShadow = o.receiveShadow = true)), []);
 
     const animation = useLoader(FBXLoader, animationPath);
@@ -20,7 +26,7 @@ const EnemyFBX = ({ modelPath, animationPath, startPosition = [0, 0, 0], targetP
     const [movingToTarget, setMovingToTarget] = useState(true);
 
     useEffect(() => {
-        if (model && animation) {
+        if (model) {
             mixer.current = new THREE.AnimationMixer(model);
             const action = mixer.current.clipAction(animation.animations[0]);
             action.play();
@@ -65,6 +71,7 @@ const EnemyFBX = ({ modelPath, animationPath, startPosition = [0, 0, 0], targetP
         if (group.current.children.length > 0) {
             const primitiveObject = group.current.children[0];
             primitiveObject.rotation.setFromQuaternion(quaternion);
+
         }
 
         // Check if the enemy has reached the target position
@@ -84,6 +91,15 @@ const EnemyFBX = ({ modelPath, animationPath, startPosition = [0, 0, 0], targetP
             // console.log("NOT COLLECTED");
         }
     };
+
+
+    // useEffect(() => {
+    //     if (rbgroup.current) {
+    //         rbgroup.current.body = copiedScene; // Assuming scene contains the physics body
+    //     }
+    // }, [copiedScene]);
+
+
     return (
         <RigidBody
             type="dynamic"
@@ -97,6 +113,7 @@ const EnemyFBX = ({ modelPath, animationPath, startPosition = [0, 0, 0], targetP
             <group ref={group}>
                 {/* Other components or meshes related to the enemy can be added here */}
                 {model && <primitive object={model} />}
+                 
             </group>
         </RigidBody>
     );

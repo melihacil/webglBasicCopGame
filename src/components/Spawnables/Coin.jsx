@@ -36,7 +36,6 @@ export default function CoinPickup({ position, onCollect }) {
 
     const handleCollision = ({ other }) => {
         const colliderName = other.rigidBodyObject?.name; // Optional chaining to handle undefined object
-        console.log("Collider name:", colliderName);
         if (colliderName === 'player') {
             onCollect();
         }

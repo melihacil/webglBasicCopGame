@@ -77,7 +77,6 @@ const EnemyFBX = ({
 
   const handleCollision = ({ other }) => {
     const colliderName = other.rigidBodyObject?.name; // Optional chaining
-    console.log("Collider name:", colliderName);
     if (colliderName === 'player') {
       onCollect();
     }

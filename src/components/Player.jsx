@@ -1,13 +1,40 @@
-import { useGLTF, useKeyboardControls } from "@react-three/drei";
+import { useFBX, useGLTF, useKeyboardControls } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import { RigidBody } from "@react-three/rapier";
-import { useLayoutEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import * as THREE from "three";
+import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 import { Controls } from "../App";
 
 export default function Player() {
-    const playerModel = useGLTF("/assets/police/scene.gltf");
-    useLayoutEffect(() => playerModel.scene.traverse(o => o.isMesh && (o.castShadow = o.receiveShadow = true)), []);
+    const playerModel = useFBX("/assets/police/player.fbx");
+    const runAnimation = useFBX("/assets/police/playerrun.fbx");
+    const idleAnimation = useFBX("/assets/police/playeridle.fbx");
+
+    const mixer = useRef();
+    const actions = useRef({});
+    const activeAction = useRef();
+    const previousAction = useRef();
+
+    useEffect(() => {
+        mixer.current = new THREE.AnimationMixer(playerModel);
+
+        actions.current.idle = mixer.current.clipAction(idleAnimation.animations[0]);
+        actions.current.run = mixer.current.clipAction(runAnimation.animations[0]);
+        actions.current.jump = mixer.current.clipAction(playerModel.animations[0]);  // Assuming jump animation is in the main model file
+
+        activeAction.current = actions.current.idle;
+        activeAction.current.play();
+
+        return () => mixer.current.stopAllAction();
+    }, [playerModel, runAnimation, idleAnimation]);
+
+
+    const jumpPressed = useKeyboardControls((state) => state[Controls.jump]);
+    const leftPressed = useKeyboardControls((state) => state[Controls.left]);
+    const rightPressed = useKeyboardControls((state) => state[Controls.right]);
+    const backPressed = useKeyboardControls((state) => state[Controls.back]);
+    const forwardPressed = useKeyboardControls((state) => state[Controls.forward]);
 
     const direction = new THREE.Vector3();
     const right = new THREE.Vector3();
@@ -18,19 +45,47 @@ export default function Player() {
     const playerRef = useRef();
 
     const { camera } = useThree();
-
-    const jumpPressed = useKeyboardControls((state) => state[Controls.jump]);
-    const leftPressed = useKeyboardControls((state) => state[Controls.left]);
-    const rightPressed = useKeyboardControls((state) => state[Controls.right]);
-    const backPressed = useKeyboardControls((state) => state[Controls.back]);
-    const forwardPressed = useKeyboardControls((state) => state[Controls.forward]);
-
     const speed = useRef(5);
-    const maxSpeed = 10;
+    const maxSpeed = 5;
+
+    useFrame((state, delta) => {
+        if (mixer.current) mixer.current.update(delta);
+
+        // const jumpPressed = useKeyboardControls((state) => state[Controls.jump]);
+        // const leftPressed = useKeyboardControls((state) => state[Controls.left]);
+        // const rightPressed = useKeyboardControls((state) => state[Controls.right]);
+        // const backPressed = useKeyboardControls((state) => state[Controls.back]);
+        // const forwardPressed = useKeyboardControls((state) => state[Controls.forward]);
+
+        const isMoving = leftPressed || rightPressed || backPressed || forwardPressed;
+
+        if (jumpPressed) {
+            jump();
+            setAction(actions.current.jump);
+        } else if (isMoving) {
+            setAction(actions.current.run);
+        } else {
+            setAction(actions.current.idle);
+        }
+
+        handleMovement();
+    });
+
+    const setAction = (toAction) => {
+        if (toAction !== activeAction.current) {
+            previousAction.current = activeAction.current;
+            activeAction.current = toAction;
+
+            previousAction.current.fadeOut(0.5);
+            activeAction.current.reset().fadeIn(0.5).play();
+        }
+    };
+
+
 
     const jump = () => {
         cube.current.wakeUp();
-        cube.current.applyImpulse({ x: 0, y: 150, z: 0 });
+        cube.current.applyImpulse({ x: 0, y: 60, z: 0 });
         isOnFloor.current = false;
     };
 
@@ -46,6 +101,12 @@ export default function Player() {
         right.normalize();
 
         velocity.set(0, 0, 0);
+
+        // const jumpPressed = useKeyboardControls((state) => state[Controls.jump]);
+        // const leftPressed = useKeyboardControls((state) => state[Controls.left]);
+        // const rightPressed = useKeyboardControls((state) => state[Controls.right]);
+        // const backPressed = useKeyboardControls((state) => state[Controls.back]);
+        // const forwardPressed = useKeyboardControls((state) => state[Controls.forward]);
 
         if (rightPressed) {
             cube.current.wakeUp();
@@ -66,52 +127,19 @@ export default function Player() {
         }
 
         if (velocity.length() > 0) {
-            velocity.normalize().multiplyScalar(speed.current);
+            velocity.normalize().multiplyScalar(speed.current * 5);
             cube.current.applyImpulse(velocity.multiplyScalar(2));
 
-            // Calculate the rotation angle
             const angle = Math.atan2(velocity.x, velocity.z);
-
-            // Create a quaternion to represent the rotation
             const quaternion = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), angle);
-
-            // Set the rotation of the player model
             playerRef.current.quaternion.slerp(quaternion, 0.1);
         }
     };
 
-    useFrame((_state, delta) => {
-        if (jumpPressed) {
-            jump();
-        }
-        handleMovement();
-
-        // Get the linear velocity of the cube
-        const linvel = cube.current.linvel();
-        const linvelLength = Math.sqrt(linvel.x * linvel.x + linvel.y * linvel.y + linvel.z * linvel.z);
-
-        // Apply a speed limit
-        if (linvelLength > maxSpeed) {
-            const normalizedLinvel = {
-                x: linvel.x / linvelLength,
-                y: linvel.y / linvelLength,
-                z: linvel.z / linvelLength
-            };
-            cube.current.setLinvel({
-                x: normalizedLinvel.x * maxSpeed,
-                y: normalizedLinvel.y * maxSpeed,
-                z: normalizedLinvel.z * maxSpeed
-            });
-        }
-
-        if (isOnFloor.current) {
-        }
-    });
-
     return (
         <>
-            <RigidBody ref={cube} type="dynamic" setCanSleep={false} lockRotations={true} name="player">
-                <primitive ref={playerRef} object={playerModel.scene} name="player" scale={5.0} position={[8, 6, 8]} />
+            <RigidBody ref={cube} type="dynamic" setCanSleep={false} lockRotations={true} name="player" rotation={[0, 0, 0]} >
+                <primitive ref={playerRef} object={playerModel} name="player" scale={0.04} position={[8, 20, 8]} />
             </RigidBody>
         </>
     );
